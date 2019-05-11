@@ -1,0 +1,54 @@
+{
+    "links": [
+        {
+            "group_id": 0, 
+            "source": 0, 
+            "target": 1, 
+            "weight": 14.0
+        }, 
+        {
+            "group_id": 1, 
+            "source": 1, 
+            "target": 2, 
+            "weight": 31.0
+        }, 
+        {
+            "group_id": 1, 
+            "source": 3, 
+            "target": 4, 
+            "weight": 31.0
+        }
+    ], 
+    "nodes": [
+        {
+            "group_id": 0, 
+            "group_name": "plant", 
+            "name": "orange_peel", 
+            "size": 1.0124252185918086
+        }, 
+        {
+            "group_id": 1, 
+            "group_name": "fruit", 
+            "name": "cherry", 
+            "size": 1.9186519876809798
+        }, 
+        {
+            "group_id": 13, 
+            "group_name": "animal product", 
+            "name": "egg", 
+            "size": 37.08272859216255
+        }, 
+        {
+            "group_id": 5, 
+            "group_name": "alcoholic beverage", 
+            "name": "wine", 
+            "size": 1.5522673368968813
+        }, 
+        {
+            "group_id": 5, 
+            "group_name": "alcoholic beverage", 
+            "name": "wine2", 
+            "size": 1.5522673368968813
+        }
+    ]
+}
