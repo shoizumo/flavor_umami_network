@@ -214,6 +214,7 @@ d3.json("js/graph_data.json", function (error, data1) {
       update()
 
 
+      d3.selectAll("line").style("stroke-width", "")
     });
 
     function update() {
@@ -239,11 +240,11 @@ d3.json("js/graph_data.json", function (error, data1) {
       link = svg.selectAll(".link");
       // node = svg.selectAll(".node");
 
-      link.style("opacity", "0.5")
-          .style("stroke-width", function (d) {
+      link.attr("opacity", "0.5")
+          .attr("stroke-width", function (d) {
             return Math.sqrt(d.weight) * 0.1 + d.weight * 0.02;
           })
-          .style("stroke", function (d) {
+          .attr("stroke", function (d) {
             return color(d.group_id)
           });
 
@@ -258,14 +259,14 @@ d3.json("js/graph_data.json", function (error, data1) {
 
     }
 
-    //
-    // document.addEventListener("dblclick", () => {
-    //   let selectLine = d3.selectAll("line")[0][0]; //node which match index number
-    //   $(selectLine).attr("class", "lineColor");  // node color
-    //
-    //   selectLine = d3.selectAll("line")[0][2]; //node which match index number
-    //   $(selectLine).attr("class", "lineColor");  // node color
-    // })
+
+    document.addEventListener("dblclick", () => {
+      let selectLine = d3.selectAll("line")[0][0]; //node which match index number
+      $(selectLine).attr("class", "lineColor");  // node color
+
+      selectLine = d3.selectAll("line")[0][2]; //node which match index number
+      $(selectLine).attr("class", "lineColor");  // node color
+    })
 
 
     function enterLinks(l) {
