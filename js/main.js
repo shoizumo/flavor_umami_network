@@ -248,6 +248,16 @@ d3.json("js/graph_data.json", function (error, data1) {
       force.start();
       d3.selectAll("line").style("stroke-width", "");
 
+
+      // change line display order to back of node
+      for (let i = links.length - 1; 0 <= i; i--) {
+        const linkSVG = link[0][i];
+        const firstSVG = linkSVG.parentNode.firstChild;
+        if (firstSVG) {
+          linkSVG.parentNode.insertBefore(linkSVG, firstSVG);
+        }
+      }
+
       // update Title
       document.getElementById('h1').textContent = selectedType + ' Network'
     }
