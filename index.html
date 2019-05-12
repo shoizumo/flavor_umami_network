@@ -1,72 +1,96 @@
 <!DOCTYPE html>
 <html prefix="og: http://ogp.me/ns#">
-	<head>
-		<!-- Google Tag Manager -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-PX3MXHV');</script>
+  <head>
+    <!-- Google Tag Manager -->
+    <script>(function (w, d, s, l, i) {
+      w[l] = w[l] || [];
+      w[l].push({
+        'gtm.start':
+            new Date().getTime(), event: 'gtm.js'
+      });
+      var f = d.getElementsByTagName(s)[0],
+          j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : '';
+      j.async = true;
+      j.src =
+          'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+      f.parentNode.insertBefore(j, f);
+    })(window, document, 'script', 'dataLayer', 'GTM-PX3MXHV');</script>
     <!-- End Google Tag Manager -->
 
-		<meta charset="utf-8">
-		<title>Flavor Network</title>
-		
-		<meta property="og:title" content="Flavor Network">
+    <meta charset="utf-8">
+    <title>Flavor Network</title>
+
+    <meta property="og:title" content="Flavor Network">
     <meta property="og:type" content="website">
     <meta property="og:url" content="http://foodgalaxy.jp/FlavorNetwork/">
     <meta property="og:image" content="http://foodgalaxy.jp/FlavorNetwork/top.png">
-    <meta property="og:description" content='This interactive network shows which ingredients go well together. The basic idea behind this is “Food Pairing Theory”, suggesting that different ingredients are more likely to pair well in a recipe when they share key flavors.'>
+    <meta property="og:description"
+          content='This interactive network shows which ingredients go well together. The basic idea behind this is “Food Pairing Theory”, suggesting that different ingredients are more likely to pair well in a recipe when they share key flavors.'>
 
     <meta name="twitter:title" content="Flavor Network">
     <meta name="twitter:site" content="http://foodgalaxy.jp/FlavorNetwork/">
     <meta name="twitter:image" content="http://foodgalaxy.jp/FlavorNetwork/top.png">
-    <meta name="twitter:description" content='This interactive network shows which ingredients go well together. The basic idea behind this is “Food Pairing Theory”, suggesting that different ingredients are more likely to pair well in a recipe when they share key flavors.'>
+    <meta name="twitter:description"
+          content='This interactive network shows which ingredients go well together. The basic idea behind this is “Food Pairing Theory”, suggesting that different ingredients are more likely to pair well in a recipe when they share key flavors.'>
 
-		<link rel="stylesheet" href="main.css">
-		<link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
-	</head>
-	<body>
-		<!-- Google Tag Manager (noscript) -->
-    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PX3MXHV"
-    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <link rel="stylesheet" href="main.css">
+    <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
+  </head>
+  <body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript>
+      <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PX3MXHV"
+              height="0" width="0" style="display:none;visibility:hidden"></iframe>
+    </noscript>
     <!-- End Google Tag Manager (noscript) -->
-    
-		<h1>Flavor Network</h1>
-		<div id="chart" align="center">
-		    <svg id="myGraph">
-	            <text class="node_link" x="5" y="875">※&ensp;Node size : Ingredient prevalence in recipes</text>
-	            <text class="node_link" x="5" y="890">&emsp;Link thickness : Number of shared compounds</text>
 
-		    </svg>
-		</div>
-		<div id="description" >
-			<p>
-			    This interactive network shows which ingredients go well together. The basic idea behind this is “Food Pairing Theory”, suggesting that different ingredients are more likely to pair well in a recipe when they share key flavors. For example, above network shows you that “beer” and “coffee”, which seem completely different, make a great match because they share similar flavors. Actually it tastes like "black beer" to me, for some reason.
-			</p>
-			</br>
-			<p>
-			    For further information on “food pairing theory” and the data set used for constructing the network, please see the below paper:
-			<p/>
-			<a href="http://www.nature.com/articles/srep00196" target=”_blank”>
-				<p>
-					"Flavor network and the principles of food pairing" Yong-Yeol Ahn, Sebastian E. Ahnert, James P. Bagrow and Albert-László Barabási
-				</p>
-			</a>
-			</br>
-			<hr  color="#eeeeee">
-			<p id="name">
-				Created by Sho Izumo&nbsp|&nbsp
-				<a href="http://foodgalaxy.jp/" target=”_blank”>
-					Home
-			</a>
-			</p>
-		</div>
-		<script src="js/jquery-2.2.4.min.js"  charset="utf-8"></script>
-		<!--<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>-->
-		<script src="js/d3.min.js"  charset="utf-8"></script>
-		<script src="js/d3-legend.js" charset="utf-8"></script>
-		<script src="js/ion.sound.min.js"></script>
-		<script src="js/main.js"></script>
-	</body>
+    <h1 id="h1">Flavor Network</h1>
+
+    <select name="dataType" id="dataType">
+      <option value="Flavor">Flavor</option>
+      <option value="Umami">Umami</option>
+    </select>
+
+
+    <div id="chart" align="center">
+      <svg id="myGraph">
+        <text class="node_link" x="5" y="875">※&ensp;Node size : Ingredient prevalence in recipes</text>
+        <text class="node_link" x="5" y="890">&emsp;Link thickness : Number of shared compounds</text>
+
+      </svg>
+    </div>
+    <div id="description">
+      <p>
+        This interactive network shows which ingredients go well together. The basic idea behind this is “Food Pairing
+        Theory”, suggesting that different ingredients are more likely to pair well in a recipe when they share key flavors.
+        For example, above network shows you that “beer” and “coffee”, which seem completely different, make a great match
+        because they share similar flavors. Actually it tastes like "black beer" to me, for some reason.
+      </p>
+      </br>
+      <p>
+        For further information on “food pairing theory” and the data set used for constructing the network, please see the
+        below paper:
+      <p/>
+      <a href="http://www.nature.com/articles/srep00196" target=”_blank”>
+        <p>
+          "Flavor network and the principles of food pairing" Yong-Yeol Ahn, Sebastian E. Ahnert, James P. Bagrow and
+          Albert-László Barabási
+        </p>
+      </a>
+      </br>
+      <hr color="#eeeeee">
+      <p id="name">
+        Created by Sho Izumo&nbsp|&nbsp
+        <a href="http://foodgalaxy.jp/" target=”_blank”>
+          Home
+        </a>
+      </p>
+    </div>
+    <script src="js/jquery-2.2.4.min.js" charset="utf-8"></script>
+    <!--<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>-->
+    <script src="js/d3.min.js" charset="utf-8"></script>
+    <script src="js/d3-legend.js" charset="utf-8"></script>
+    <script src="js/ion.sound.min.js"></script>
+    <script src="js/main.js"></script>
+  </body>
 </html>

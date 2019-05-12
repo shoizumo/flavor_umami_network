@@ -125,7 +125,7 @@ d3.json("js/graph_data.json", function (error, data1) {
     // default line opacity:0.5
 
     let link = d3.select("#myGraph")
-        .selectAll("line")
+        .selectAll(".line")
         .data(links)
         .enter()
         .append("line")
@@ -204,41 +204,36 @@ d3.json("js/graph_data.json", function (error, data1) {
     });
 
 
-    document.addEventListener("keydown", () => {
-      console.log('key down')
+    const dataTypeSelector = document.getElementById('dataType');
+    dataTypeSelector.onchange = function () {
+      // 選択されているoption要素を取得する
+      const selectedType = this.options[this.selectedIndex].value;
 
-      nodes = dataSet2.nodes;
-      links = dataSet2.links;
+      if (selectedType === 'Flavor') {
+        nodes = dataSet.nodes;
+        links = dataSet.links;
+        update(selectedType)
+      }else if(selectedType === 'Umami') {
+        nodes = dataSet2.nodes;
+        links = dataSet2.links;
+        update(selectedType)
+      }
+    };
 
 
-      update()
-
-
-      d3.selectAll("line").style("stroke-width", "")
-    });
-
-    function update() {
+    function update(selectedType) {
 
       let deleteLine = d3.selectAll("line");
 
       // force.nodes(nodes).links(links);
       force.links(links);
 
-      let l = svg.selectAll(".link")
-          .data(links, function (d) {
-            return d.source + "," + d.target
-          });
-      // let n = svg.selectAll(".node")
-      //     .data(nodes, function (d) {
-      //       return d.key
-      //     });
-      enterLinks(l);
-      // exitLinks(l);
-      // enterNodes(n);
-      // exitNodes(n);
 
-      link = svg.selectAll(".link");
-      // node = svg.selectAll(".node");
+      link = d3.select("#myGraph")
+        .selectAll(".line")
+        .data(links)
+        .enter()
+        .append("line");
 
       link.attr("opacity", "0.5")
           .attr("stroke-width", function (d) {
@@ -248,42 +243,14 @@ d3.json("js/graph_data.json", function (error, data1) {
             return color(d.group_id)
           });
 
-      deleteLine.remove()
-
-
-      // node.select("circle").attr("r", function (d) {
-      //   return Math.sqrt(d.size) * 5 + 3;
-      // });
+      deleteLine.remove();
 
       force.start();
+      d3.selectAll("line").style("stroke-width", "");
 
+      // update Title
+      document.getElementById('h1').textContent = selectedType + ' Network'
     }
-
-
-    document.addEventListener("dblclick", () => {
-      let selectLine = d3.selectAll("line")[0][0]; //node which match index number
-      $(selectLine).attr("class", "lineColor");  // node color
-
-      selectLine = d3.selectAll("line")[0][2]; //node which match index number
-      $(selectLine).attr("class", "lineColor");  // node color
-    })
-
-
-    function enterLinks(l) {
-      l.enter().insert("line", ".node")
-          .attr("class", "link")
-          .style("stroke-width", function (d) {
-            return Math.sqrt(d.weight) * 0.1 + d.weight * 10.02;
-          })
-          .attr("fill", '#FF0000');
-    }
-
-    function exitLinks(l) {
-      l.exit().remove();
-    }
-
-
-
 
 
     /* //Collision detection// */
