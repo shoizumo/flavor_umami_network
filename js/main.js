@@ -329,6 +329,10 @@ d3.json("js/graph_data.json", function (error, data1) {
             $(selectNodeTarget2).attr("class", "linkedNodeText");  // node text color
           }
         }
+        let selectNode = d3.selectAll("circle")[0][nodeIndex];
+        $(selectNode).attr("class", "nodeColor");
+        let selectNodeText = circle.parent().children('text')[nodeIndex];
+        $(selectNodeText).attr("class", "linkedNodeText");
       }
 
 
@@ -357,6 +361,10 @@ d3.json("js/graph_data.json", function (error, data1) {
             $(selectNodeTarget2).attr("class", "textSizeDefault");
           }
         }
+        let selectNode = d3.selectAll("circle")[0][nodeIndex];
+        $(selectNode).attr("class", "nodeColorDefault");
+        let selectNodeText = circle.parent().children('text')[nodeIndex];
+        $(selectNodeText).attr("class", "textSizeDefault");
       }
 
 
@@ -391,6 +399,10 @@ d3.json("js/graph_data.json", function (error, data1) {
 
           }
         }
+        let selectNode = d3.selectAll("circle")[0][nodeIndex];
+        $(selectNode).attr("class", "nodeColor");
+        let selectNodeText = circle.parent().children('text')[nodeIndex];
+        $(selectNodeText).attr("class", "linkedNodeText");
       }
 
       static touchStart(d) {
@@ -424,6 +436,10 @@ d3.json("js/graph_data.json", function (error, data1) {
 
           }
         }
+        let selectNode = d3.selectAll("circle")[0][nodeIndex];
+        $(selectNode).attr("class", "nodeColor");
+        let selectNodeText = circle.parent().children('text')[nodeIndex];
+        $(selectNodeText).attr("class", "linkedNodeText");
       }
 
       static mouseup(d) {
@@ -456,6 +472,10 @@ d3.json("js/graph_data.json", function (error, data1) {
 
           }
         }
+        let selectNode = d3.selectAll("circle")[0][nodeIndex];
+        $(selectNode).attr("class", "nodeColor");
+        let selectNodeText = circle.parent().children('text')[nodeIndex];
+        $(selectNodeText).attr("class", "linkedNodeText");
       }
 
       static cursor(type) {
