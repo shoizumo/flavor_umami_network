@@ -5,13 +5,13 @@ let isSp = ((navigator.userAgent.indexOf('iPhone') > 0 ||
 
 console.log(isSp)
 
-d3.json("js/graph_data.json", function (error, data1) {
-  d3.json("js/graph_data2.json", function (error, data2) {
-    let dataSet = data1;
-    let dataSet2 = data2;
+d3.json("js/flavor_data.json", function (error, data1) {
+  d3.json("js/umami_data.json", function (error, data2) {
+    let flavorData = data1;
+    let umamiData = data2;
 
-    console.log(dataSet);
-    console.log(dataSet2);
+    console.log(flavorData);
+    console.log(umamiData);
 
     //make color function
     let color = function (n) {
@@ -78,8 +78,8 @@ d3.json("js/graph_data.json", function (error, data1) {
     let width = 1200;
     let height = 900;
 
-    let nodes = dataSet.nodes;
-    let links = dataSet.links;
+    let nodes = flavorData.nodes;
+    let links = flavorData.links;
 
 
     let force = d3.layout.force()
@@ -210,12 +210,12 @@ d3.json("js/graph_data.json", function (error, data1) {
       const selectedType = this.options[this.selectedIndex].value;
 
       if (selectedType === 'Flavor') {
-        nodes = dataSet.nodes;
-        links = dataSet.links;
+        nodes = flavorData.nodes;
+        links = flavorData.links;
         update(selectedType)
       }else if(selectedType === 'Umami') {
-        nodes = dataSet2.nodes;
-        links = dataSet2.links;
+        nodes = umamiData.nodes;
+        links = umamiData.links;
         update(selectedType)
       }
     };
