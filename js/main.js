@@ -10,8 +10,8 @@ d3.json("js/flavor_data.json", function (error, data1) {
     let flavorData = data1;
     let umamiData = data2;
 
-    console.log(flavorData);
-    console.log(umamiData);
+    // console.log(flavorData);
+    // console.log(umamiData);
 
     //make color function
     let color = function (n) {
