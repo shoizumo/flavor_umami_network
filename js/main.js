@@ -221,6 +221,7 @@ d3.json("js/flavor_data.json", function (error, data1) {
     };
 
 
+    let stopForceSetInterval;
     function update(selectedType) {
 
       let deleteLine = d3.selectAll("line");
@@ -257,6 +258,11 @@ d3.json("js/flavor_data.json", function (error, data1) {
           linkSVG.parentNode.insertBefore(linkSVG, firstSVG);
         }
       }
+
+      clearInterval(stopForceSetInterval);
+      stopForceSetInterval = setTimeout(() => {
+        force.stop(); //force レイアウトの計算を終了
+      }, 5000);
 
       // update Title
       document.getElementById('h1').textContent = selectedType + ' Network'
@@ -571,7 +577,7 @@ d3.json("js/flavor_data.json", function (error, data1) {
 
     /////////////////////////////////////////////////////////////
 
-    setTimeout(() => {
+    stopForceSetInterval = setTimeout(() => {
       force.stop(); //force レイアウトの計算を終了
       node.each(function (d) {
         //d.fixed = true
