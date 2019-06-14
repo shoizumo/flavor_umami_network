@@ -210,11 +210,19 @@ d3.json("js/flavor_data.json", function (error, data1) {
       const selectedType = this.options[this.selectedIndex].value;
 
       if (selectedType === 'Flavor') {
+        force
+            .linkDistance(100)
+            .gravity(0.20)
+            .charge(-300);
         nodes = flavorData.nodes;
         links = flavorData.links;
         update(selectedType)
       }else if(selectedType === 'Umami') {
-        nodes = umamiData.nodes;
+        force
+            .linkDistance(150)
+            .gravity(1.80)
+            .charge(-2500);
+        // nodes = umamiData.nodes;
         links = umamiData.links;
         update(selectedType)
       }
