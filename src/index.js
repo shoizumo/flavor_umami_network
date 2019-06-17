@@ -6,6 +6,11 @@ import 'ion-sound';
 import flavorData from './data/flavor_data';
 import umamiData from './data/umami_data';
 
+import Network from './Network';
+import Legend from './Legend'
+const radiusCallision = 15;
+
+
 console.log(flavorData);
 console.log(umamiData);
 
@@ -19,7 +24,7 @@ console.log(umamiData);
 
 
   //make color function
-  let color = function (n) {
+  const color = function (n) {
     return legendColor[n];
   };
 
@@ -34,20 +39,20 @@ console.log(umamiData);
   };
 
   /* //Legend// */
-  let legendName = ["plant", "fruit", "meat", "vegetable", "cereal/crop",
+  const legendName = ["plant", "fruit", "meat", "vegetable", "cereal/crop",
     "alcoholic beverage", "herb", "dairy", "nut/seed/pulse", "spice",
     "fish/seafood", "plant derivative", "flower", "animal product"];
 
-  let legendColor = ["#0fff0f", "#fc783f", "#ff4c4c", "#3cb37a", "#e8c59c",
+  const legendColor = ["#0fff0f", "#fc783f", "#ff4c4c", "#3cb37a", "#e8c59c",
     "#e73552", "#ad5d88", "#db830d", "#965d21", "#00afcc",
     "#434da2", "#b3e500", "#ff00ae", "#ff7fbf"];
 
-  let ordinal = d3.scale.ordinal()
+  const ordinal = d3.scale.ordinal()
       .domain(legendName)
       .range(legendColor);
 
 
-  let svg = d3.select("#myGraph");
+  const svg = d3.select("#myGraph");
 
   svg.append("g")
       .attr("class", "legendOrdinal")
@@ -57,7 +62,7 @@ console.log(umamiData);
       .style({"font-family": ["Helvetica Neue", "Arial", "sans-serif"]});
 
 
-  let legendOrdinal = d3.legend.color()
+  const legendOrdinal = d3.legend.color()
       .shape("path", d3.svg.symbol().type("circle").size(300)())
       .shapePadding(4)
       .labelOffset(2.5)
@@ -68,8 +73,8 @@ console.log(umamiData);
       .call(legendOrdinal);
 
   // attr of legend circle
-  let cell = $(".cell");
-  let legendPathDefo = cell.children("path");
+  const cell = $(".cell");
+  const legendPathDefo = cell.children("path");
   $(legendPathDefo).css({
     "opacity": ["0.6"],
     "stroke-width": ["2"],
@@ -80,14 +85,14 @@ console.log(umamiData);
   $(".legendCells").css({"cursor": ["pointer"]});
 
   /* //Setting// */
-  let width = 1200;
-  let height = 900;
+  const width = 1200;
+  const height = 900;
 
   let nodes = flavorData.nodes;
   let links = flavorData.links;
 
 
-  let force = d3.layout.force()
+  const force = d3.layout.force()
       .nodes(nodes)
       .links(links)
       .size([width - 50, height - 10]) //The center of gravity:[x/2, y/2]
@@ -109,7 +114,7 @@ console.log(umamiData);
   // for picture
 
   //let keyDown = 0;
-  let body = $("body");
+  const body = $("body");
   /*
   body.on("keydown", function(){
     if (keyDown===0){
@@ -177,10 +182,6 @@ console.log(umamiData);
 
   force.on("tick", function () {
     link
-    //.attr("x1", function(d){ return d.source.x;})
-    //.attr("y1", function(d){ return d.source.y;})
-    //.attr("x2", function(d){ return d.target.x;})
-    //.attr("y2", function(d){ return d.target.y;})
         .attr("x1", function (d) {
           return Math.max(wallMargin, Math.min(width - wallMargin, d.source.x));
         })
@@ -195,7 +196,6 @@ console.log(umamiData);
         });
 
     node
-    //.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; }); //because of appending "g"
         .attr("transform", function (d) {
           return "translate(" + Math.max(wallMargin, Math.min(width - wallMargin, d.x))
               + ","
@@ -205,10 +205,11 @@ console.log(umamiData);
 
     //collision detection
     node
-        .each(collide(0.5));
+        .each(Network.collide(0.5, radiusCallision, nodes));
   });
 
-
+  // Network dataを更新する
+  ////////////////////////////////////////////////////////////////////////////////////////
   const dataTypeSelector = document.getElementById('dataType');
   dataTypeSelector.onchange = function () {
     // 選択されているoption要素を取得する
@@ -237,7 +238,6 @@ console.log(umamiData);
   let stopForceSetInterval;
 
   function update(selectedType) {
-
     let deleteLine = d3.selectAll("line");
 
     // force.nodes(nodes).links(links);
@@ -281,249 +281,16 @@ console.log(umamiData);
     // update Title
     document.getElementById('h1').textContent = selectedType + ' Network'
   }
+  ////////////////////////////////////////////////////////////////////////////////////////
 
 
-  /* //Collision detection// */
-  // to prevent from overrapping
-  let radiusCallision = 15;
+  const circle = $("circle");
 
-  function collide(alpha) {
-    let quadtree = d3.geom.quadtree(nodes);
-    return function (d) {
-      let rb = 2 * radiusCallision,
-          nx1 = d.x - rb,
-          nx2 = d.x + rb,
-          ny1 = d.y - rb,
-          ny2 = d.y + rb;
-      quadtree.visit(function (quad, x1, y1, x2, y2) {
-        if (quad.point && (quad.point !== d)) {
-          let x = d.x - quad.point.x,
-              y = d.y - quad.point.y,
-              l = Math.sqrt(x * x + y * y);
-          if (l < rb) {
-            l = (l - rb) / l * alpha;
-            d.x -= x *= l;
-            d.y -= y *= l;
-            quad.point.x += x;
-            quad.point.y += y;
-          }
-        }
-        return x1 > nx2
-            || x2 < nx1
-            || y1 > ny2
-            || y2 < ny1;
-      });
-    };
-  }
-
-
-  let circle = $("circle");
-
-  class Coloring {
-    static mouseover(d) {
-      let nodeIndex = d.index; // to get node index
-      for (let i = 0, l = links.length; l > i; i++) {
-        if (links[i].source.index === nodeIndex ||
-            links[i].target.index === nodeIndex) {
-
-          let lineIndex = i;  // index number
-          //console.log(lineIndex)
-
-          let selectLine = d3.selectAll("line")[0][lineIndex]; //node which match index number
-          $(selectLine).attr("class", "lineColor");  // node color
-
-          //console.log(links[lineIndex].source.index)
-          //console.log(links[lineIndex].target.index)
-
-          let nodeSource = links[lineIndex].source.index;
-          let nodeTarget = links[lineIndex].target.index;
-
-          let selectNodeSource = d3.selectAll("circle")[0][nodeSource]; //node which match source index number
-          let selectNodeTarget = d3.selectAll("circle")[0][nodeTarget]; //node which match target index number
-          $(selectNodeSource).attr("class", "nodeColor");  // node color
-          $(selectNodeTarget).attr("class", "nodeColor");  // node color
-
-          let selectNodeSource2 = circle.parent().children('text')[nodeSource];  // text which match source index number
-          let selectNodeTarget2 = circle.parent().children('text')[nodeTarget];  // text which match target index number
-          $(selectNodeSource2).attr("class", "linkedNodeText");  // node text color
-          $(selectNodeTarget2).attr("class", "linkedNodeText");  // node text color
-        }
-      }
-      let selectNode = d3.selectAll("circle")[0][nodeIndex];
-      $(selectNode).attr("class", "nodeColor");
-      let selectNodeText = circle.parent().children('text')[nodeIndex];
-      $(selectNodeText).attr("class", "linkedNodeText");
-    }
-
-
-    static mouseout(d) {
-      let nodeIndex = d.index;
-      for (let i = 0, l = links.length; l > i; i++) {
-        if (links[i].source.index === nodeIndex ||
-            links[i].target.index === nodeIndex) {
-
-          let lineIndex = i;
-
-          let selectLine = d3.selectAll("line")[0][lineIndex];
-          $(selectLine).attr("class", "lineColorDefault");
-
-          let nodeSource = links[lineIndex].source.index;
-          let nodeTarget = links[lineIndex].target.index;
-
-          let selectNodeSource = d3.selectAll("circle")[0][nodeSource];
-          let selectNodeTarget = d3.selectAll("circle")[0][nodeTarget];
-          $(selectNodeSource).attr("class", "nodeColorDefault");
-          $(selectNodeTarget).attr("class", "nodeColorDefault");
-
-          let selectNodeSource2 = circle.parent().children('text')[nodeSource];
-          let selectNodeTarget2 = circle.parent().children('text')[nodeTarget];
-          $(selectNodeSource2).attr("class", "textSizeDefault");
-          $(selectNodeTarget2).attr("class", "textSizeDefault");
-        }
-      }
-      let selectNode = d3.selectAll("circle")[0][nodeIndex];
-      $(selectNode).attr("class", "nodeColorDefault");
-      let selectNodeText = circle.parent().children('text')[nodeIndex];
-      $(selectNodeText).attr("class", "textSizeDefault");
-    }
-
-
-    static mousedown(d) {
-      //at first, make all node & line fade
-      d3.selectAll("circle").attr("class", "nodeColorFade");
-      d3.selectAll("line").attr("class", "lineColorFade");
-      circle.parent().children('text').attr("class", "nodeTextFade");
-
-
-      let nodeIndex = d.index;
-      for (let i = 0, l = links.length; l > i; i++) {
-        if (links[i].source.index === nodeIndex ||
-            links[i].target.index === nodeIndex) {
-
-          let lineIndex = i;
-          let selectLine = d3.selectAll("line")[0][lineIndex];
-          $(selectLine).attr("class", "lineColor");
-
-          let nodeSource = links[lineIndex].source.index;
-          let nodeTarget = links[lineIndex].target.index;
-
-          let selectNodeSource = d3.selectAll("circle")[0][nodeSource];
-          let selectNodeTarget = d3.selectAll("circle")[0][nodeTarget];
-          $(selectNodeSource).attr("class", "nodeColor");
-          $(selectNodeTarget).attr("class", "nodeColor");
-
-          let selectNodeSource2 = circle.parent().children('text')[nodeSource];
-          let selectNodeTarget2 = circle.parent().children('text')[nodeTarget];
-          $(selectNodeSource2).attr("class", "linkedNodeText");
-          $(selectNodeTarget2).attr("class", "linkedNodeText");
-
-        }
-      }
-      let selectNode = d3.selectAll("circle")[0][nodeIndex];
-      $(selectNode).attr("class", "nodeColor");
-      let selectNodeText = circle.parent().children('text')[nodeIndex];
-      $(selectNodeText).attr("class", "linkedNodeText");
-    }
-
-    static touchStart(d) {
-      //at first, make all node & line fade
-      d3.selectAll("circle").attr("class", "nodeColorFadeSp");
-      d3.selectAll("line").attr("class", "lineColorFade");
-      circle.parent().children('text').attr("class", "nodeTextFade");
-
-
-      let nodeIndex = d.index;
-      for (let i = 0, l = links.length; l > i; i++) {
-        if (links[i].source.index === nodeIndex ||
-            links[i].target.index === nodeIndex) {
-
-          let lineIndex = i;
-          let selectLine = d3.selectAll("line")[0][lineIndex];
-          $(selectLine).attr("class", "lineColor");
-
-          let nodeSource = links[lineIndex].source.index;
-          let nodeTarget = links[lineIndex].target.index;
-
-          let selectNodeSource = d3.selectAll("circle")[0][nodeSource];
-          let selectNodeTarget = d3.selectAll("circle")[0][nodeTarget];
-          $(selectNodeSource).attr("class", "nodeColor");
-          $(selectNodeTarget).attr("class", "nodeColor");
-
-          let selectNodeSource2 = circle.parent().children('text')[nodeSource];
-          let selectNodeTarget2 = circle.parent().children('text')[nodeTarget];
-          $(selectNodeSource2).attr("class", "linkedNodeText");
-          $(selectNodeTarget2).attr("class", "linkedNodeText");
-
-        }
-      }
-      let selectNode = d3.selectAll("circle")[0][nodeIndex];
-      $(selectNode).attr("class", "nodeColor");
-      let selectNodeText = circle.parent().children('text')[nodeIndex];
-      $(selectNodeText).attr("class", "linkedNodeText");
-    }
-
-    static mouseup(d) {
-      d3.selectAll("circle").attr("class", "nodeReturnFade");
-      d3.selectAll("line").attr("class", "lineReturnFade");
-      circle.parent().children('text').attr("class", "nodeTextReturnFade");
-
-      let nodeIndex = d.index;
-      for (let i = 0, l = links.length; l > i; i++) {
-        if (links[i].source.index === nodeIndex ||
-            links[i].target.index === nodeIndex) {
-
-          let lineIndex = i;
-
-          let selectLine = d3.selectAll("line")[0][lineIndex];
-          $(selectLine).attr("class", "lineColor");
-
-          let nodeSource = links[lineIndex].source.index;
-          let nodeTarget = links[lineIndex].target.index;
-
-          let selectNodeSource = d3.selectAll("circle")[0][nodeSource];
-          let selectNodeTarget = d3.selectAll("circle")[0][nodeTarget];
-          $(selectNodeSource).attr("class", "nodeColor");
-          $(selectNodeTarget).attr("class", "nodeColor");
-
-          let selectNodeSource2 = circle.parent().children('text')[nodeSource];
-          let selectNodeTarget2 = circle.parent().children('text')[nodeTarget];
-          $(selectNodeSource2).attr("class", "linkedNodeText");
-          $(selectNodeTarget2).attr("class", "linkedNodeText");
-
-        }
-      }
-      let selectNode = d3.selectAll("circle")[0][nodeIndex];
-      $(selectNode).attr("class", "nodeColor");
-      let selectNodeText = circle.parent().children('text')[nodeIndex];
-      $(selectNodeText).attr("class", "linkedNodeText");
-    }
-
-    static cursor(type) {
-      let grabTypeC;
-      let grabTypeB;
-      if (type === 'grabbing') {
-        grabTypeC = "grabbing";
-        grabTypeB = "grabbing";
-      } else {
-        grabTypeC = "grab";
-        grabTypeB = "auto";
-      }
-
-      //grabbing
-      circle.css({"cursor": ["-webkit-" + grabTypeC]});
-      circle.css({"cursor": ["-moz-" + grabTypeC]});
-      circle.css({"cursor": [grabTypeC]});
-
-      body.css({"cursor": ["-webkit-" + grabTypeB]});
-      body.css({"cursor": ["-moz-" + grabTypeB]});
-      body.css({"cursor": [grabTypeB]});
-    }
-  }
 
   /* //Mouse action// */
   if (!isSp) {
     node.on("mouseover", function (d) {
-      Coloring.mouseover(d);
+      Network.mouseover(d, links, circle);
       if (mouseDown === 0) {
         ion.sound.play("mouseover", {
           volume: 0.1 // turn down
@@ -532,12 +299,12 @@ console.log(umamiData);
     });
 
     node.on("mouseout", function (d) {
-      Coloring.mouseout(d)
+      Network.mouseout(d, links, circle)
     });
 
     node.on("mousedown", function (d) {
-      Coloring.mousedown(d);
-      Coloring.cursor('grabbing');
+      Network.mousedown(d, links, circle);
+      Network.cursor('grabbing', body, circle);
       ion.sound.play("grabNode", {
         volume: 0.2 // turn down
       });
@@ -550,8 +317,8 @@ console.log(umamiData);
     });
 
     body.on("mouseup", function (d) {
-      Coloring.mouseup(d);
-      Coloring.cursor('grab')
+      Network.mouseup(d, links, circle);
+      Network.cursor('grab', body, circle)
     });
   }
 
@@ -566,14 +333,14 @@ console.log(umamiData);
     });
 
     node.on("touchstart", function (d) {
-      Coloring.touchStart(d);
+      Network.touchStart(d, links, circle);
     });
 
     node.on("touchend", function () {
       touchColored = 0;
     });
 
-    svg.on("touchstart", function (d) {
+    svg.on("touchstart", function () {
       touchColored = 1;
     });
 
@@ -599,92 +366,17 @@ console.log(umamiData);
   }, 10000);
 
 
-  /* //make filter// */
 
-  // legend filter(mouse over) to make node bigger
-  class LegendFilter {
-    static mouseoverFilter(legendId) {
-      let legendText = cell.children("text")[legendId];
-      $(legendText).animate({
-            "font-size": ["1.15em"],
-            "font-weight": ["700"]
-          },
-          100);
+  Legend.putId2Legend(cell, legendName);
+  // ノードを更新する場合は再度クラスを付与する必要あり
+  Legend.putClass2Node(nodes, circle);
 
-      let legendPath = cell.children("path")[legendId];
-      $(legendPath).css({"stroke": [color(legendId)]});
-      $(legendPath).animate({"stroke-width": ["5"]}, 100);
-
-      let filteredCircle = circle.parent("." + legendId).children("circle");
-      $(filteredCircle).attr("class", "filteredCircle");
-      //                  .attr("stroke", color(legendId));
-
-      let filteredText = circle.parent("." + legendId).children("text");
-      $(filteredText).attr("class", "filteredText");
-    }
-
-    static mouseoutFilter(legendId) {
-      let legendText = cell.children("text")[legendId];
-      $(legendText).animate({
-            "fill": ["#302833"],
-            "font-size": ["1em"],
-            "font-weight": ["400"]
-          },
-          100);
-
-      let legendPath = cell.children("path")[legendId];
-      $(legendPath).css({"stroke": ["white"]});
-      $(legendPath).animate({"stroke-width": ["2"]}, 100);
-
-      let filteredCircle = circle.parent("." + legendId).children("circle");
-      $(filteredCircle).attr("class", "returnFilteredCircle");
-
-      let filteredText = circle.parent("." + legendId).children("text");
-      $(filteredText).attr("class", "returnFilteredText");
-    }
-
-    static mouseoverClick(legendId) {
-      let legendText = cell.children("text")[legendId];
-      $(legendText).animate({
-            "font-size": ["1.15em"],
-            "font-weight": ["700"]
-          },
-          100);
-
-      let legendPath = cell.children("path")[legendId];
-      $(legendPath).css({"stroke": [color(legendId)]});
-      $(legendPath).animate({"stroke-width": ["5"]}, 100);
-
-      let filteredCircle = circle.parent("." + legendId).children("circle");
-      $(filteredCircle).attr("class", "filteredCircle");
-
-      let filteredText = circle.parent("." + legendId).children("text");
-      $(filteredText).attr("class", "filteredText");
-    }
-  }
-
-
-  // put id to each legend
-  for (let i = 0, l = legendName.length; l > i; i++) {
-    let legendId = cell[i];
-    $(legendId).attr("id", "legend_No" + i);
-  }
-
-
-  // put class(=group_id) to each node
-  let nodeGroup = circle.parent();
-
-  for (let i = 0, l = nodeGroup.length; l > i; i++) {
-    let nodeG = nodeGroup[i];
-    $(nodeG).attr("class", nodes[i].group_id);
-    //          .attr("r", Math.sqrt(nodes[i].size)*3 + 5)
-  }
 
   let legendFilter = d3.selectAll(".cell");
   if (!isSp) {
     legendFilter.on("mouseover", function () {
-      let legendId = this.id.slice(9);
-      LegendFilter.mouseoverFilter(legendId);
+      const legendId = this.id.slice(9);
+      Legend.mouseoverFilter(legendId, circle, cell, color);
 
       ion.sound.play("mouseover", {
         volume: 0.1 // turn down
@@ -692,16 +384,16 @@ console.log(umamiData);
     });
 
     legendFilter.on("click", function () {
-      let legendId = this.id.slice(9);
-      LegendFilter.mouseoverClick(legendId);
+      const legendId = this.id.slice(9);
+      Legend.mouseoverClick(legendId, circle, cell, color);
 
       ion.sound.play("legend");
     });
 
     // legend filter(mouse out)
     legendFilter.on("mouseout", function () {
-      let legendId = this.id.slice(9);
-      LegendFilter.mouseoutFilter(legendId);
+      const legendId = this.id.slice(9);
+      Legend.mouseoutFilter(legendId, circle, cell);
     });
   }
 
