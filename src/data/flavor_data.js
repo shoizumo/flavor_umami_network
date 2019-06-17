@@ -1,4 +1,4 @@
-{
+export const flavorData = {
     "links": [
         {
             "group_id": 0, 
