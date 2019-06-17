@@ -1,7 +1,10 @@
 import $ from 'jquery';
+import d3 from 'd3';
+import 'd3-svg-legend/d3-legend';
+import 'ion-sound';
 
-import {flavorData} from './data/flavor_data';
-import {umamiData} from './data/umami_data';
+import flavorData from './data/flavor_data';
+import umamiData from './data/umami_data';
 
 console.log(flavorData);
 console.log(umamiData);

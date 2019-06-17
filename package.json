@@ -25,6 +25,9 @@
     "webpack-dev-server": "^3.7.1"
   },
   "dependencies": {
+    "d3": "^3.5.17",
+    "d3-svg-legend": "^1.13.0",
+    "ion-sound": "^3.0.7",
     "jquery": "^2.2.4"
   }
 }

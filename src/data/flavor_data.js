@@ -1,4 +1,4 @@
-export const flavorData = {
+const flavorData = {
     "links": [
         {
             "group_id": 0, 
@@ -3064,3 +3064,4 @@ export const flavorData = {
         }
     ]
 }
+export default flavorData;
