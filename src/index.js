@@ -219,8 +219,6 @@ console.log(umamiData);
     ion.sound.play("grabNode", {
       volume: 0.2 // turn down
     });
-
-    console.log('mousedown')
   }
 
   function dragged(d) {
@@ -238,9 +236,16 @@ console.log(umamiData);
     ion.sound.play("releaseNode", {
       volume: 0.5
     });
-
-    console.log('mouseup')
   }
+
+
+  body.on("mouseup", function (d) {
+    Network.mouseup(d, links, circle, labels);
+    Network.cursor('grab', body, circle)
+
+    console.log('mouseup body')
+
+  });
 
 
   // Network dataを更新する
@@ -331,46 +336,20 @@ console.log(umamiData);
           volume: 0.1 // turn down
         });
       }
-
-      console.log('mouseover')
-
     });
 
     node.on("mouseout", function (d) {
       Network.mouseout(d, links, circle)
-
-
-      console.log('mouseout')
-
     });
 
-    node.on("mousedown", function (d) {
-      // Network.mousedown(d, links, circle);
-      // Network.cursor('grabbing', body, circle);
-      // ion.sound.play("grabNode", {
-      //   volume: 0.2 // turn down
-      // });
-      //
-      // console.log('mousedown')
 
-    });
-
-    node.on("mouseup", function () {
-      // ion.sound.play("releaseNode", {
-      //   volume: 0.5
-      // });
-      //
-      // console.log('mouseup')
-
-    });
-
-    body.on("mouseup", function (d) {
-      Network.mouseup(d, links, circle, labels);
-      Network.cursor('grab', body, circle)
-
-      console.log('mouseup body')
-
-    });
+    // body.on("mouseup", function (d) {
+    //   Network.mouseup(d, links, circle, labels);
+    //   Network.cursor('grab', body, circle)
+    //
+    //   console.log('mouseup body')
+    //
+    // });
   }
 
   /////////////////////////////////////////////////////////////

@@ -73,7 +73,7 @@ export default class Network {
 
   static mousedown(d, links, circle, labels) {
     //at first, make all node & line fade
-    d3.selectAll("circle").attr("class", "nodeColorFade");
+    // d3.selectAll("circle").attr("class", "nodeColorFade");
     d3.selectAll("line").attr("class", "lineColorFade");
     labels.attr("class", "nodeTextFade");
     // circle.parent().children('text').attr("class", "nodeTextFade");
@@ -111,7 +111,7 @@ export default class Network {
 
   static touchStart(d, links, circle, labels) {
     //at first, make all node & line fade
-    d3.selectAll("circle").attr("class", "nodeColorFadeSp");
+    // d3.selectAll("circle").attr("class", "nodeColorFadeSp");
     d3.selectAll("line").attr("class", "lineColorFade");
     labels.attr("class", "nodeTextFade");
 
@@ -148,7 +148,7 @@ export default class Network {
 
 
   static mouseup(d, links, circle, labels) {
-    d3.selectAll("circle").attr("class", "nodeReturnFade");
+    // d3.selectAll("circle").attr("class", "nodeReturnFade");
     d3.selectAll("line").attr("class", "lineReturnFade");
     labels.attr("class", "nodeTextReturnFade");
 
