@@ -195,10 +195,10 @@ svg {
   fill: #E5E5E5;
   stroke: #bfbec5;
   opacity: 0.6;
-  cursor: -webkit-grab;
-  cursor: -moz-grab;
-  cursor: grab;
-  transition-duration: 0.5s;
+  //cursor: -webkit-grab;
+  //cursor: -moz-grab;
+  //cursor: grab;
+  //transition-duration: 0.5s;
   pointer-events: none;
 }
 
@@ -209,7 +209,7 @@ svg {
   cursor: -webkit-grab;
   cursor: -moz-grab;
   cursor: grab;
-  transition-duration: 0.5s;
+  //transition-duration: 0.5s;
 }
 
 .nodeTextFade {
@@ -230,10 +230,10 @@ svg {
 
 .nodeReturnFade {
   opacity: 0.6;
-  cursor: -webkit-grab;
-  cursor: -moz-grab;
-  cursor: grab;
-  transition-duration: 0.5s;
+  //cursor: -webkit-grab;
+  //cursor: -moz-grab;
+  //cursor: grab;
+  //transition-duration: 0.5s;
 }
 
 .nodeTextReturnFade {
