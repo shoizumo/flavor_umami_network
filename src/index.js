@@ -89,32 +89,7 @@ console.log(umamiData);
 
   let nodes = flavorData.nodes;
   let links = flavorData.links;
-
-
-  /* //Continually move// */
-  //setInterval(function(){force.alpha(0.05);}, 125);
-  //d3.timer(function(){
-  //force.alpha(0.1);
-  //});
-
-  /* //Static Network// */
-  // for picture
-
-  //let keyDown = 0;
   const body = $("body");
-  /*
-  body.on("keydown", function(){
-    if (keyDown===0){
-      force.stop(); //force レイアウトの計算を終了
-      node.each(function(d){ d.fixed = true });
-      keyDown = 1
-    }else{
-      force.start(); //force レイアウトの計算を終了
-      node.each(function(d){ d.fixed = false });
-      keyDown = 0
-    }
-  });
-  */
 
 
   // set svg elements
@@ -125,7 +100,7 @@ console.log(umamiData);
       .append("line")
       .attr("opacity", "0.5")
       .attr("stroke-width", function (d) {
-        return Math.sqrt(d.weight) * 0.1 + d.weight * 0.015
+        return Math.sqrt(d.weight) * 0.1 + d.weight * 0.015;
       })
       .attr("stroke", function (d) {
         return color(d.group_id)
@@ -146,13 +121,13 @@ console.log(umamiData);
       .attr("stroke", "#fffcf9")
       .call(d3.drag()
           .on("start", dragstarted)
-          .on("drag", dragged)
+          .on("drag", dragging)
           .on("end", dragended));
 
 
   let labels = d3.select("#myGraph")
       .selectAll("text").data(nodes).enter().append("text")
-      .text(function(d){return d.name;})
+      .text(function(d){return d.name;});
 
   labels
       .attr("font-size", ".7em")
@@ -169,13 +144,10 @@ console.log(umamiData);
   //.force("center", d3.forceCenter([width / 2 - 50, height / 2 - 10]))
       .force("link",
           d3.forceLink()
-          // .distance(function (d) {
-          //   return Math.sqrt(d.weight) * 0.1 + d.weight * 0.02;
-          // })
               .distance(80)
           //     .distance(function(d) { return  Math.sqrt(d.weight) * 0.1 + d.weight * 0.5; })
               .strength(0.8)
-              // .iterations(16)
+              .iterations(1.0)
       )
       .force("collide",
           d3.forceCollide()
@@ -183,7 +155,7 @@ console.log(umamiData);
                 return Math.sqrt(d.size) * 4 + 2.5;
               })
               .strength(0.7)
-              // .iterations(1)
+              .iterations(1.0)
       )
       .force("charge", d3.forceManyBody().strength(-300))
       .force("center", d3.forceCenter(Xcenter, Ycenter))
@@ -232,7 +204,7 @@ console.log(umamiData);
     });
   }
 
-  function dragged(d) {
+  function dragging(d) {
     d.fx = d3.event.x;
     d.fy = d3.event.y;
   }
@@ -250,15 +222,6 @@ console.log(umamiData);
   }
 
 
-  body.on("mouseup", function (d) {
-    Network.mouseup(d, links, circle, labels);
-    Network.cursor('grab', body, circle)
-
-    console.log('mouseup body')
-
-  });
-
-
   // Network dataを更新する
   ////////////////////////////////////////////////////////////////////////////////////////
   const dataTypeSelector = document.getElementById('dataType');
@@ -267,32 +230,57 @@ console.log(umamiData);
     const selectedType = this.options[this.selectedIndex].value;
 
     if (selectedType === 'Flavor') {
-      force
-          .linkDistance(100)
-          .gravity(0.20)
-          .charge(-300);
+      // force
+      //     .linkDistance(100)
+      //     .gravity(0.20)
+      //     .charge(-300);
+
+
+      simulation
+          .force("link", d3.forceLink().distance(80))
+          .force("charge", d3.forceManyBody().strength(-300))
+          .force("x", d3.forceX().strength(0.25).x(Xcenter))
+          .force("y", d3.forceY().strength(0.35).y(Ycenter));
+
+
       nodes = flavorData.nodes;
       links = flavorData.links;
       update(selectedType)
+
+
     } else if (selectedType === 'Umami') {
-      force
-          .linkDistance(150)
-          .gravity(1.80)
-          .charge(-2500);
+      // force
+      //     .linkDistance(150)
+      //     .gravity(1.80)
+      //     .charge(-2500);
+
+
+      simulation
+          .force("link", d3.forceLink().distance(250))
+          .force("charge", d3.forceManyBody().strength(-2000))
+          .force("x", d3.forceX().strength(2.0).x(Xcenter))
+          .force("y", d3.forceY().strength(3.0).y(Ycenter));
+
+
       // nodes = umamiData.nodes;
       links = umamiData.links;
       update(selectedType)
+
+
     }
   };
 
 
-  let stopForceSetInterval;
-
   function update(selectedType) {
     let deleteLine = d3.selectAll("line");
+    simulation.alphaTarget(0.7).restart();
 
     // force.nodes(nodes).links(links);
-    force.links(links);
+    simulation.force("link")
+      .links(links)
+      .id(function (d) {
+        return d.index;
+      });
 
 
     link = d3.select("#myGraph")
@@ -303,7 +291,7 @@ console.log(umamiData);
 
     link.attr("opacity", "0.5")
         .attr("stroke-width", function (d) {
-          return Math.sqrt(d.weight) * 0.1 + d.weight * 0.02;
+          return Math.sqrt(d.weight) * 0.1 + d.weight * 0.015;
         })
         .attr("stroke", function (d) {
           return color(d.group_id)
@@ -311,22 +299,21 @@ console.log(umamiData);
 
     deleteLine.remove();
 
-    force.start();
+    // force.start();
     d3.selectAll("line").style("stroke-width", "");
 
 
     // change line display order to back of node
     for (let i = links.length - 1; 0 <= i; i--) {
-      const linkSVG = link[0][i];
+      const linkSVG = link['_groups'][0][i];
       const firstSVG = linkSVG.parentNode.firstChild;
       if (firstSVG) {
         linkSVG.parentNode.insertBefore(linkSVG, firstSVG);
       }
     }
 
-    clearInterval(stopForceSetInterval);
-    stopForceSetInterval = setTimeout(() => {
-      force.stop(); //force レイアウトの計算を終了
+    setTimeout(() => {
+      simulation.alphaTarget(0); //force レイアウトの計算を終了
     }, 5000);
 
     // update Title
@@ -335,10 +322,8 @@ console.log(umamiData);
   ////////////////////////////////////////////////////////////////////////////////////////
 
 
-  const circle = $("circle");
-
-
   /* //Mouse action// */
+  const circle = $("circle");
   if (!isSp) {
     node.on("mouseover", function (d) {
       Network.mouseover(d, links, circle);
@@ -354,13 +339,13 @@ console.log(umamiData);
     });
 
 
-    // body.on("mouseup", function (d) {
-    //   Network.mouseup(d, links, circle, labels);
-    //   Network.cursor('grab', body, circle)
-    //
-    //   console.log('mouseup body')
-    //
-    // });
+    body.on("mouseup", function (d) {
+      Network.mouseup(d, links, circle, labels);
+      Network.cursor('grab', body, circle)
+
+      console.log('mouseup body')
+
+    });
   }
 
   /////////////////////////////////////////////////////////////
@@ -399,15 +384,6 @@ console.log(umamiData);
 
   /*
   /////////////////////////////////////////////////////////////
-
-  stopForceSetInterval = setTimeout(() => {
-    force.stop(); //force レイアウトの計算を終了
-    node.each(function (d) {
-      //d.fixed = true
-    })
-  }, 10000);
-
-
 
   Legend.putId2Legend(cell, legendName);
   // ノードを更新する場合は再度クラスを付与する必要あり
