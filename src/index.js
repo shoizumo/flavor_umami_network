@@ -125,7 +125,7 @@ console.log(umamiData);
       .append("line")
       .attr("opacity", "0.5")
       .attr("stroke-width", function (d) {
-        return Math.sqrt(d.weight) * 0.1 + d.weight * 0.02
+        return Math.sqrt(d.weight) * 0.1 + d.weight * 0.015
       })
       .attr("stroke", function (d) {
         return color(d.group_id)
@@ -138,7 +138,7 @@ console.log(umamiData);
       .append("circle")
       .attr("opacity", "0.6")
       .attr("r", function (d) {
-        return Math.sqrt(d.size) * 5 + 3;
+        return Math.sqrt(d.size) * 4 + 2.5;
       })
       .attr("fill", function (d) {
         return color(d.group_id)
@@ -162,46 +162,57 @@ console.log(umamiData);
       .attr({"font-family": ["Futura", "Nunito", "Helvetica Neue", "Arial", "sans-serif"]});
 
 
+  const Xcenter = width / 2 + 30;
+  const Ycenter = height / 2 + 15;
+
   let simulation = d3.forceSimulation()
-      //.force("center", d3.forceCenter([width / 2 - 50, height / 2 - 10]))
+  //.force("center", d3.forceCenter([width / 2 - 50, height / 2 - 10]))
       .force("link",
           d3.forceLink()
-              // .distance(function (d) {
-              //   return Math.sqrt(d.weight) * 0.1 + d.weight * 0.02;
-              // })
-              .distance(100)
+          // .distance(function (d) {
+          //   return Math.sqrt(d.weight) * 0.1 + d.weight * 0.02;
+          // })
+              .distance(80)
+          //     .distance(function(d) { return  Math.sqrt(d.weight) * 0.1 + d.weight * 0.5; })
               .strength(0.8)
-              .iterations(16))
+              // .iterations(16)
+      )
       .force("collide",
           d3.forceCollide()
               .radius(function (d) {
-                return d.size;
+                return Math.sqrt(d.size) * 4 + 2.5;
               })
               .strength(0.7)
-              .iterations(16))
+              // .iterations(1)
+      )
       .force("charge", d3.forceManyBody().strength(-300))
-      .force("center", d3.forceCenter(width / 2 + 50, height / 2 + 100))
-      .force("x", d3.forceX().strength(0.2))
-      .force("y", d3.forceY().strength(0.2));
+      .force("center", d3.forceCenter(Xcenter, Ycenter))
+      .force("x", d3.forceX().strength(0.25).x(Xcenter))
+      .force("y", d3.forceY().strength(0.35).y(Ycenter));
 
   simulation
-    .nodes(nodes)
-    .on("tick", ticked);
+      .nodes(nodes)
+      .on("tick", ticked);
 
   simulation.force("link")
-    .links(links);
+      .links(links)
+      .id(function (d) {
+        return d.index;
+      });
 
 
   // tick for simulation
+  const wallMargin = 7.5;
   function ticked() {
     link
-        .attr("x1", function(d) { return d.source.x; })
-        .attr("y1", function(d) { return d.source.y; })
-        .attr("x2", function(d) { return d.target.x; })
-        .attr("y2", function(d) { return d.target.y; });
+        .attr("x1", function(d) { return Math.max(wallMargin, Math.min(width  - wallMargin, d.source.x)); })
+        .attr("y1", function(d) { return Math.max(wallMargin, Math.min(height - wallMargin, d.source.y)); })
+        .attr("x2", function(d) { return Math.max(wallMargin, Math.min(width  - wallMargin, d.target.x)); })
+        .attr("y2", function(d) { return Math.max(wallMargin, Math.min(height - wallMargin, d.target.y)); });
     node
-        .attr("cx", function(d) { return d.x; })
-        .attr("cy", function(d) { return d.y; });
+        .attr("cx", function(d) { return Math.max(wallMargin, Math.min(width  - wallMargin, d.x)); })
+        .attr("cy", function(d) { return Math.max(wallMargin, Math.min(height - wallMargin, d.y)); });
+
     labels
         .attr("x", function(d){return d.x;})
         .attr("y", function(d){return d.y;});
