@@ -1,6 +1,5 @@
 import $ from 'jquery';
 import * as d3 from 'd3';
-// import 'd3-svg-legend/d3-legend';
 import 'ion-sound';
 
 import flavorData from './data/flavor_data';
@@ -46,10 +45,6 @@ console.log(umamiData);
     "#e73552", "#ad5d88", "#db830d", "#965d21", "#00afcc",
     "#434da2", "#b3e500", "#ff00ae", "#ff7fbf"];
 
-  // const ordinal = d3.scale.ordinal()
-  //     .domain(legendName)
-  //     .range(legendColor);
-
 
   const svg = d3.select("#myGraph");
 
@@ -61,27 +56,55 @@ console.log(umamiData);
       .style({"font-family": ["Helvetica Neue", "Arial", "sans-serif"]});
 
 
-  // const legendOrdinal = d3.legend.color()
-  //     .shape("path", d3.svg.symbol().type("circle").size(300)())
-  //     .shapePadding(4)
-  //     .labelOffset(2.5)
-  //     //.title("Ingredient Categories")
-  //     .scale(ordinal);
+  const legend = svg
+      .selectAll('.legends')
+      .data(legendName)
+      .enter()
+      .append('g')
+      .attr("class", "legends")
+      .attr("transform", function (d, i) {
+        {
+          return "translate(20," + (i + 1) * 20 + ")" // y方向に20px間隔で移動
+        }
+      });
 
-  // svg.select(".legendOrdinal")
-  //     .call(legendOrdinal);
+  $(".legends").css({"cursor": ["pointer"]});
+
+
+  legend.append('circle') // 凡例の色付け四角
+      .attr("cx", 5)
+      .attr("cy", 5)
+      .attr("r", 10)
+      .attr("opacity", 0.6)
+      .attr("class", "legendCircle")
+      .attr("fill", function (d, i) {
+        return color(i);
+      })
+
+  legend.append('text')  // 凡例の文言
+      .attr("x", 20)
+      .attr("y", 10)
+      .attr("class", "legendText")
+      .text(function (d) {
+        return d;
+      })
+      // .attr("class", "textselected")
+      .style("text-anchor", "start")
+      .style("font-size", 15);
+
+
 
   // attr of legend circle
-  const cell = $(".cell");
-  const legendPathDefo = cell.children("path");
-  $(legendPathDefo).css({
-    "opacity": ["0.6"],
-    "stroke-width": ["2"],
-    "stroke": ["white"]
-  });
-
-  // set pointer cursor at legend
-  $(".legendCells").css({"cursor": ["pointer"]});
+  // const cell = $(".cell");
+  // const legendPathDefo = cell.children("path");
+  // $(legendPathDefo).css({
+  //   "opacity": ["0.6"],
+  //   "stroke-width": ["2"],
+  //   "stroke": ["white"]
+  // });
+  //
+  // // set pointer cursor at legend
+  // $(".legendCells").css({"cursor": ["pointer"]});
 
   /* //Setting// */
   const width = 1000;
@@ -93,9 +116,9 @@ console.log(umamiData);
 
 
   // set svg elements
-  let link = d3.select("#myGraph")
-    .selectAll("line")
-    .data(links)
+  let link = svg
+      .selectAll("line")
+      .data(links)
       .enter()
       .append("line")
       .attr("opacity", "0.5")
@@ -106,8 +129,11 @@ console.log(umamiData);
         return color(d.group_id)
       });
 
-  let node = d3.select("#myGraph")
+  let node = svg
       .selectAll("circle")
+      .filter(function () {
+        return !this.classList.contains('legendCircle')
+      })
       .data(nodes)
       .enter()
       .append("circle")
@@ -125,11 +151,21 @@ console.log(umamiData);
           .on("end", dragended));
 
 
-  let labels = d3.select("#myGraph")
-      .selectAll("text").data(nodes).enter().append("text")
+
+  let label = svg
+      .selectAll("text")
+      .filter(function () {
+        return !this.classList.contains('legendText')
+      })
+      .filter(function () {
+        return !this.classList.contains('node_link')
+      })
+      .data(nodes)
+      .enter()
+      .append("text")
       .text(function(d){return d.name;});
 
-  labels
+  label
       .attr("font-size", ".7em")
       .attr("font-weight", "300")
       .attr("class", "nonDrag")
@@ -185,7 +221,7 @@ console.log(umamiData);
         .attr("cx", function(d) { return Math.max(wallMargin, Math.min(width  - wallMargin, d.x)); })
         .attr("cy", function(d) { return Math.max(wallMargin, Math.min(height - wallMargin, d.y)); });
 
-    labels
+    label
         .attr("x", function(d){return d.x;})
         .attr("y", function(d){return d.y;});
   }
@@ -197,7 +233,7 @@ console.log(umamiData);
     d.fx = d.x;
     d.fy = d.y;
 
-    Network.mousedown(d, links, circle, labels);
+    Network.mousedown(d, links, link, node, label);
     Network.cursor('grabbing', body, circle);
     ion.sound.play("grabNode", {
       volume: 0.2 // turn down
@@ -214,8 +250,8 @@ console.log(umamiData);
     d.fx = null;
     d.fy = null;
 
-    Network.mouseup(d, links, circle, labels);
-    Network.cursor('grab', body, circle)
+    Network.mouseup(d, links, link, node, label);
+    Network.cursor('grab', body, circle);
     ion.sound.play("releaseNode", {
       volume: 0.5
     });
@@ -283,7 +319,7 @@ console.log(umamiData);
       });
 
 
-    link = d3.select("#myGraph")
+    link = svg
         .selectAll(".line")
         .data(links)
         .enter()
@@ -323,10 +359,13 @@ console.log(umamiData);
 
 
   /* //Mouse action// */
-  const circle = $("circle");
+  const circle = $("circle:not(.legendCircle)");
+  console.log(circle);
+
+
   if (!isSp) {
     node.on("mouseover", function (d) {
-      Network.mouseover(d, links, circle);
+      Network.mouseover(d, links, link, node, label);
       if (mouseDown === 0) {
         ion.sound.play("mouseover", {
           volume: 0.1 // turn down
@@ -335,13 +374,13 @@ console.log(umamiData);
     });
 
     node.on("mouseout", function (d) {
-      Network.mouseout(d, links, circle)
+      Network.mouseout(d, links, link, node, label)
     });
 
 
     body.on("mouseup", function (d) {
-      Network.mouseup(d, links, circle, labels);
-      Network.cursor('grab', body, circle)
+      Network.mouseup(d, links, link, node, label);
+      Network.cursor('grab', body, circle);
 
       console.log('mouseup body')
 
@@ -359,7 +398,7 @@ console.log(umamiData);
     });
 
     node.on("touchstart", function (d) {
-      Network.touchStart(d, links, circle);
+      Network.touchStart(d, links, link, node, label);
     });
 
     node.on("touchend", function () {
@@ -373,7 +412,11 @@ console.log(umamiData);
     svg.on("touchend", function () {
       if (touchmove === 0) {
         if (touchColored === 1) {
-          d3.selectAll("circle").attr("class", "nodeReturnFade");
+          d3.selectAll("circle")
+              .filter(function () {
+                return !this.classList.contains('legendCircle')
+              })
+              .attr("class", "nodeReturnFade");
           d3.selectAll("line").attr("class", "lineReturnFade");
           circle.parent().children('text').attr("class", "nodeTextReturnFade");
         }
