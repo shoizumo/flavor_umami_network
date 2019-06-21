@@ -1,41 +1,32 @@
 import * as d3 from 'd3';
-import $ from "jquery";
 
 export default class Mouse {
 
   static mouseover(d, linkData, linkLine, nodeCircle, nodeText) {
-    const nodeIndex = d.index; // to get node index
+    const nodeIndex = d.index;
     for (let i = 0, l = linkData.length; l > i; i++) {
       if (linkData[i].source.index === nodeIndex ||
           linkData[i].target.index === nodeIndex) {
 
-        const lineIndex = i;  // index number
-        //console.log(lineIndex)
-
-        const selectLine = linkLine['_groups'][0][lineIndex]; //node which match index number
-        $(selectLine).attr("class", "lineColor");  // node color
-
-        //console.log(linkData[lineIndex].source.index)
-        //console.log(linkData[lineIndex].target.index)
-
+        const lineIndex = i;
         const nodeSource = linkData[lineIndex].source.index;
         const nodeTarget = linkData[lineIndex].target.index;
 
-        const selectNodeSource = nodeCircle['_groups'][0][nodeSource]; //node which match source index number
-        const selectNodeTarget = nodeCircle['_groups'][0][nodeTarget]; //node which match target index number
-        $(selectNodeSource).attr("class", "nodeColor");  // node color
-        $(selectNodeTarget).attr("class", "nodeColor");  // node color
-
-        const selectNodeSource2 = nodeText[nodeSource];  // text which match source index number
-        const selectNodeTarget2 = nodeText[nodeTarget];  // text which match target index number
-        $(selectNodeSource2).attr("class", "linkedNodeText");  // node text color
-        $(selectNodeTarget2).attr("class", "linkedNodeText");  // node text color
+        // line
+        const selectLine = linkLine['_groups'][0][lineIndex];
+        selectLine.setAttribute('class', 'lineColor');
+        // node
+        nodeCircle['_groups'][0][nodeSource].setAttribute("class", "nodeColor");
+        nodeCircle['_groups'][0][nodeTarget].setAttribute("class", "nodeColor");
+        // text
+        nodeText['_groups'][0][nodeSource].setAttribute("class", "linkedNodeText");
+        nodeText['_groups'][0][nodeTarget].setAttribute("class", "linkedNodeText");
       }
     }
-    const selectNode = nodeCircle['_groups'][0][nodeIndex];
-    $(selectNode).attr("class", "nodeColor");
-    const selectNodeText = nodeText[nodeIndex];
-    $(selectNodeText).attr("class", "linkedNodeText");
+    // selectNode
+    nodeCircle['_groups'][0][nodeIndex].setAttribute("class", "nodeColor");
+    // selectNodeText
+    nodeText['_groups'][0][nodeIndex].setAttribute("class", "linkedNodeText");
   }
 
 
@@ -46,28 +37,24 @@ export default class Mouse {
           linkData[i].target.index === nodeIndex) {
 
         const lineIndex = i;
-
-        const selectLine = linkLine['_groups'][0][lineIndex];
-        $(selectLine).attr("class", "lineColorDefault");
-
         const nodeSource = linkData[lineIndex].source.index;
         const nodeTarget = linkData[lineIndex].target.index;
 
-        const selectNodeSource = nodeCircle['_groups'][0][nodeSource];
-        const selectNodeTarget = nodeCircle['_groups'][0][nodeTarget];
-        $(selectNodeSource).attr("class", "nodeColorDefault");
-        $(selectNodeTarget).attr("class", "nodeColorDefault");
-
-        const selectNodeSource2 = nodeText[nodeSource];
-        const selectNodeTarget2 = nodeText[nodeTarget];
-        $(selectNodeSource2).attr("class", "textSizeDefault");
-        $(selectNodeTarget2).attr("class", "textSizeDefault");
+        // line
+        const selectLine = linkLine['_groups'][0][lineIndex];
+        selectLine.setAttribute('class', 'lineColorDefault');
+        // node
+        nodeCircle['_groups'][0][nodeSource].setAttribute("class", "nodeColorDefault");
+        nodeCircle['_groups'][0][nodeTarget].setAttribute("class", "nodeColorDefault");
+        // text
+        nodeText['_groups'][0][nodeSource].setAttribute("class", "textSizeDefault");
+        nodeText['_groups'][0][nodeTarget].setAttribute("class", "textSizeDefault");
       }
     }
-    const selectNode = nodeCircle['_groups'][0][nodeIndex];
-    $(selectNode).attr("class", "nodeColorDefault");
-    const selectNodeText = nodeText[nodeIndex];
-    $(selectNodeText).attr("class", "textSizeDefault");
+    // selectNode
+    nodeCircle['_groups'][0][nodeIndex].setAttribute("class", "nodeColorDefault");
+    // selectNodeText
+    nodeText['_groups'][0][nodeIndex].setAttribute("class", "textSizeDefault");
   }
 
 
@@ -76,7 +63,6 @@ export default class Mouse {
     d3.selectAll(nodeCircle)['_groups'][0].attr("class", "nodeColorFade");
     d3.selectAll(linkLine)['_groups'][0].attr("class", "lineColorFade");
     d3.selectAll(nodeText)['_groups'][0].attr("class", "nodeTextFade");
-    // nodeText.attr("class", "nodeTextFade");
 
     const nodeIndex = d.index;
     for (let i = 0, l = linkData.length; l > i; i++) {
@@ -84,28 +70,24 @@ export default class Mouse {
           linkData[i].target.index === nodeIndex) {
 
         const lineIndex = i;
-        const selectLine = linkLine['_groups'][0][lineIndex];
-        $(selectLine).attr("class", "lineColor");
-
         const nodeSource = linkData[lineIndex].source.index;
         const nodeTarget = linkData[lineIndex].target.index;
 
-        const selectNodeSource = nodeCircle['_groups'][0][nodeSource];
-        const selectNodeTarget = nodeCircle['_groups'][0][nodeTarget];
-        $(selectNodeSource).attr("class", "nodeColor");
-        $(selectNodeTarget).attr("class", "nodeColor");
-
-        const selectNodeSource2 = nodeText['_groups'][0][nodeSource];
-        const selectNodeTarget2 = nodeText['_groups'][0][nodeTarget];
-        $(selectNodeSource2).attr("class", "linkedNodeText");
-        $(selectNodeTarget2).attr("class", "linkedNodeText");
-
+        // line
+        const selectLine = linkLine['_groups'][0][lineIndex];
+        selectLine.setAttribute('class', 'lineColor');
+        // node
+        nodeCircle['_groups'][0][nodeSource].setAttribute("class", "nodeColor");
+        nodeCircle['_groups'][0][nodeTarget].setAttribute("class", "nodeColor");
+        // text
+        nodeText['_groups'][0][nodeSource].setAttribute("class", "linkedNodeText");
+        nodeText['_groups'][0][nodeTarget].setAttribute("class", "linkedNodeText");
       }
     }
-    const selectNode = nodeCircle['_groups'][0][nodeIndex];
-    $(selectNode).attr("class", "nodeColor");
-    const selectNodeText = nodeText['_groups'][0][nodeIndex];
-    $(selectNodeText).attr("class", "linkedNodeText");
+    // selectNode
+    nodeCircle['_groups'][0][nodeIndex].setAttribute("class", "nodeColor");
+    // selectNodeText
+    nodeText['_groups'][0][nodeIndex].setAttribute("class", "linkedNodeText");
   }
 
 
@@ -115,35 +97,30 @@ export default class Mouse {
     d3.selectAll(linkLine)['_groups'][0].attr("class", "lineColorFade");
     d3.selectAll(nodeText)['_groups'][0].attr("class", "nodeTextFade");
 
-
     const nodeIndex = d.index;
     for (let i = 0, l = linkData.length; l > i; i++) {
       if (linkData[i].source.index === nodeIndex ||
           linkData[i].target.index === nodeIndex) {
 
         const lineIndex = i;
-        const selectLine = linkLine['_groups'][0][lineIndex];
-        $(selectLine).attr("class", "lineColor");
-
         const nodeSource = linkData[lineIndex].source.index;
         const nodeTarget = linkData[lineIndex].target.index;
 
-        const selectNodeSource = nodeCircle['_groups'][0][nodeSource];
-        const selectNodeTarget = nodeCircle['_groups'][0][nodeTarget];
-        $(selectNodeSource).attr("class", "nodeColor");
-        $(selectNodeTarget).attr("class", "nodeColor");
-
-        const selectNodeSource2 = nodeText['_groups'][0][nodeSource];
-        const selectNodeTarget2 = nodeText['_groups'][0][nodeTarget];
-        $(selectNodeSource2).attr("class", "linkedNodeText");
-        $(selectNodeTarget2).attr("class", "linkedNodeText");
-
+        // line
+        const selectLine = linkLine['_groups'][0][lineIndex];
+        selectLine.setAttribute('class', 'lineColor');
+        // node
+        nodeCircle['_groups'][0][nodeSource].setAttribute("class", "nodeColor")
+        nodeCircle['_groups'][0][nodeTarget].setAttribute("class", "nodeColor");
+        // text
+        nodeText['_groups'][0][nodeSource].setAttribute("class", "linkedNodeText");
+        nodeText['_groups'][0][nodeTarget].setAttribute("class", "linkedNodeText");
       }
     }
-    const selectNode = nodeCircle['_groups'][0][nodeIndex];
-    $(selectNode).attr("class", "nodeColor");
-    const selectNodeText = nodeText['_groups'][0][nodeIndex];
-    $(selectNodeText).attr("class", "linkedNodeText");
+    // selectNode
+    nodeCircle['_groups'][0][nodeIndex].setAttribute("class", "nodeColor");
+    // selectNodeText
+    nodeText['_groups'][0][nodeIndex].setAttribute("class", "linkedNodeText");
   }
 
 
@@ -158,31 +135,24 @@ export default class Mouse {
           linkData[i].target.index === nodeIndex) {
 
         const lineIndex = i;
-
-        const selectLine = linkLine['_groups'][0][lineIndex];
-        $(selectLine).attr("class", "lineColor");
-
         const nodeSource = linkData[lineIndex].source.index;
         const nodeTarget = linkData[lineIndex].target.index;
 
-        const selectNodeSource = nodeCircle['_groups'][0][nodeSource];
-        const selectNodeTarget = nodeCircle['_groups'][0][nodeTarget];
-        $(selectNodeSource).attr("class", "nodeColor");
-        $(selectNodeTarget).attr("class", "nodeColor");
+        // line
+        const selectLine = linkLine['_groups'][0][lineIndex];
+        selectLine.setAttribute('class', 'lineColor');
+        // node
+        nodeCircle['_groups'][0][nodeSource].setAttribute("class", "nodeColor");
+        nodeCircle['_groups'][0][nodeTarget].setAttribute("class", "nodeColor");
 
-        const selectNodeSource2 = nodeText['_groups'][0][nodeSource];
-        const selectNodeTarget2 = nodeText['_groups'][0][nodeTarget];
-        $(selectNodeSource2).attr("class", "linkedNodeText");
-        $(selectNodeTarget2).attr("class", "linkedNodeText");
-
+        nodeText['_groups'][0][nodeSource].setAttribute("class", "linkedNodeText");
+        nodeText['_groups'][0][nodeTarget].setAttribute("class", "linkedNodeText");
       }
     }
-    const selectNode = nodeCircle['_groups'][0][nodeIndex];
-    $(selectNode).attr("class", "nodeColor");
-    const selectNodeText = nodeText['_groups'][0][nodeIndex];
-    $(selectNodeText).attr("class", "linkedNodeText");
-
-    console.log('mouseup')
+    // selectNode
+    nodeCircle['_groups'][0][nodeIndex].setAttribute("class", "nodeColor");
+    // selectNodeText
+    nodeText['_groups'][0][nodeIndex].setAttribute("class", "linkedNodeText");
   }
 
   static reset(linkData, linkLine, nodeCircle, nodeText) {
