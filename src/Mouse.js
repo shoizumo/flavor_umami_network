@@ -1,13 +1,9 @@
 import * as d3 from 'd3';
 import $ from "jquery";
 
-export default class Network {
+export default class Mouse {
 
   static mouseover(d, linkData, linkLine, nodeCircle, nodeText) {
-    let linkData_ = linkData;
-    let linkLine_ = linkLine;
-    let nodeCircle_ = nodeCircle;
-    let nodeText_ = nodeText;
     const nodeIndex = d.index; // to get node index
     for (let i = 0, l = linkData.length; l > i; i++) {
       if (linkData[i].source.index === nodeIndex ||
@@ -185,6 +181,16 @@ export default class Network {
     $(selectNode).attr("class", "nodeColor");
     const selectNodeText = nodeText['_groups'][0][nodeIndex];
     $(selectNodeText).attr("class", "linkedNodeText");
+
+    console.log('mouseup')
+  }
+
+  static reset(linkData, linkLine, nodeCircle, nodeText) {
+    d3.selectAll(nodeCircle)['_groups'][0].attr("class", "nodeReturnFade");
+    d3.selectAll(linkLine)['_groups'][0].attr("class", "lineReturnFade");
+    d3.selectAll(nodeText)['_groups'][0].attr("class", "nodeTextReturnFade");
+
+    console.log('reset')
   }
 
 
@@ -200,13 +206,13 @@ export default class Network {
     }
 
     //grabbing
-    circle.css({"cursor": ["-webkit-" + grabTypeC]});
-    circle.css({"cursor": ["-moz-" + grabTypeC]});
-    circle.css({"cursor": [grabTypeC]});
+    circle.style("cursor", "-webkit-" + grabTypeC);
+    circle.style("cursor", "-moz-" + grabTypeC);
+    circle.style("cursor", grabTypeC);
 
-    body.css({"cursor": ["-webkit-" + grabTypeB]});
-    body.css({"cursor": ["-moz-" + grabTypeB]});
-    body.css({"cursor": [grabTypeB]});
+    body.style("cursor", "-webkit-" + grabTypeB);
+    body.style("cursor", "-moz-" + grabTypeB);
+    body.style("cursor", grabTypeB);
   }
 
 }

@@ -1,11 +1,10 @@
-import $ from 'jquery';
 import * as d3 from 'd3';
 import 'ion-sound';
 
 import flavorData from './data/flavor_data';
 import umamiData from './data/umami_data';
 
-import Network from './Network';
+import Mouse from './Mouse';
 import Legend from './Legend'
 
 
@@ -48,12 +47,12 @@ console.log(umamiData);
 
   const svg = d3.select("#myGraph");
 
-  svg.append("g")
-      .attr("class", "legendOrdinal")
-      .attr("transform", "translate(25,50)")
-      .style("font-size", "1.2em")
-      .style("fill", "#352622")
-      .style({"font-family": ["Helvetica Neue", "Arial", "sans-serif"]});
+  // svg.append("g")
+  //     .attr("class", "legendOrdinal")
+  //     .attr("transform", "translate(25,50)")
+  //     .style("font-size", "1.2em")
+  //     .style("fill", "#352622")
+  //     .style({"font-family": ["Helvetica Neue", "Arial", "sans-serif"]});
 
 
   const legend = svg
@@ -63,18 +62,18 @@ console.log(umamiData);
       .append('g')
       .attr("class", "legends")
       .attr("transform", function (d, i) {
-        {
-          return "translate(20," + (i + 1) * 20 + ")" // y方向に20px間隔で移動
-        }
-      });
+        return "translate(20," + (i + 1) * 20 + ")" // y方向に20px間隔で移動
+      })
+      .attr("width",200)
+      .attr("height",20);
 
-  $(".legends").css({"cursor": ["pointer"]});
-
+  // $(".legends").css({"cursor": ["pointer"]});
+  d3.selectAll(".legends").style("cursor", "pointer");
 
   legend.append('circle') // 凡例の色付け四角
       .attr("cx", 5)
       .attr("cy", 5)
-      .attr("r", 10)
+      .attr("r", 9)
       .attr("opacity", 0.6)
       .attr("class", "legendCircle")
       .attr("fill", function (d, i) {
@@ -94,25 +93,13 @@ console.log(umamiData);
 
 
 
-  // attr of legend circle
-  // const cell = $(".cell");
-  // const legendPathDefo = cell.children("path");
-  // $(legendPathDefo).css({
-  //   "opacity": ["0.6"],
-  //   "stroke-width": ["2"],
-  //   "stroke": ["white"]
-  // });
-  //
-  // // set pointer cursor at legend
-  // $(".legendCells").css({"cursor": ["pointer"]});
-
   /* //Setting// */
   const width = 1000;
   const height = 650;
 
   let nodes = flavorData.nodes;
   let links = flavorData.links;
-  const body = $("body");
+  const body = d3.select("body");
 
 
   // set svg elements
@@ -233,8 +220,8 @@ console.log(umamiData);
     d.fx = d.x;
     d.fy = d.y;
 
-    Network.mousedown(d, links, link, node, label);
-    Network.cursor('grabbing', body, circle);
+    Mouse.mousedown(d, links, link, node, label);
+    Mouse.cursor('grabbing', body, node);
     ion.sound.play("grabNode", {
       volume: 0.2 // turn down
     });
@@ -250,15 +237,15 @@ console.log(umamiData);
     d.fx = null;
     d.fy = null;
 
-    Network.mouseup(d, links, link, node, label);
-    Network.cursor('grab', body, circle);
+    Mouse.mouseup(d, links, link, node, label);
+    Mouse.cursor('grab', body, node);
     ion.sound.play("releaseNode", {
       volume: 0.5
     });
   }
 
 
-  // Network dataを更新する
+  // Mouse dataを更新する
   ////////////////////////////////////////////////////////////////////////////////////////
   const dataTypeSelector = document.getElementById('dataType');
   dataTypeSelector.onchange = function () {
@@ -353,19 +340,15 @@ console.log(umamiData);
     }, 5000);
 
     // update Title
-    document.getElementById('h1').textContent = selectedType + ' Network'
+    document.getElementById('h1').textContent = selectedType + ' Mouse'
   }
   ////////////////////////////////////////////////////////////////////////////////////////
 
 
   /* //Mouse action// */
-  const circle = $("circle:not(.legendCircle)");
-  console.log(circle);
-
-
   if (!isSp) {
     node.on("mouseover", function (d) {
-      Network.mouseover(d, links, link, node, label);
+      Mouse.mouseover(d, links, link, node, label);
       if (mouseDown === 0) {
         ion.sound.play("mouseover", {
           volume: 0.1 // turn down
@@ -374,15 +357,13 @@ console.log(umamiData);
     });
 
     node.on("mouseout", function (d) {
-      Network.mouseout(d, links, link, node, label)
+      Mouse.mouseout(d, links, link, node, label)
     });
 
 
-    body.on("mouseup", function (d) {
-      Network.mouseup(d, links, link, node, label);
-      Network.cursor('grab', body, circle);
-
-      console.log('mouseup body')
+    d3.select("body").on("mouseup", function () {
+      Mouse.reset(links, link, node, label);
+      Mouse.cursor('grab', body, node);
 
     });
   }
@@ -398,7 +379,7 @@ console.log(umamiData);
     });
 
     node.on("touchstart", function (d) {
-      Network.touchStart(d, links, link, node, label);
+      Mouse.touchStart(d, links, link, node, label);
     });
 
     node.on("touchend", function () {
@@ -412,13 +393,18 @@ console.log(umamiData);
     svg.on("touchend", function () {
       if (touchmove === 0) {
         if (touchColored === 1) {
-          d3.selectAll("circle")
-              .filter(function () {
-                return !this.classList.contains('legendCircle')
-              })
-              .attr("class", "nodeReturnFade");
-          d3.selectAll("line").attr("class", "lineReturnFade");
-          circle.parent().children('text').attr("class", "nodeTextReturnFade");
+          // d3.selectAll("circle")
+          //     .filter(function () {
+          //       return !this.classList.contains('legendCircle')
+          //     })
+          //     .attr("class", "nodeReturnFade");
+          // d3.selectAll("line").attr("class", "lineReturnFade");
+          // circle.parent().children('text').attr("class", "nodeTextReturnFade");
+
+          // 上の書き換え(動作未確認)
+          node.attr("class", "nodeReturnFade");
+          link.attr("class", "lineReturnFade");
+          label.attr("class", "nodeTextReturnFade");
         }
       }
       touchmove = 0
