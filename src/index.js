@@ -113,7 +113,7 @@ console.log(umamiData);
         return Math.sqrt(d.weight) * 0.1 + d.weight * 0.015;
       })
       .attr("stroke", function (d) {
-        return color(d.group_id)
+        return color(d.group_id_s)
       });
 
   let node = svg
@@ -171,6 +171,9 @@ console.log(umamiData);
           //     .distance(function(d) { return  Math.sqrt(d.weight) * 0.1 + d.weight * 0.5; })
               .strength(0.8)
               .iterations(1.0)
+              .id(function (d) {
+                return d.name;
+              })
       )
       .force("collide",
           d3.forceCollide()
@@ -190,10 +193,7 @@ console.log(umamiData);
       .on("tick", ticked);
 
   simulation.force("link")
-      .links(links)
-      .id(function (d) {
-        return d.index;
-      });
+      .links(links);
 
 
   // tick for simulation
@@ -279,13 +279,17 @@ console.log(umamiData);
 
 
       simulation
-          .force("link", d3.forceLink().distance(250))
+          .force("link",
+              d3.forceLink().distance(200)
+                  .id(function (d) {
+                    return d.name;
+                  }))
           .force("charge", d3.forceManyBody().strength(-2000))
-          .force("x", d3.forceX().strength(2.0).x(Xcenter))
-          .force("y", d3.forceY().strength(3.0).y(Ycenter));
+          .force("x", d3.forceX().strength(1.5).x(Xcenter))
+          .force("y", d3.forceY().strength(2.25).y(Ycenter));
 
 
-      // nodes = umamiData.nodes;
+      nodes = umamiData.nodes;
       links = umamiData.links;
       update(selectedType)
 
@@ -296,14 +300,20 @@ console.log(umamiData);
 
   function update(selectedType) {
     let deleteLine = d3.selectAll("line");
+    let deleteNode = d3.selectAll("circle")
+        .filter(function () {
+          return !this.classList.contains('legendCircle')
+        });
+    let deleteLabel = d3.selectAll("text")
+        .filter(function () {
+          return !this.classList.contains('legendText')
+        });
+
     simulation.alphaTarget(0.7).restart();
 
     // force.nodes(nodes).links(links);
     simulation.force("link")
-      .links(links)
-      .id(function (d) {
-        return d.index;
-      });
+      .links(links);
 
 
     link = svg
@@ -317,10 +327,58 @@ console.log(umamiData);
           return Math.sqrt(d.weight) * 0.1 + d.weight * 0.015;
         })
         .attr("stroke", function (d) {
-          return color(d.group_id)
+          return color(d.group_id_s)
         });
 
+    // node = svg
+    //     .selectAll("circle")
+    //     .filter(function () {
+    //       return !this.classList.contains('legendCircle')
+    //     })
+    //     .data(nodes)
+    //     .enter()
+    //     .append("circle")
+    //     .attr("opacity", "0.6")
+    //     .attr("r", function (d) {
+    //       return Math.sqrt(d.size) * 4 + 2.5;
+    //     })
+    //     .attr("fill", function (d) {
+    //       return color(d.group_id)
+    //     })
+    //     .attr("stroke", "#fffcf9")
+    //     .call(d3.drag()
+    //         .on("start", dragstarted)
+    //         .on("drag", dragging)
+    //         .on("end", dragended));
+
+
+    // label = svg
+    //     .selectAll("text")
+    //     .filter(function () {
+    //       return !this.classList.contains('legendText')
+    //     })
+    //     .filter(function () {
+    //       return !this.classList.contains('node_link')
+    //     })
+    //     .data(nodes)
+    //     .enter()
+    //     .append("text")
+    //     .text(function (d) {
+    //       return d.name;
+    //     });
+
+    // label
+    //     .attr("font-size", ".7em")
+    //     .attr("font-weight", "300")
+    //     .attr("class", "nonDrag")
+    //     .attr("fill", "#352622")
+    //     .attr({"font-family": ["Futura", "Nunito", "Helvetica Neue", "Arial", "sans-serif"]});
+
+
+
     deleteLine.remove();
+    // deleteNode.remove();
+    // deleteLabel.remove();
 
     // force.start();
     d3.selectAll("line").style("stroke-width", "");
