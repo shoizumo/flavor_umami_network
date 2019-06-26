@@ -311,7 +311,9 @@ console.log(umamiData);
 
     simulation.alphaTarget(0.7).restart();
 
-    // force.nodes(nodes).links(links);
+    simulation
+      .nodes(nodes)
+      .on("tick", ticked);
     simulation.force("link")
       .links(links);
 
@@ -330,55 +332,56 @@ console.log(umamiData);
           return color(d.group_id_s)
         });
 
-    // node = svg
-    //     .selectAll("circle")
-    //     .filter(function () {
-    //       return !this.classList.contains('legendCircle')
-    //     })
-    //     .data(nodes)
-    //     .enter()
-    //     .append("circle")
-    //     .attr("opacity", "0.6")
-    //     .attr("r", function (d) {
-    //       return Math.sqrt(d.size) * 4 + 2.5;
-    //     })
-    //     .attr("fill", function (d) {
-    //       return color(d.group_id)
-    //     })
-    //     .attr("stroke", "#fffcf9")
-    //     .call(d3.drag()
-    //         .on("start", dragstarted)
-    //         .on("drag", dragging)
-    //         .on("end", dragended));
+    node = svg
+        .selectAll(".circle")
+        .filter(function () {
+          return !this.classList.contains('legendCircle')
+        })
+        .data(nodes)
+        .enter()
+        .append("circle");
+
+    node.attr("opacity", "0.6")
+        .attr("r", function (d) {
+          return Math.sqrt(d.size) * 4 + 2.5;
+        })
+        .attr("fill", function (d) {
+          return color(d.group_id)
+        })
+        .attr("stroke", "#fffcf9")
+        .call(d3.drag()
+            .on("start", dragstarted)
+            .on("drag", dragging)
+            .on("end", dragended));
 
 
-    // label = svg
-    //     .selectAll("text")
-    //     .filter(function () {
-    //       return !this.classList.contains('legendText')
-    //     })
-    //     .filter(function () {
-    //       return !this.classList.contains('node_link')
-    //     })
-    //     .data(nodes)
-    //     .enter()
-    //     .append("text")
-    //     .text(function (d) {
-    //       return d.name;
-    //     });
+    label = svg
+        .selectAll(".text")
+        .filter(function () {
+          return !this.classList.contains('legendText')
+        })
+        .filter(function () {
+          return !this.classList.contains('node_link')
+        })
+        .data(nodes)
+        .enter()
+        .append("text")
+        .text(function (d) {
+          return d.name;
+        });
 
-    // label
-    //     .attr("font-size", ".7em")
-    //     .attr("font-weight", "300")
-    //     .attr("class", "nonDrag")
-    //     .attr("fill", "#352622")
-    //     .attr({"font-family": ["Futura", "Nunito", "Helvetica Neue", "Arial", "sans-serif"]});
+    label
+        .attr("font-size", ".7em")
+        .attr("font-weight", "300")
+        .attr("class", "nonDrag")
+        .attr("fill", "#352622")
+        .attr({"font-family": ["Futura", "Nunito", "Helvetica Neue", "Arial", "sans-serif"]});
 
 
 
     deleteLine.remove();
-    // deleteNode.remove();
-    // deleteLabel.remove();
+    deleteNode.remove();
+    deleteLabel.remove();
 
     // force.start();
     d3.selectAll("line").style("stroke-width", "");
@@ -392,6 +395,14 @@ console.log(umamiData);
         linkSVG.parentNode.insertBefore(linkSVG, firstSVG);
       }
     }
+
+    // for (let i = nodes.length - 1; 0 <= i; i--) {
+    //   const nodeSVG = node['_groups'][0][i];
+    //   const firstSVG = nodeSVG.parentNode.firstChild;
+    //   if (firstSVG) {
+    //     nodeSVG.parentNode.insertBefore(nodeSVG, firstSVG);
+    //   }
+    // }
 
     setTimeout(() => {
       simulation.alphaTarget(0); //force レイアウトの計算を終了
