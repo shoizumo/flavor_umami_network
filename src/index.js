@@ -253,31 +253,16 @@ console.log(umamiData);
     const selectedType = this.options[this.selectedIndex].value;
 
     if (selectedType === 'Flavor') {
-      // force
-      //     .linkDistance(100)
-      //     .gravity(0.20)
-      //     .charge(-300);
-
-
       simulation
           .force("link", d3.forceLink().distance(80))
           .force("charge", d3.forceManyBody().strength(-300))
           .force("x", d3.forceX().strength(0.25).x(Xcenter))
           .force("y", d3.forceY().strength(0.35).y(Ycenter));
 
-
       nodes = flavorData.nodes;
       links = flavorData.links;
-      update(selectedType)
-
 
     } else if (selectedType === 'Umami') {
-      // force
-      //     .linkDistance(150)
-      //     .gravity(1.80)
-      //     .charge(-2500);
-
-
       simulation
           .force("link",
               d3.forceLink().distance(200)
@@ -288,13 +273,11 @@ console.log(umamiData);
           .force("x", d3.forceX().strength(1.5).x(Xcenter))
           .force("y", d3.forceY().strength(2.25).y(Ycenter));
 
-
       nodes = umamiData.nodes;
       links = umamiData.links;
-      update(selectedType)
-
-
     }
+    update(selectedType);
+    mouseAction();
   };
 
 
@@ -307,6 +290,9 @@ console.log(umamiData);
     let deleteLabel = d3.selectAll("text")
         .filter(function () {
           return !this.classList.contains('legendText')
+        })
+        .filter(function () {
+          return !this.classList.contains('node_link')
         });
 
     simulation.alphaTarget(0.7).restart();
@@ -396,17 +382,9 @@ console.log(umamiData);
       }
     }
 
-    // for (let i = nodes.length - 1; 0 <= i; i--) {
-    //   const nodeSVG = node['_groups'][0][i];
-    //   const firstSVG = nodeSVG.parentNode.firstChild;
-    //   if (firstSVG) {
-    //     nodeSVG.parentNode.insertBefore(nodeSVG, firstSVG);
-    //   }
-    // }
-
-    setTimeout(() => {
-      simulation.alphaTarget(0); //force レイアウトの計算を終了
-    }, 5000);
+    // setTimeout(() => {
+    //   simulation.alphaTarget(0); //force レイアウトの計算を終了
+    // }, 5000);
 
     // update Title
     document.getElementById('h1').textContent = selectedType + ' Mouse'
@@ -415,69 +393,73 @@ console.log(umamiData);
 
 
   /* //Mouse action// */
-  if (!isSp) {
-    node.on("mouseover", function (d) {
-      Mouse.mouseover(d, links, link, node, label);
-      if (mouseDown === 0) {
-        ion.sound.play("mouseover", {
-          volume: 0.1 // turn down
-        });
-      }
-    });
-
-    node.on("mouseout", function (d) {
-      Mouse.mouseout(d, links, link, node, label)
-    });
-
-
-    d3.select("body").on("mouseup", function () {
-      Mouse.reset(links, link, node, label);
-      Mouse.cursor('grab', body, node);
-
-    });
-  }
-
-  /////////////////////////////////////////////////////////////
-  // for SmartPhone
-
-  if (isSp) {
-    let touchColored = 0;
-    let touchmove = 0;
-    svg.on("touchmove", function () {
-      touchmove = 1
-    });
-
-    node.on("touchstart", function (d) {
-      Mouse.touchStart(d, links, link, node, label);
-    });
-
-    node.on("touchend", function () {
-      touchColored = 0;
-    });
-
-    svg.on("touchstart", function () {
-      touchColored = 1;
-    });
-
-    svg.on("touchend", function () {
-      if (touchmove === 0) {
-        if (touchColored === 1) {
-          // d3.selectAll("circle")
-          //     .filter(function () {
-          //       return !this.classList.contains('legendCircle')
-          //     })
-          //     .attr("class", "nodeReturnFade");
-          // d3.selectAll("line").attr("class", "lineReturnFade");
-          // circle.parent().children('text').attr("class", "nodeTextReturnFade");
-
-          // 上の書き換え(動作未確認)
-          node.attr("class", "nodeReturnFade");
-          link.attr("class", "lineReturnFade");
-          label.attr("class", "nodeTextReturnFade");
+  mouseAction();
+  function mouseAction() {
+    if (!isSp) {
+      node.on("mouseover", function (d) {
+        Mouse.mouseover(d, links, link, node, label);
+        if (mouseDown === 0) {
+          ion.sound.play("mouseover", {
+            volume: 0.1 // turn down
+          });
         }
-      }
-      touchmove = 0
-    });
+      });
+
+      node.on("mouseout", function (d) {
+        Mouse.mouseout(d, links, link, node, label)
+      });
+
+
+      d3.select("body").on("mouseup", function () {
+        Mouse.reset(links, link, node, label);
+        Mouse.cursor('grab', body, node);
+
+      });
+    }
+
+
+    /////////////////////////////////////////////////////////////
+    // for SmartPhone
+
+    if (isSp) {
+      let touchColored = 0;
+      let touchmove = 0;
+      svg.on("touchmove", function () {
+        touchmove = 1
+      });
+
+      node.on("touchstart", function (d) {
+        Mouse.touchStart(d, links, link, node, label);
+      });
+
+      node.on("touchend", function () {
+        touchColored = 0;
+      });
+
+      svg.on("touchstart", function () {
+        touchColored = 1;
+      });
+
+      svg.on("touchend", function () {
+        if (touchmove === 0) {
+          if (touchColored === 1) {
+            // d3.selectAll("circle")
+            //     .filter(function () {
+            //       return !this.classList.contains('legendCircle')
+            //     })
+            //     .attr("class", "nodeReturnFade");
+            // d3.selectAll("line").attr("class", "lineReturnFade");
+            // circle.parent().children('text').attr("class", "nodeTextReturnFade");
+
+            // 上の書き換え(動作未確認)
+            node.attr("class", "nodeReturnFade");
+            link.attr("class", "lineReturnFade");
+            label.attr("class", "nodeTextReturnFade");
+          }
+        }
+        touchmove = 0
+      });
+    }
   }
 
   /*
