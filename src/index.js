@@ -264,14 +264,11 @@ console.log(umamiData);
 
   // Network dataを更新する
   ////////////////////////////////////////////////////////////////////////////////////////
-  let prevNode;
-  let newNode;
-
+  let prevNodePosition;
+  const tDuration = 5000;
   const dataTypeSelector = document.getElementById('dataType');
   dataTypeSelector.onchange = function () {
-    console.log(simulation)
-    prevNode = [];
-    newNode = [];
+    prevNodePosition = [];
     // 選択されているoption要素を取得する
     const selectedType = this.options[this.selectedIndex].value;
 
@@ -285,15 +282,10 @@ console.log(umamiData);
       links = umamiData.links;
     }
 
+    updateNodeData();
+    updateLabelData();
+    storePreviousNodePosition();
 
-    label = label.data(nodes, function (d) {
-      return d.name;
-    });
-    label.exit().remove();
-    label = label.enter().append("text").merge(label);
-
-
-    updateData();
     updateSimulation();
     setMouseAction();
     // update Title
@@ -304,22 +296,55 @@ console.log(umamiData);
   };
 
 
-  function updateData () {
+  function updateNodeData () {
+    const t = d3.transition().duration(tDuration);
     node = node.data(nodes, function (d) {
       return d.name;
     });
-
-    const t = d3.transition().duration(5000);
     node.exit().transition(t).attr("r", 100).remove();
-    // console.log(node['_groups'][0][0]['cx']['baseVal']['value'])
+    node = node.enter().append("circle")
+        .attr("opacity", "0.6")
+        .attr("r", function (d) {
+          return Math.sqrt(d.size) * 4 + 2.5;
+        })
+        .attr("fill", function (d) {
+          return color(d.group_id)
+        })
+        .attr("stroke", "#fffcf9")
+        .call(d3.drag()
+            .on("start", dragstarted)
+            .on("drag", dragging)
+            .on("end", dragended))
+        .merge(node);
+  }
 
-    node = node.enter().append("circle").merge(node);
+  function updateLabelData () {
+    const t = d3.transition().duration(tDuration);
+    label = label.data(nodes, function (d) {
+      return d.name;
+    });
+    label.exit().transition(t).remove();
+    label = label.enter().append("text").merge(label)
+        .text(function (d) {
+          return d.name;
+        });
 
+    label
+      .attr("font-size", ".7em")
+      .attr("font-weight", "300")
+      .attr("class", "nonDrag")
+      .attr("fill", "#352622")
+      .attr({"font-family": ["Futura", "Nunito", "Helvetica Neue", "Arial", "sans-serif"]});
+
+  }
+
+
+  function storePreviousNodePosition() {
     // get previous node position
     for (let i = 0, l = nodes.length; l > i; i++) {
-      prevNode.push({
-        'cx': node['_groups'][0][i]['cx']['baseVal']['value'],
-        'cy': node['_groups'][0][i]['cy']['baseVal']['value']
+      prevNodePosition.push({
+        'x': node['_groups'][0][i]['cx']['baseVal']['value'],
+        'y': node['_groups'][0][i]['cy']['baseVal']['value']
       })
     }
   }
@@ -336,32 +361,38 @@ console.log(umamiData);
 
 
   let transitPosition = function () {
-    const t = d3.transition().duration(5000);
-
-    // // simulation.stop();
-    // node.attr("cx", d => 500)
-    //     .attr("cy", d => 500)
-    // // .attr("cy", function (d) {
-    // //   prevNode.y
-    // // });
-
-
+    const t = d3.transition().duration(tDuration);
     for (let i = 0, l = nodes.length; l > i; i++) {
-      node['_groups'][0][i].setAttribute("cx", prevNode[i]['cx']);
-      node['_groups'][0][i].setAttribute("cy", prevNode[i]['cy']);
+      console.log(prevNodePosition[i]['x'], prevNodePosition[i]['x'] === 0)
+
+      // new node -> new position, existing node -> previous position
+      if (prevNodePosition[i]['x'] === 0) {
+        const newX = node['_groups'][0][i]['__data__']['x'];
+        const newY = node['_groups'][0][i]['__data__']['y'];
+
+        node['_groups'][0][i].setAttribute("cx", newX);
+        node['_groups'][0][i].setAttribute("cy", newY);
+        // label
+        label['_groups'][0][i].setAttribute("x", newX);
+        label['_groups'][0][i].setAttribute("y", newY);
+      } else {
+        // node
+        node['_groups'][0][i].setAttribute("cx", prevNodePosition[i]['x']);
+        node['_groups'][0][i].setAttribute("cy", prevNodePosition[i]['y']);
+        // label
+        label['_groups'][0][i].setAttribute("x", prevNodePosition[i]['x']);
+        label['_groups'][0][i].setAttribute("y", prevNodePosition[i]['y']);
+      }
+
     }
 
     node.transition(t)
         .attr("cx", d => d.x)
         .attr("cy", d => d.y);
 
-
-    label = label.data(nodes, function (d) {
-      return d.name;
-    });
-    label.exit().remove();
-    label = label.enter().append("text").merge(label);
-
+    label.transition(t)
+        .attr("x", d => d.x)
+        .attr("y", d => d.y);
   };
 
   ////////////////////////////////////////////////////////////////////////////////////////
