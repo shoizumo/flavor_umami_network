@@ -5,3 +5,6 @@ data.json
 *.iml
 *.iws
 *.ipr
+
+main.js
+main.css

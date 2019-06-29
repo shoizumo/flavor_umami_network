@@ -26,6 +26,6 @@
   },
   "dependencies": {
     "d3": "^5.9.2",
-    "ion-sound": "^3.0.7",
+    "ion-sound": "^3.0.7"
   }
 }

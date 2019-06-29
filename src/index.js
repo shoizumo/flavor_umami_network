@@ -64,8 +64,8 @@ console.log(umamiData);
       .attr("transform", function (d, i) {
         return "translate(20," + (i + 1) * 20 + ")" // y方向に20px間隔で移動
       })
-      .attr("width",200)
-      .attr("height",20);
+      .attr("width", 200)
+      .attr("height", 20);
 
   // $(".legends").css({"cursor": ["pointer"]});
   d3.selectAll(".legends").style("cursor", "pointer");
@@ -90,7 +90,6 @@ console.log(umamiData);
       // .attr("class", "textselected")
       .style("text-anchor", "start")
       .style("font-size", 15);
-
 
 
   /* //Setting// */
@@ -138,7 +137,6 @@ console.log(umamiData);
           .on("end", dragended));
 
 
-
   let label = svg
       .selectAll("text")
       .filter(function () {
@@ -150,7 +148,9 @@ console.log(umamiData);
       .data(nodes)
       .enter()
       .append("text")
-      .text(function(d){return d.name;});
+      .text(function (d) {
+        return d.name;
+      });
 
   label
       .attr("font-size", ".7em")
@@ -168,7 +168,7 @@ console.log(umamiData);
       .force("link",
           d3.forceLink()
               .distance(80)
-          //     .distance(function(d) { return  Math.sqrt(d.weight) * 0.1 + d.weight * 0.5; })
+              //     .distance(function(d) { return  Math.sqrt(d.weight) * 0.1 + d.weight * 0.5; })
               .strength(0.8)
               .iterations(1.0)
               .id(function (d) {
@@ -198,25 +198,42 @@ console.log(umamiData);
 
   // tick for simulation
   const wallMargin = 7.5;
+
   function ticked() {
     link
-        .attr("x1", function(d) { return Math.max(wallMargin, Math.min(width  - wallMargin, d.source.x)); })
-        .attr("y1", function(d) { return Math.max(wallMargin, Math.min(height - wallMargin, d.source.y)); })
-        .attr("x2", function(d) { return Math.max(wallMargin, Math.min(width  - wallMargin, d.target.x)); })
-        .attr("y2", function(d) { return Math.max(wallMargin, Math.min(height - wallMargin, d.target.y)); });
+        .attr("x1", function (d) {
+          return Math.max(wallMargin, Math.min(width - wallMargin, d.source.x));
+        })
+        .attr("y1", function (d) {
+          return Math.max(wallMargin, Math.min(height - wallMargin, d.source.y));
+        })
+        .attr("x2", function (d) {
+          return Math.max(wallMargin, Math.min(width - wallMargin, d.target.x));
+        })
+        .attr("y2", function (d) {
+          return Math.max(wallMargin, Math.min(height - wallMargin, d.target.y));
+        });
     node
-        .attr("cx", function(d) { return Math.max(wallMargin, Math.min(width  - wallMargin, d.x)); })
-        .attr("cy", function(d) { return Math.max(wallMargin, Math.min(height - wallMargin, d.y)); });
+        .attr("cx", function (d) {
+          return Math.max(wallMargin, Math.min(width - wallMargin, d.x));
+        })
+        .attr("cy", function (d) {
+          return Math.max(wallMargin, Math.min(height - wallMargin, d.y));
+        });
 
     label
-        .attr("x", function(d){return d.x;})
-        .attr("y", function(d){return d.y;});
+        .attr("x", function (d) {
+          return d.x;
+        })
+        .attr("y", function (d) {
+          return d.y;
+        });
   }
 
 
   // drag event
   function dragstarted(d) {
-    if(!d3.event.active) simulation.alphaTarget(0.3).restart();
+    if (!d3.event.active) simulation.alphaTarget(0.3).restart();
     d.fx = d.x;
     d.fy = d.y;
 
@@ -233,7 +250,7 @@ console.log(umamiData);
   }
 
   function dragended(d) {
-    if(!d3.event.active) simulation.alphaTarget(0);
+    if (!d3.event.active) simulation.alphaTarget(0);
     d.fx = null;
     d.fy = null;
 
@@ -247,8 +264,14 @@ console.log(umamiData);
 
   // Network dataを更新する
   ////////////////////////////////////////////////////////////////////////////////////////
+  let prevNode;
+  let newNode;
+
   const dataTypeSelector = document.getElementById('dataType');
   dataTypeSelector.onchange = function () {
+    console.log(simulation)
+    prevNode = [];
+    newNode = [];
     // 選択されているoption要素を取得する
     const selectedType = this.options[this.selectedIndex].value;
 
@@ -256,27 +279,98 @@ console.log(umamiData);
       Update.flavorSimulation(simulation, Xcenter, Ycenter);
       nodes = flavorData.nodes;
       links = flavorData.links;
-    }
-    else if (selectedType === 'Umami') {
+    } else if (selectedType === 'Umami') {
       Update.umamiSimulation(simulation, Xcenter, Ycenter);
       nodes = umamiData.nodes;
       links = umamiData.links;
     }
 
-    [simulation, link, node, label] =
-        Update.rerender(svg, simulation, links, nodes, ticked, dragstarted, dragging, dragended, color);
-    mouseAction();
 
+    label = label.data(nodes, function (d) {
+      return d.name;
+    });
+    label.exit().remove();
+    label = label.enter().append("text").merge(label);
+
+
+    updateData();
+    updateSimulation();
+    setMouseAction();
     // update Title
     document.getElementById('h1').textContent = selectedType + ' Network';
+
+    simulation.tick(30);
+    setTimeout(transitPosition, 0);
+  };
+
+
+  function updateData () {
+    node = node.data(nodes, function (d) {
+      return d.name;
+    });
+
+    const t = d3.transition().duration(5000);
+    node.exit().transition(t).attr("r", 100).remove();
+    // console.log(node['_groups'][0][0]['cx']['baseVal']['value'])
+
+    node = node.enter().append("circle").merge(node);
+
+    // get previous node position
+    for (let i = 0, l = nodes.length; l > i; i++) {
+      prevNode.push({
+        'cx': node['_groups'][0][i]['cx']['baseVal']['value'],
+        'cy': node['_groups'][0][i]['cy']['baseVal']['value']
+      })
+    }
+  }
+
+
+  function updateSimulation() {
+    simulation
+        .nodes(nodes)
+        .on("tick", ticked);
+    simulation.force("link")
+        .links(links);
+    simulation.stop();
+  }
+
+
+  let transitPosition = function () {
+    const t = d3.transition().duration(5000);
+
+    // // simulation.stop();
+    // node.attr("cx", d => 500)
+    //     .attr("cy", d => 500)
+    // // .attr("cy", function (d) {
+    // //   prevNode.y
+    // // });
+
+
+    for (let i = 0, l = nodes.length; l > i; i++) {
+      node['_groups'][0][i].setAttribute("cx", prevNode[i]['cx']);
+      node['_groups'][0][i].setAttribute("cy", prevNode[i]['cy']);
+    }
+
+    node.transition(t)
+        .attr("cx", d => d.x)
+        .attr("cy", d => d.y);
+
+
+    label = label.data(nodes, function (d) {
+      return d.name;
+    });
+    label.exit().remove();
+    label = label.enter().append("text").merge(label);
+
   };
 
   ////////////////////////////////////////////////////////////////////////////////////////
 
 
   /* //Mouse action// */
-  mouseAction();
-  function mouseAction() {
+  setMouseAction();
+
+  function setMouseAction() {
     if (!isSp) {
       node.on("mouseover", function (d) {
         Mouse.mouseover(d, links, link, node, label);
@@ -298,7 +392,6 @@ console.log(umamiData);
 
       });
     }
-
 
     /////////////////////////////////////////////////////////////
     // for SmartPhone
