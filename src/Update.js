@@ -135,16 +135,16 @@ export default class Update {
   }
 
 
-  static flavorSimulation(simulation, Xcenter, Ycenter) {
+  static flavorSimulation(simulation, centerX, centerY) {
     simulation
         .force("link", d3.forceLink().distance(80))
         .force("charge", d3.forceManyBody().strength(-300))
-        .force("x", d3.forceX().strength(0.25).x(Xcenter))
-        .force("y", d3.forceY().strength(0.35).y(Ycenter));
+        .force("x", d3.forceX().strength(0.25).x(centerX))
+        .force("y", d3.forceY().strength(0.35).y(centerY));
   }
 
 
-  static umamiSimulation(simulation, Xcenter, Ycenter) {
+  static umamiSimulation(simulation, centerX, centerY) {
     simulation
         .force("link",
             d3.forceLink().distance(200)
@@ -152,8 +152,8 @@ export default class Update {
                   return d.name;
                 }))
         .force("charge", d3.forceManyBody().strength(-2000))
-        .force("x", d3.forceX().strength(1.5).x(Xcenter))
-        .force("y", d3.forceY().strength(2.25).y(Ycenter));
+        .force("x", d3.forceX().strength(1.5).x(centerX))
+        .force("y", d3.forceY().strength(2.25).y(centerY));
   }
 
 }

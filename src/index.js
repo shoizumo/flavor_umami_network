@@ -17,7 +17,7 @@ console.log(umamiData);
       navigator.userAgent.indexOf('iPod') > 0 ||
       navigator.userAgent.indexOf('Android') > 0);
 
-  console.log(isSp)
+  console.log(isSp);
 
 
   //make color function
@@ -78,7 +78,7 @@ console.log(umamiData);
       .attr("class", "legendCircle")
       .attr("fill", function (d, i) {
         return color(i);
-      })
+      });
 
   legend.append('text')  // 凡例の文言
       .attr("x", 20)
@@ -160,8 +160,8 @@ console.log(umamiData);
       .attr({"font-family": ["Futura", "Nunito", "Helvetica Neue", "Arial", "sans-serif"]});
 
 
-  const Xcenter = width / 2 + 30;
-  const Ycenter = height / 2 + 15;
+  const centerX = width / 2 + 30;
+  const centerY = height / 2 + 15;
 
   let simulation = d3.forceSimulation()
   //.force("center", d3.forceCenter([width / 2 - 50, height / 2 - 10]))
@@ -184,9 +184,9 @@ console.log(umamiData);
               .iterations(1.0)
       )
       .force("charge", d3.forceManyBody().strength(-300))
-      .force("center", d3.forceCenter(Xcenter, Ycenter))
-      .force("x", d3.forceX().strength(0.25).x(Xcenter))
-      .force("y", d3.forceY().strength(0.35).y(Ycenter));
+      .force("center", d3.forceCenter(centerX, centerY))
+      .force("x", d3.forceX().strength(0.25).x(centerX))
+      .force("y", d3.forceY().strength(0.35).y(centerY));
 
   simulation
       .nodes(nodes)
@@ -265,35 +265,58 @@ console.log(umamiData);
   // Network dataを更新する
   ////////////////////////////////////////////////////////////////////////////////////////
   let prevNodePosition;
+  let prevLinkPosition;
   const tDuration = 5000;
   const dataTypeSelector = document.getElementById('dataType');
   dataTypeSelector.onchange = function () {
     prevNodePosition = [];
+    prevLinkPosition = [];
     // 選択されているoption要素を取得する
     const selectedType = this.options[this.selectedIndex].value;
 
     if (selectedType === 'Flavor') {
-      Update.flavorSimulation(simulation, Xcenter, Ycenter);
+      Update.flavorSimulation(simulation, centerX, centerY);
       nodes = flavorData.nodes;
       links = flavorData.links;
     } else if (selectedType === 'Umami') {
-      Update.umamiSimulation(simulation, Xcenter, Ycenter);
+      Update.umamiSimulation(simulation, centerX, centerY);
       nodes = umamiData.nodes;
       links = umamiData.links;
     }
 
+    updateLinkData();
     updateNodeData();
     updateLabelData();
     storePreviousNodePosition();
+    storePreviousLinkPosition();
 
     updateSimulation();
     setMouseAction();
     // update Title
     document.getElementById('h1').textContent = selectedType + ' Network';
 
-    simulation.tick(30);
-    setTimeout(transitPosition, 0);
+    setTimeout(transitNodePosition, 0);
+    setTimeout(transitLinkPosition, 0);
   };
+
+
+  function updateLinkData () {
+    const t = d3.transition().duration(tDuration);
+    link = link.data(links, function (d) {
+      return d.name;
+    });
+    link.exit().remove();
+    // link.exit().transition(t).attr("stroke-width", 0).remove();
+    link = link.enter().append("line")
+        .attr("opacity", "0.5")
+        .attr("stroke-width", function (d) {
+          return Math.sqrt(d.weight) * 0.1 + d.weight * 0.015;
+        })
+        .attr("stroke", function (d) {
+          return color(d.group_id_s)
+        })
+        .merge(link);
+  }
 
 
   function updateNodeData () {
@@ -335,7 +358,6 @@ console.log(umamiData);
       .attr("class", "nonDrag")
       .attr("fill", "#352622")
       .attr({"font-family": ["Futura", "Nunito", "Helvetica Neue", "Arial", "sans-serif"]});
-
   }
 
 
@@ -350,6 +372,19 @@ console.log(umamiData);
   }
 
 
+  function storePreviousLinkPosition() {
+    // get previous link position
+    for (let i = 0, l = links.length; l > i; i++) {
+      prevLinkPosition.push({
+        'x1': link['_groups'][0][i]['x1']['baseVal']['value'],
+        'y1': link['_groups'][0][i]['y1']['baseVal']['value'],
+        'x2': link['_groups'][0][i]['x2']['baseVal']['value'],
+        'y2': link['_groups'][0][i]['y2']['baseVal']['value']
+      })
+    }
+  }
+
+
   function updateSimulation() {
     simulation
         .nodes(nodes)
@@ -357,13 +392,14 @@ console.log(umamiData);
     simulation.force("link")
         .links(links);
     simulation.stop();
+    simulation.tick(30);
   }
 
 
-  let transitPosition = function () {
+  let transitNodePosition = function () {
     const t = d3.transition().duration(tDuration);
     for (let i = 0, l = nodes.length; l > i; i++) {
-      console.log(prevNodePosition[i]['x'], prevNodePosition[i]['x'] === 0)
+      // console.log(prevNodePosition[i]['x'], prevNodePosition[i]['x'] === 0)
 
       // new node -> new position, existing node -> previous position
       if (prevNodePosition[i]['x'] === 0) {
@@ -393,6 +429,38 @@ console.log(umamiData);
     label.transition(t)
         .attr("x", d => d.x)
         .attr("y", d => d.y);
+  };
+
+
+  let transitLinkPosition = function () {
+    const t = d3.transition().duration(tDuration);
+    for (let i = 0, l = links.length; l > i; i++) {
+
+      // new node -> new position, existing node -> previous position
+      if (prevLinkPosition[i]['x1'] === 0) {
+        const newX1 = link['_groups'][0][i]['__data__']['source']['x'];
+        const newY1 = link['_groups'][0][i]['__data__']['source']['y'];
+        const newX2 = link['_groups'][0][i]['__data__']['target']['x'];
+        const newY2 = link['_groups'][0][i]['__data__']['target']['y'];
+
+        link['_groups'][0][i].setAttribute("x1", newX1);
+        link['_groups'][0][i].setAttribute("y1", newY1);
+        link['_groups'][0][i].setAttribute("x2", newX2);
+        link['_groups'][0][i].setAttribute("y2", newY2);
+
+      } else {
+        link['_groups'][0][i].setAttribute("x1", prevLinkPosition[i]['x1']);
+        link['_groups'][0][i].setAttribute("y1", prevLinkPosition[i]['y1']);
+        link['_groups'][0][i].setAttribute("x2", prevLinkPosition[i]['x2']);
+        link['_groups'][0][i].setAttribute("y2", prevLinkPosition[i]['y2']);
+      }
+    }
+
+    link.transition(t)
+        .attr("x1", d => d.source.x)
+        .attr("y1", d => d.source.y)
+        .attr("x2", d => d.target.x)
+        .attr("y2", d => d.target.y)
   };
 
   ////////////////////////////////////////////////////////////////////////////////////////
