@@ -265,12 +265,10 @@ console.log(umamiData);
   // Network dataを更新する
   ////////////////////////////////////////////////////////////////////////////////////////
   let prevNodePosition;
-  let prevLinkPosition;
   const tDuration = 5000;
   const dataTypeSelector = document.getElementById('dataType');
   dataTypeSelector.onchange = function () {
     prevNodePosition = [];
-    prevLinkPosition = [];
     // 選択されているoption要素を取得する
     const selectedType = this.options[this.selectedIndex].value;
 
@@ -288,7 +286,7 @@ console.log(umamiData);
     updateNodeData();
     updateLabelData();
     storePreviousNodePosition();
-    storePreviousLinkPosition();
+    // storePreviousLinkPosition();
 
     updateSimulation();
     setMouseAction();
@@ -365,6 +363,7 @@ console.log(umamiData);
     // get previous node position
     for (let i = 0, l = nodes.length; l > i; i++) {
       prevNodePosition.push({
+        'name': node['_groups'][0][i]['__data__']['name'],
         'x': node['_groups'][0][i]['cx']['baseVal']['value'],
         'y': node['_groups'][0][i]['cy']['baseVal']['value']
       })
@@ -372,17 +371,17 @@ console.log(umamiData);
   }
 
 
-  function storePreviousLinkPosition() {
-    // get previous link position
-    for (let i = 0, l = links.length; l > i; i++) {
-      prevLinkPosition.push({
-        'x1': link['_groups'][0][i]['x1']['baseVal']['value'],
-        'y1': link['_groups'][0][i]['y1']['baseVal']['value'],
-        'x2': link['_groups'][0][i]['x2']['baseVal']['value'],
-        'y2': link['_groups'][0][i]['y2']['baseVal']['value']
-      })
-    }
-  }
+  // function storePreviousLinkPosition() {
+  //   // get previous link position
+  //   for (let i = 0, l = links.length; l > i; i++) {
+  //     prevLinkPosition.push({
+  //       'x1': link['_groups'][0][i]['x1']['baseVal']['value'],
+  //       'y1': link['_groups'][0][i]['y1']['baseVal']['value'],
+  //       'x2': link['_groups'][0][i]['x2']['baseVal']['value'],
+  //       'y2': link['_groups'][0][i]['y2']['baseVal']['value']
+  //     })
+  //   }
+  // }
 
 
   function updateSimulation() {
@@ -399,27 +398,17 @@ console.log(umamiData);
   let transitNodePosition = function () {
     const t = d3.transition().duration(tDuration);
     for (let i = 0, l = nodes.length; l > i; i++) {
-      // console.log(prevNodePosition[i]['x'], prevNodePosition[i]['x'] === 0)
-
       // new node -> new position, existing node -> previous position
       if (prevNodePosition[i]['x'] === 0) {
-        const newX = node['_groups'][0][i]['__data__']['x'];
-        const newY = node['_groups'][0][i]['__data__']['y'];
-
-        node['_groups'][0][i].setAttribute("cx", newX);
-        node['_groups'][0][i].setAttribute("cy", newY);
-        // label
-        label['_groups'][0][i].setAttribute("x", newX);
-        label['_groups'][0][i].setAttribute("y", newY);
-      } else {
-        // node
-        node['_groups'][0][i].setAttribute("cx", prevNodePosition[i]['x']);
-        node['_groups'][0][i].setAttribute("cy", prevNodePosition[i]['y']);
-        // label
-        label['_groups'][0][i].setAttribute("x", prevNodePosition[i]['x']);
-        label['_groups'][0][i].setAttribute("y", prevNodePosition[i]['y']);
+        prevNodePosition[i]['x'] = node['_groups'][0][i]['__data__']['x'];
+        prevNodePosition[i]['y'] = node['_groups'][0][i]['__data__']['y'];
       }
-
+      // node
+      node['_groups'][0][i].setAttribute("cx", prevNodePosition[i]['x']);
+      node['_groups'][0][i].setAttribute("cy", prevNodePosition[i]['y']);
+      // label
+      label['_groups'][0][i].setAttribute("x", prevNodePosition[i]['x']);
+      label['_groups'][0][i].setAttribute("y", prevNodePosition[i]['y']);
     }
 
     node.transition(t)
@@ -434,26 +423,20 @@ console.log(umamiData);
 
   let transitLinkPosition = function () {
     const t = d3.transition().duration(tDuration);
+
+    let nodePositionIndex = {};
+    for (let i = 0, l = prevNodePosition.length; l > i; i++) {
+      nodePositionIndex[prevNodePosition[i]['name']] = i;
+    }
+
     for (let i = 0, l = links.length; l > i; i++) {
+      const sourceName = link['_groups'][0][i]['__data__']['source']['name'];
+      const targetName = link['_groups'][0][i]['__data__']['target']['name'];
 
-      // new node -> new position, existing node -> previous position
-      if (prevLinkPosition[i]['x1'] === 0) {
-        const newX1 = link['_groups'][0][i]['__data__']['source']['x'];
-        const newY1 = link['_groups'][0][i]['__data__']['source']['y'];
-        const newX2 = link['_groups'][0][i]['__data__']['target']['x'];
-        const newY2 = link['_groups'][0][i]['__data__']['target']['y'];
-
-        link['_groups'][0][i].setAttribute("x1", newX1);
-        link['_groups'][0][i].setAttribute("y1", newY1);
-        link['_groups'][0][i].setAttribute("x2", newX2);
-        link['_groups'][0][i].setAttribute("y2", newY2);
-
-      } else {
-        link['_groups'][0][i].setAttribute("x1", prevLinkPosition[i]['x1']);
-        link['_groups'][0][i].setAttribute("y1", prevLinkPosition[i]['y1']);
-        link['_groups'][0][i].setAttribute("x2", prevLinkPosition[i]['x2']);
-        link['_groups'][0][i].setAttribute("y2", prevLinkPosition[i]['y2']);
-      }
+      link['_groups'][0][i].setAttribute("x1", prevNodePosition[nodePositionIndex[sourceName]]['x']);
+      link['_groups'][0][i].setAttribute("y1", prevNodePosition[nodePositionIndex[sourceName]]['y']);
+      link['_groups'][0][i].setAttribute("x2", prevNodePosition[nodePositionIndex[targetName]]['x']);
+      link['_groups'][0][i].setAttribute("y2", prevNodePosition[nodePositionIndex[targetName]]['y']);
     }
 
     link.transition(t)
