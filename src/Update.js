@@ -2,34 +2,93 @@ import * as d3 from 'd3';
 
 export default class Update {
 
-  static linkData (linkLine, linkData, color) {
-    const t = d3.transition().duration(5000);
+  static deleteObj(linkLine, nodeCircle, nodeText, linkData, nodeData) {
+    return {
+      link: Update.deleteLinkData(linkLine, linkData),
+      node: Update.deleteNodeData(nodeCircle, nodeData),
+      label: Update.deleteLabelData(nodeText, nodeData)
+    }
+  }
+
+
+  static addObj(linkLine, nodeCircle, nodeText, nodeData, linkData, color, dragstarted, dragging, dragended) {
+    return {
+      link: Update.addLinkData(linkLine, linkData, color),
+      node: Update.addNodeData(nodeCircle, nodeData, color, dragstarted, dragging, dragended),
+      label: Update.addLabelData(nodeText)
+    }
+  }
+
+
+
+  static deleteLinkData (linkLine, linkData) {
     linkLine = linkLine.data(linkData, function (d) {
       return d.name;
     });
-    linkLine.exit().remove();
-    linkLine = linkLine.enter().append("line")
-        .attr("opacity", "0.5")
-        .attr("stroke-width", function (d) {
-          return Math.sqrt(d.weight) * 0.1 + d.weight * 0.015;
-        })
-        .attr("stroke", function (d) {
-          return color(d.group_id_s)
-        })
-        .merge(linkLine);
+    linkLine.exit()
+        .transition()
+        .duration(5000)
+        .ease(d3.easeLinear)
+        .style("opacity", 0.0)
+        .remove();
 
     return linkLine;
   }
 
 
-  static nodeData (nodeCircle, nodeData, color, dragstarted, dragging, dragended) {
-    const t = d3.transition().duration(5000);
+  static addLinkData (linkLine, linkData, color) {
+    // linkLine = linkLine.enter().append("line")
+    //     .attr("opacity", "0.0")
+    //     .attr("stroke-width", function (d) {
+    //       return Math.sqrt(d.weight) * 0.1 + d.weight * 0.015;
+    //     })
+    //     .attr("stroke", function (d) {
+    //       return color(d.group_id_s)
+    //     })
+    //     .merge(linkLine);
+    //
+    // linkLine.transition()
+    //     .duration(5000)
+    //     .ease(d3.easeLinear)
+    //     .style("opacity", 0.6);
+
+    let linkLineEnter = linkLine.enter().append("line")
+        .attr("opacity", "0.0")
+        .attr("stroke-width", function (d) {
+          return Math.sqrt(d.weight) * 0.1 + d.weight * 0.015;
+        })
+        .attr("stroke", function (d) {
+          return color(d.group_id_s)
+        });
+
+    linkLine = linkLineEnter.merge(linkLine);
+    linkLine.transition()
+        .duration(5000)
+        .ease(d3.easeLinear)
+        .style("opacity", 0.6);
+
+    return linkLine;
+  }
+
+
+  static deleteNodeData (nodeCircle, nodeData) {
     nodeCircle = nodeCircle.data(nodeData, function (d) {
       return d.name;
     });
-    nodeCircle.exit().transition(t).attr("r", 0).remove();
+    nodeCircle.exit()
+        .transition()
+        .duration(5000)
+        .ease(d3.easeLinear)
+        .style("opacity", 0.0)
+        .remove();
+
+    return nodeCircle;
+  }
+
+
+   static addNodeData (nodeCircle, nodeData, color, dragstarted, dragging, dragended) {
     nodeCircle = nodeCircle.enter().append("circle")
-        .attr("opacity", "0.6")
+        .attr("opacity", "0.0")
         .attr("r", function (d) {
           return Math.sqrt(d.size) * 4 + 2.5;
         })
@@ -43,26 +102,48 @@ export default class Update {
             .on("end", dragended))
         .merge(nodeCircle);
 
+    nodeCircle.transition()
+        .duration(5000)
+        .ease(d3.easeLinear)
+        .style("opacity", "0.6");
+
     return nodeCircle;
   }
 
-  static labelData (nodeText, nodeData) {
-    const t = d3.transition().duration(5000);
+
+  static deleteLabelData (nodeText, nodeData) {
     nodeText = nodeText.data(nodeData, function (d) {
       return d.name;
     });
-    nodeText.exit().transition(t).remove();
+    nodeText.exit()
+        .transition()
+        .duration(5000)
+        .ease(d3.easeLinear)
+        .style("opacity", 0.0)
+        .remove();
+
+    return nodeText;
+  }
+
+
+  static addLabelData(nodeText) {
     nodeText = nodeText.enter().append("text").merge(nodeText)
         .text(function (d) {
           return d.name;
         });
 
     nodeText
-      .attr("font-size", ".7em")
-      .attr("font-weight", "300")
-      .attr("class", "nonDrag")
-      .attr("fill", "#352622")
-      .attr({"font-family": ["Futura", "Nunito", "Helvetica Neue", "Arial", "sans-serif"]});
+        .attr("opacity", "0.0")
+        .attr("font-size", ".7em")
+        .attr("font-weight", "300")
+        .attr("class", "nonDrag")
+        .attr("fill", "#352622")
+        .attr({"font-family": ["Futura", "Nunito", "Helvetica Neue", "Arial", "sans-serif"]})
+
+     nodeText.transition()
+        .duration(5000)
+        .ease(d3.easeLinear)
+        .style("opacity", 0.6);
 
     return nodeText;
   }
@@ -121,18 +202,18 @@ export default class Update {
     const t = d3.transition().duration(5000);
 
     let nodePositionIndex = {};
-    for (let i = 0, l = prevNodePosition.length; l > i; i++) {
-      nodePositionIndex[prevNodePosition[i]['name']] = i;
+    for (let i1 = 0, l1 = prevNodePosition.length; l1 > i1; i1++) {
+      nodePositionIndex[prevNodePosition[i1]['name']] = i1;
     }
 
-    for (let i = 0, l = linkData.length; l > i; i++) {
-      const sourceName = linkLine['_groups'][0][i]['__data__']['source']['name'];
-      const targetName = linkLine['_groups'][0][i]['__data__']['target']['name'];
+    for (let i2 = 0, l2 = linkData.length; l2 > i2; i2++) {
+      const sourceName = linkLine['_groups'][0][i2]['__data__']['source']['name'];
+      const targetName = linkLine['_groups'][0][i2]['__data__']['target']['name'];
 
-      linkLine['_groups'][0][i].setAttribute("x1", prevNodePosition[nodePositionIndex[sourceName]]['x']);
-      linkLine['_groups'][0][i].setAttribute("y1", prevNodePosition[nodePositionIndex[sourceName]]['y']);
-      linkLine['_groups'][0][i].setAttribute("x2", prevNodePosition[nodePositionIndex[targetName]]['x']);
-      linkLine['_groups'][0][i].setAttribute("y2", prevNodePosition[nodePositionIndex[targetName]]['y']);
+      linkLine['_groups'][0][i2].setAttribute("x1", prevNodePosition[nodePositionIndex[sourceName]]['x']);
+      linkLine['_groups'][0][i2].setAttribute("y1", prevNodePosition[nodePositionIndex[sourceName]]['y']);
+      linkLine['_groups'][0][i2].setAttribute("x2", prevNodePosition[nodePositionIndex[targetName]]['x']);
+      linkLine['_groups'][0][i2].setAttribute("y2", prevNodePosition[nodePositionIndex[targetName]]['y']);
     }
 
     linkLine.transition(t)

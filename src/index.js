@@ -272,20 +272,46 @@ console.log(umamiData);
       links = umamiData.links;
     }
 
-    link = Update.linkData(link, links, color);
-    node = Update.nodeData(node, nodes, color, dragstarted, dragging, dragended);
-    label = Update.labelData(label, nodes);
-    prevNodePosition = Update.storePreviousNodePosition(node, nodes, prevNodePosition);
 
-    Update.simulation(links, nodes, simulation, ticked);
-
+    simulation.stop();
+    let resDeleteObj;
+    let resAddObj;
     new Promise((resolve) => {
       setTimeout(function () {
-        resolve(simulation.tick(30));
-      }, 0);
+        resolve(resDeleteObj = Update.deleteObj(link, node, label, links, nodes));
+        console.log(1);
+      }, 3000);
+    }).then(() => {
+      return new Promise((resolve) => {
+        setTimeout(function () {
+          resolve(
+              resAddObj = Update.addObj(resDeleteObj.link, resDeleteObj.node, resDeleteObj.label,
+                  nodes, links, color, dragstarted, dragging, dragended),
+              link = resAddObj.link,
+              node = resAddObj.node,
+              label = resAddObj.label,
+              console.log(2)
+          )
+        }, 1000);
+      });
+    }).then(() => {
+      prevNodePosition = Update.storePreviousNodePosition(node, nodes, prevNodePosition);
+      Update.simulation(links, nodes, simulation, ticked);
+      console.log(3);
+    }).then(() => {
+      prevNodePosition = Update.storePreviousNodePosition(node, nodes, prevNodePosition);
+      console.log(4);
+    }).then(() => {
+      return new Promise((resolve) => {
+        setTimeout(function () {
+          resolve(simulation.tick(30));
+          console.log(5);
+        }, 1000);
+      });
     }).then(() => {
       setTimeout(Update.transitNodePosition(node, label, nodes, prevNodePosition), 0);
       setTimeout(Update.transitLinkPosition(link, links, prevNodePosition), 0);
+      console.log(6);
     });
 
     setMouseAction();
