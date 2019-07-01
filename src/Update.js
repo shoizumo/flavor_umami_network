@@ -2,72 +2,34 @@ import * as d3 from 'd3';
 
 export default class Update {
 
-  static rerender(svg, simulation, linkData, nodeData, ticked, dragstarted, dragging, dragended, color) {
-    let deleteObjList = Update.getDeletObj();
-
-    simulation.alphaTarget(0.7).restart();
-    simulation
-        .nodes(nodeData)
-        .on("tick", ticked);
-    simulation.force("link")
-        .links(linkData);
-
-    let link = Update.link(svg, linkData, color);
-    let node = Update.node(svg, nodeData, color, dragstarted, dragging, dragended);
-    let label = Update.label(svg, nodeData);
-
-
-    Update.deleteObj(deleteObjList);
-
-    // force.start();
-    d3.selectAll("line").style("stroke-width", "");
-
-
-    // change line display order to back of node
-    for (let i = linkData.length - 1; 0 <= i; i--) {
-      const linkSVG = link['_groups'][0][i];
-      const firstSVG = linkSVG.parentNode.firstChild;
-      if (firstSVG) {
-        linkSVG.parentNode.insertBefore(linkSVG, firstSVG);
-      }
-    }
-
-    // setTimeout(() => {
-    //   simulation.alphaTarget(0); //force レイアウトの計算を終了
-    // }, 5000);
-    return [simulation, link, node, label]
-  }
-
-
-  static link(svg, linkData, color) {
-    let link = svg
-        .selectAll(".line")
-        .data(linkData)
-        .enter()
-        .append("line");
-
-    link.attr("opacity", "0.5")
+  static linkData (linkLine, linkData, color) {
+    const t = d3.transition().duration(5000);
+    linkLine = linkLine.data(linkData, function (d) {
+      return d.name;
+    });
+    linkLine.exit().remove();
+    linkLine = linkLine.enter().append("line")
+        .attr("opacity", "0.5")
         .attr("stroke-width", function (d) {
           return Math.sqrt(d.weight) * 0.1 + d.weight * 0.015;
         })
         .attr("stroke", function (d) {
           return color(d.group_id_s)
-        });
-    return link;
+        })
+        .merge(linkLine);
+
+    return linkLine;
   }
 
 
-  static node(svg, nodeData, color, dragstarted, dragging, dragended) {
-    let node = svg
-        .selectAll(".circle")
-        .filter(function () {
-          return !this.classList.contains('legendCircle')
-        })
-        .data(nodeData)
-        .enter()
-        .append("circle");
-
-    node.attr("opacity", "0.6")
+  static nodeData (nodeCircle, nodeData, color, dragstarted, dragging, dragended) {
+    const t = d3.transition().duration(5000);
+    nodeCircle = nodeCircle.data(nodeData, function (d) {
+      return d.name;
+    });
+    nodeCircle.exit().transition(t).attr("r", 0).remove();
+    nodeCircle = nodeCircle.enter().append("circle")
+        .attr("opacity", "0.6")
         .attr("r", function (d) {
           return Math.sqrt(d.size) * 4 + 2.5;
         })
@@ -78,61 +40,107 @@ export default class Update {
         .call(d3.drag()
             .on("start", dragstarted)
             .on("drag", dragging)
-            .on("end", dragended));
-    return node;
+            .on("end", dragended))
+        .merge(nodeCircle);
+
+    return nodeCircle;
   }
 
-
-  static label(svg, nodeData) {
-    let label = svg
-        .selectAll(".text")
-        .filter(function () {
-          return !this.classList.contains('legendText')
-        })
-        .filter(function () {
-          return !this.classList.contains('node_link')
-        })
-        .data(nodeData)
-        .enter()
-        .append("text")
+  static labelData (nodeText, nodeData) {
+    const t = d3.transition().duration(5000);
+    nodeText = nodeText.data(nodeData, function (d) {
+      return d.name;
+    });
+    nodeText.exit().transition(t).remove();
+    nodeText = nodeText.enter().append("text").merge(nodeText)
         .text(function (d) {
           return d.name;
         });
 
-    label
-        .attr("font-size", ".7em")
-        .attr("font-weight", "300")
-        .attr("class", "nonDrag")
-        .attr("fill", "#352622")
-        .attr({"font-family": ["Futura", "Nunito", "Helvetica Neue", "Arial", "sans-serif"]});
-    return label;
+    nodeText
+      .attr("font-size", ".7em")
+      .attr("font-weight", "300")
+      .attr("class", "nonDrag")
+      .attr("fill", "#352622")
+      .attr({"font-family": ["Futura", "Nunito", "Helvetica Neue", "Arial", "sans-serif"]});
+
+    return nodeText;
   }
 
 
-  static getDeletObj() {
-    let deleteLine = d3.selectAll("line");
-    let deleteNode = d3.selectAll("circle")
-        .filter(function () {
-          return !this.classList.contains('legendCircle')
-        });
-    let deleteLabel = d3.selectAll("text")
-        .filter(function () {
-          return !this.classList.contains('legendText')
-        })
-        .filter(function () {
-          return !this.classList.contains('node_link')
-        });
+  static storePreviousNodePosition(nodeCircle, nodeData, prevNodePosition) {
+    // get previous node position
+    for (let i = 0, l = nodeData.length; l > i; i++) {
+      prevNodePosition.push({
+        'name': nodeCircle['_groups'][0][i]['__data__']['name'],
+        'x': nodeCircle['_groups'][0][i]['cx']['baseVal']['value'],
+        'y': nodeCircle['_groups'][0][i]['cy']['baseVal']['value']
+      })
+    }
 
-    return [deleteLine, deleteNode, deleteLabel]
+    return prevNodePosition;
+  }
+
+  static simulation(linkData, nodeData, simulation, ticked) {
+    simulation
+        .nodes(nodeData)
+        .on("tick", ticked);
+    simulation.force("link")
+        .links(linkData);
+    simulation.stop();
   }
 
 
-  static deleteObj(objList) {
-    // list, node, label
-    objList[0].remove();
-    objList[1].remove();
-    objList[2].remove();
-  }
+  static transitNodePosition (nodeCircle, nodeText, nodeData, prevNodePosition) {
+    const t = d3.transition().duration(5000);
+    for (let i = 0, l = nodeData.length; l > i; i++) {
+      // new node -> new position, existing node -> previous position
+      if (prevNodePosition[i]['x'] === 0) {
+        prevNodePosition[i]['x'] = nodeCircle['_groups'][0][i]['__data__']['x'];
+        prevNodePosition[i]['y'] = nodeCircle['_groups'][0][i]['__data__']['y'];
+      }
+      // node
+      nodeCircle['_groups'][0][i].setAttribute("cx", prevNodePosition[i]['x']);
+      nodeCircle['_groups'][0][i].setAttribute("cy", prevNodePosition[i]['y']);
+      // label
+      nodeText['_groups'][0][i].setAttribute("x", prevNodePosition[i]['x']);
+      nodeText['_groups'][0][i].setAttribute("y", prevNodePosition[i]['y']);
+    }
+
+    nodeCircle.transition(t)
+        .attr("cx", d => d.x)
+        .attr("cy", d => d.y);
+
+    nodeText.transition(t)
+        .attr("x", d => d.x)
+        .attr("y", d => d.y);
+  };
+
+
+  static transitLinkPosition (linkLine, linkData, prevNodePosition) {
+    const t = d3.transition().duration(5000);
+
+    let nodePositionIndex = {};
+    for (let i = 0, l = prevNodePosition.length; l > i; i++) {
+      nodePositionIndex[prevNodePosition[i]['name']] = i;
+    }
+
+    for (let i = 0, l = linkData.length; l > i; i++) {
+      const sourceName = linkLine['_groups'][0][i]['__data__']['source']['name'];
+      const targetName = linkLine['_groups'][0][i]['__data__']['target']['name'];
+
+      linkLine['_groups'][0][i].setAttribute("x1", prevNodePosition[nodePositionIndex[sourceName]]['x']);
+      linkLine['_groups'][0][i].setAttribute("y1", prevNodePosition[nodePositionIndex[sourceName]]['y']);
+      linkLine['_groups'][0][i].setAttribute("x2", prevNodePosition[nodePositionIndex[targetName]]['x']);
+      linkLine['_groups'][0][i].setAttribute("y2", prevNodePosition[nodePositionIndex[targetName]]['y']);
+    }
+
+    linkLine.transition(t)
+        .attr("x1", d => d.source.x)
+        .attr("y1", d => d.source.y)
+        .attr("x2", d => d.target.x)
+        .attr("y2", d => d.target.y)
+  };
 
 
   static flavorSimulation(simulation, centerX, centerY) {

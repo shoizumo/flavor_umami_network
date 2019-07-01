@@ -35,6 +35,8 @@ console.log(umamiData);
     mouseDown = 0;
   };
 
+  const svg = d3.select("#myGraph");
+
   /* //Legend// */
   const legendName = ["plant", "fruit", "meat", "vegetable", "cereal/crop",
     "alcoholic beverage", "herb", "dairy", "nut/seed/pulse", "spice",
@@ -44,17 +46,6 @@ console.log(umamiData);
     "#e73552", "#ad5d88", "#db830d", "#965d21", "#00afcc",
     "#434da2", "#b3e500", "#ff00ae", "#ff7fbf"];
 
-
-  const svg = d3.select("#myGraph");
-
-  // svg.append("g")
-  //     .attr("class", "legendOrdinal")
-  //     .attr("transform", "translate(25,50)")
-  //     .style("font-size", "1.2em")
-  //     .style("fill", "#352622")
-  //     .style({"font-family": ["Helvetica Neue", "Arial", "sans-serif"]});
-
-
   const legend = svg
       .selectAll('.legends')
       .data(legendName)
@@ -62,7 +53,7 @@ console.log(umamiData);
       .append('g')
       .attr("class", "legends")
       .attr("transform", function (d, i) {
-        return "translate(20," + (i + 1) * 20 + ")" // y方向に20px間隔で移動
+        return "translate(20," + (i + 1) * 20 + ")"
       })
       .attr("width", 200)
       .attr("height", 20);
@@ -265,7 +256,6 @@ console.log(umamiData);
   // Network dataを更新する
   ////////////////////////////////////////////////////////////////////////////////////////
   let prevNodePosition;
-  const tDuration = 5000;
   const dataTypeSelector = document.getElementById('dataType');
   dataTypeSelector.onchange = function () {
     prevNodePosition = [];
@@ -282,168 +272,25 @@ console.log(umamiData);
       links = umamiData.links;
     }
 
-    updateLinkData();
-    updateNodeData();
-    updateLabelData();
-    storePreviousNodePosition();
-    // storePreviousLinkPosition();
+    link = Update.linkData(link, links, color);
+    node = Update.nodeData(node, nodes, color, dragstarted, dragging, dragended);
+    label = Update.labelData(label, nodes);
+    prevNodePosition = Update.storePreviousNodePosition(node, nodes, prevNodePosition);
 
-    updateSimulation();
+    Update.simulation(links, nodes, simulation, ticked);
+
+    new Promise((resolve) => {
+      setTimeout(function () {
+        resolve(simulation.tick(30));
+      }, 0);
+    }).then(() => {
+      setTimeout(Update.transitNodePosition(node, label, nodes, prevNodePosition), 0);
+      setTimeout(Update.transitLinkPosition(link, links, prevNodePosition), 0);
+    });
+
     setMouseAction();
     // update Title
     document.getElementById('h1').textContent = selectedType + ' Network';
-
-    setTimeout(transitNodePosition, 0);
-    setTimeout(transitLinkPosition, 0);
-  };
-
-
-  function updateLinkData () {
-    const t = d3.transition().duration(tDuration);
-    link = link.data(links, function (d) {
-      return d.name;
-    });
-    link.exit().remove();
-    // link.exit().transition(t).attr("stroke-width", 0).remove();
-    link = link.enter().append("line")
-        .attr("opacity", "0.5")
-        .attr("stroke-width", function (d) {
-          return Math.sqrt(d.weight) * 0.1 + d.weight * 0.015;
-        })
-        .attr("stroke", function (d) {
-          return color(d.group_id_s)
-        })
-        .merge(link);
-  }
-
-
-  function updateNodeData () {
-    const t = d3.transition().duration(tDuration);
-    node = node.data(nodes, function (d) {
-      return d.name;
-    });
-    node.exit().transition(t).attr("r", 100).remove();
-    node = node.enter().append("circle")
-        .attr("opacity", "0.6")
-        .attr("r", function (d) {
-          return Math.sqrt(d.size) * 4 + 2.5;
-        })
-        .attr("fill", function (d) {
-          return color(d.group_id)
-        })
-        .attr("stroke", "#fffcf9")
-        .call(d3.drag()
-            .on("start", dragstarted)
-            .on("drag", dragging)
-            .on("end", dragended))
-        .merge(node);
-  }
-
-  function updateLabelData () {
-    const t = d3.transition().duration(tDuration);
-    label = label.data(nodes, function (d) {
-      return d.name;
-    });
-    label.exit().transition(t).remove();
-    label = label.enter().append("text").merge(label)
-        .text(function (d) {
-          return d.name;
-        });
-
-    label
-      .attr("font-size", ".7em")
-      .attr("font-weight", "300")
-      .attr("class", "nonDrag")
-      .attr("fill", "#352622")
-      .attr({"font-family": ["Futura", "Nunito", "Helvetica Neue", "Arial", "sans-serif"]});
-  }
-
-
-  function storePreviousNodePosition() {
-    // get previous node position
-    for (let i = 0, l = nodes.length; l > i; i++) {
-      prevNodePosition.push({
-        'name': node['_groups'][0][i]['__data__']['name'],
-        'x': node['_groups'][0][i]['cx']['baseVal']['value'],
-        'y': node['_groups'][0][i]['cy']['baseVal']['value']
-      })
-    }
-  }
-
-
-  // function storePreviousLinkPosition() {
-  //   // get previous link position
-  //   for (let i = 0, l = links.length; l > i; i++) {
-  //     prevLinkPosition.push({
-  //       'x1': link['_groups'][0][i]['x1']['baseVal']['value'],
-  //       'y1': link['_groups'][0][i]['y1']['baseVal']['value'],
-  //       'x2': link['_groups'][0][i]['x2']['baseVal']['value'],
-  //       'y2': link['_groups'][0][i]['y2']['baseVal']['value']
-  //     })
-  //   }
-  // }
-
-
-  function updateSimulation() {
-    simulation
-        .nodes(nodes)
-        .on("tick", ticked);
-    simulation.force("link")
-        .links(links);
-    simulation.stop();
-    simulation.tick(30);
-  }
-
-
-  let transitNodePosition = function () {
-    const t = d3.transition().duration(tDuration);
-    for (let i = 0, l = nodes.length; l > i; i++) {
-      // new node -> new position, existing node -> previous position
-      if (prevNodePosition[i]['x'] === 0) {
-        prevNodePosition[i]['x'] = node['_groups'][0][i]['__data__']['x'];
-        prevNodePosition[i]['y'] = node['_groups'][0][i]['__data__']['y'];
-      }
-      // node
-      node['_groups'][0][i].setAttribute("cx", prevNodePosition[i]['x']);
-      node['_groups'][0][i].setAttribute("cy", prevNodePosition[i]['y']);
-      // label
-      label['_groups'][0][i].setAttribute("x", prevNodePosition[i]['x']);
-      label['_groups'][0][i].setAttribute("y", prevNodePosition[i]['y']);
-    }
-
-    node.transition(t)
-        .attr("cx", d => d.x)
-        .attr("cy", d => d.y);
-
-    label.transition(t)
-        .attr("x", d => d.x)
-        .attr("y", d => d.y);
-  };
-
-
-  let transitLinkPosition = function () {
-    const t = d3.transition().duration(tDuration);
-
-    let nodePositionIndex = {};
-    for (let i = 0, l = prevNodePosition.length; l > i; i++) {
-      nodePositionIndex[prevNodePosition[i]['name']] = i;
-    }
-
-    for (let i = 0, l = links.length; l > i; i++) {
-      const sourceName = link['_groups'][0][i]['__data__']['source']['name'];
-      const targetName = link['_groups'][0][i]['__data__']['target']['name'];
-
-      link['_groups'][0][i].setAttribute("x1", prevNodePosition[nodePositionIndex[sourceName]]['x']);
-      link['_groups'][0][i].setAttribute("y1", prevNodePosition[nodePositionIndex[sourceName]]['y']);
-      link['_groups'][0][i].setAttribute("x2", prevNodePosition[nodePositionIndex[targetName]]['x']);
-      link['_groups'][0][i].setAttribute("y2", prevNodePosition[nodePositionIndex[targetName]]['y']);
-    }
-
-    link.transition(t)
-        .attr("x1", d => d.source.x)
-        .attr("y1", d => d.source.y)
-        .attr("x2", d => d.target.x)
-        .attr("y2", d => d.target.y)
   };
 
   ////////////////////////////////////////////////////////////////////////////////////////
