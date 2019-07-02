@@ -277,41 +277,51 @@ console.log(umamiData);
     let resDeleteObj;
     let resAddObj;
     new Promise((resolve) => {
+
+      resDeleteObj = Update.deleteObj(link, node, label, links, nodes);
       setTimeout(function () {
-        resolve(resDeleteObj = Update.deleteObj(link, node, label, links, nodes));
-        console.log(1);
-      }, 3000);
+        resolve(
+              link = resDeleteObj.link,
+              node = resDeleteObj.node,
+              label = resDeleteObj.label,
+              console.log(1)
+          );
+      }, 500);
+
     }).then(() => {
+
+      resAddObj = Update.addObj(link, node, label, nodes, links, color, dragstarted, dragging, dragended);
       return new Promise((resolve) => {
         setTimeout(function () {
           resolve(
-              resAddObj = Update.addObj(resDeleteObj.link, resDeleteObj.node, resDeleteObj.label,
-                  nodes, links, color, dragstarted, dragging, dragended),
               link = resAddObj.link,
               node = resAddObj.node,
               label = resAddObj.label,
               console.log(2)
           )
-        }, 1000);
+        }, 500);
       });
+
     }).then(() => {
+
       prevNodePosition = Update.storePreviousNodePosition(node, nodes, prevNodePosition);
       Update.simulation(links, nodes, simulation, ticked);
       console.log(3);
+
     }).then(() => {
-      prevNodePosition = Update.storePreviousNodePosition(node, nodes, prevNodePosition);
-      console.log(4);
-    }).then(() => {
+
+      simulation.tick(30);
+      const t = 3000;
       return new Promise((resolve) => {
         setTimeout(function () {
-          resolve(simulation.tick(30));
-          console.log(5);
-        }, 1000);
+          resolve(
+              Update.transitNodePosition(node, label, nodes, prevNodePosition, t),
+              Update.transitLinkPosition(link, links, prevNodePosition, t),
+              console.log(4)
+          )
+        }, 50);
       });
-    }).then(() => {
-      setTimeout(Update.transitNodePosition(node, label, nodes, prevNodePosition), 0);
-      setTimeout(Update.transitLinkPosition(link, links, prevNodePosition), 0);
-      console.log(6);
+
     });
 
     setMouseAction();

@@ -20,16 +20,16 @@ export default class Update {
   }
 
 
-
   static deleteLinkData (linkLine, linkData) {
     linkLine = linkLine.data(linkData, function (d) {
       return d.name;
     });
-    linkLine.exit()
-        .transition()
-        .duration(5000)
-        .ease(d3.easeLinear)
-        .style("opacity", 0.0)
+    linkLine
+        .exit()
+        // .transition()
+        // .duration(1000)
+        // .ease(d3.easeLinear)
+        // .attr("opacity", 0.0)
         .remove();
 
     return linkLine;
@@ -37,23 +37,10 @@ export default class Update {
 
 
   static addLinkData (linkLine, linkData, color) {
-    // linkLine = linkLine.enter().append("line")
-    //     .attr("opacity", "0.0")
-    //     .attr("stroke-width", function (d) {
-    //       return Math.sqrt(d.weight) * 0.1 + d.weight * 0.015;
-    //     })
-    //     .attr("stroke", function (d) {
-    //       return color(d.group_id_s)
-    //     })
-    //     .merge(linkLine);
-    //
-    // linkLine.transition()
-    //     .duration(5000)
-    //     .ease(d3.easeLinear)
-    //     .style("opacity", 0.6);
-
-    let linkLineEnter = linkLine.enter().append("line")
-        .attr("opacity", "0.0")
+    let linkLineEnter = linkLine
+        .enter()
+        .append("line")
+        // .attr("opacity", 0.0)
         .attr("stroke-width", function (d) {
           return Math.sqrt(d.weight) * 0.1 + d.weight * 0.015;
         })
@@ -62,10 +49,11 @@ export default class Update {
         });
 
     linkLine = linkLineEnter.merge(linkLine);
-    linkLine.transition()
-        .duration(5000)
-        .ease(d3.easeLinear)
-        .style("opacity", 0.6);
+    linkLine
+        // .transition()
+        // .duration(1000)
+        // .ease(d3.easeLinear)
+        .attr("opacity", 0.5);
 
     return linkLine;
   }
@@ -75,11 +63,12 @@ export default class Update {
     nodeCircle = nodeCircle.data(nodeData, function (d) {
       return d.name;
     });
-    nodeCircle.exit()
-        .transition()
-        .duration(5000)
-        .ease(d3.easeLinear)
-        .style("opacity", 0.0)
+    nodeCircle
+        .exit()
+        // .transition()
+        // .duration(1000)
+        // .ease(d3.easeLinear)
+        // .attr("opacity", 0.0)
         .remove();
 
     return nodeCircle;
@@ -87,8 +76,10 @@ export default class Update {
 
 
    static addNodeData (nodeCircle, nodeData, color, dragstarted, dragging, dragended) {
-    nodeCircle = nodeCircle.enter().append("circle")
-        .attr("opacity", "0.0")
+    nodeCircle = nodeCircle
+        .enter()
+        .append("circle")
+        // .attr("opacity", "0.0")
         .attr("r", function (d) {
           return Math.sqrt(d.size) * 4 + 2.5;
         })
@@ -102,10 +93,11 @@ export default class Update {
             .on("end", dragended))
         .merge(nodeCircle);
 
-    nodeCircle.transition()
-        .duration(5000)
-        .ease(d3.easeLinear)
-        .style("opacity", "0.6");
+    nodeCircle
+        // .transition()
+        // .duration(1000)
+        // .ease(d3.easeLinear)
+        .attr("opacity", 0.6);
 
     return nodeCircle;
   }
@@ -115,11 +107,12 @@ export default class Update {
     nodeText = nodeText.data(nodeData, function (d) {
       return d.name;
     });
-    nodeText.exit()
-        .transition()
-        .duration(5000)
-        .ease(d3.easeLinear)
-        .style("opacity", 0.0)
+    nodeText
+        .exit()
+        // .transition()
+        // .duration(1000)
+        // .ease(d3.easeLinear)
+        // .attr("opacity", 0.0)
         .remove();
 
     return nodeText;
@@ -133,17 +126,17 @@ export default class Update {
         });
 
     nodeText
-        .attr("opacity", "0.0")
+        .attr("opacity", 1.0)
         .attr("font-size", ".7em")
         .attr("font-weight", "300")
         .attr("class", "nonDrag")
         .attr("fill", "#352622")
         .attr({"font-family": ["Futura", "Nunito", "Helvetica Neue", "Arial", "sans-serif"]})
 
-     nodeText.transition()
-        .duration(5000)
-        .ease(d3.easeLinear)
-        .style("opacity", 0.6);
+     // nodeText.transition()
+     //    .duration(1000)
+     //    .ease(d3.easeLinear)
+     //    .style("opacity", 0.6);
 
     return nodeText;
   }
@@ -172,8 +165,8 @@ export default class Update {
   }
 
 
-  static transitNodePosition (nodeCircle, nodeText, nodeData, prevNodePosition) {
-    const t = d3.transition().duration(5000);
+  static transitNodePosition (nodeCircle, nodeText, nodeData, prevNodePosition, durationTime) {
+    const t = d3.transition().duration(durationTime);
     for (let i = 0, l = nodeData.length; l > i; i++) {
       // new node -> new position, existing node -> previous position
       if (prevNodePosition[i]['x'] === 0) {
@@ -198,8 +191,8 @@ export default class Update {
   };
 
 
-  static transitLinkPosition (linkLine, linkData, prevNodePosition) {
-    const t = d3.transition().duration(5000);
+  static transitLinkPosition (linkLine, linkData, prevNodePosition, durationTime) {
+    const t = d3.transition().duration(durationTime);
 
     let nodePositionIndex = {};
     for (let i1 = 0, l1 = prevNodePosition.length; l1 > i1; i1++) {
