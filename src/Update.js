@@ -55,6 +55,17 @@ export default class Update {
         // .ease(d3.easeLinear)
         .attr("opacity", 0.5);
 
+
+    // change line display order to back of node
+    for (let i = linkData.length - 1; 0 <= i; i--) {
+      const linkSVG = linkLine['_groups'][0][i];
+      const firstSVG = linkSVG.parentNode.firstChild;
+      if (firstSVG) {
+        linkSVG.parentNode.insertBefore(linkSVG, firstSVG);
+      }
+    }
+
+
     return linkLine;
   }
 
