@@ -21,7 +21,7 @@ export default class Update {
 
 
   static deleteLinkData (linkLine, linkData) {
-    linkLine = linkLine.data(linkData, function (d) {
+    linkLine = linkLine.data(linkData, (d) => {
       return d.name;
     });
     linkLine
@@ -41,11 +41,11 @@ export default class Update {
         .enter()
         .append("line")
         // .attr("opacity", 0.0)
-        .attr("stroke-width", function (d) {
+        .attr("stroke-width",  (d) => {
           return Math.sqrt(d.weight) * 0.1 + d.weight * 0.015;
         })
-        .attr("stroke", function (d) {
-          return color(d.group_id_s)
+        .attr("stroke",  (d) => {
+          return color[d.group_id_s]
         });
 
     linkLine = linkLineEnter.merge(linkLine);
@@ -71,7 +71,7 @@ export default class Update {
 
 
   static deleteNodeData (nodeCircle, nodeData) {
-    nodeCircle = nodeCircle.data(nodeData, function (d) {
+    nodeCircle = nodeCircle.data(nodeData,  (d) => {
       return d.name;
     });
     nodeCircle
@@ -91,11 +91,11 @@ export default class Update {
         .enter()
         .append("circle")
         // .attr("opacity", "0.0")
-        .attr("r", function (d) {
+        .attr("r",  (d) => {
           return Math.sqrt(d.size) * 4 + 2.5;
         })
-        .attr("fill", function (d) {
-          return color(d.group_id)
+        .attr("fill",  (d) => {
+          return color[d.group_id]
         })
         .attr("stroke", "#fffcf9")
         .call(d3.drag()
@@ -115,7 +115,7 @@ export default class Update {
 
 
   static deleteLabelData (nodeText, nodeData) {
-    nodeText = nodeText.data(nodeData, function (d) {
+    nodeText = nodeText.data(nodeData,  (d) => {
       return d.name;
     });
     nodeText
@@ -132,7 +132,7 @@ export default class Update {
 
   static addLabelData(nodeText) {
     nodeText = nodeText.enter().append("text").merge(nodeText)
-        .text(function (d) {
+        .text((d) => {
           return d.name;
         });
 
@@ -241,7 +241,7 @@ export default class Update {
     simulation
         .force("link",
             d3.forceLink().distance(200)
-                .id(function (d) {
+                .id( (d) => {
                   return d.name;
                 }))
         .force("charge", d3.forceManyBody().strength(-2000))
