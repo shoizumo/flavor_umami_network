@@ -6,7 +6,7 @@ import Update from './Update'
 
 
 export default class Network {
-  constructor(flavorData, umamiData, isSp) {
+  constructor(flavorData, umamiData, isSp, svgID) {
     this.flavorData = flavorData;
     this.umamiData = umamiData;
     this.linkData = this.flavorData.links;
@@ -19,7 +19,15 @@ export default class Network {
     this.centerY = this.height / 2 + 15;
 
     this.body = d3.select("body");
-    this.svg = d3.select("#myGraph");
+    this.svg = d3.select(svgID);
+    this.scaleRatio = 1.0;
+
+    this.svg
+        .attr("style", "outline: 1px solid #ff8e1e;")
+        .attr("width", this.width / this.scaleRatio)
+        .attr("height", this.height / this.scaleRatio)
+        .attr("viewBox", "0 0 1000 650");
+
 
     this.link = '';
     this.node = '';
@@ -41,7 +49,29 @@ export default class Network {
     this.mouseDown = 0;
     this.setIon();
     this.isSp = isSp;
+
+    this.zoomGroup = this.svg.append("g");
+    this.zoom_handler = d3.zoom()
+        .scaleExtent([0.1, 40])
+        .on("zoom", this.zoom_actions.bind(this));
+
+    //zoom initialises
+    this.initialTransform = d3.zoomIdentity
+        .translate(this.width / 2, this.height / 2)
+        .scale(0.25);
+
+    this.svg.call(this.zoom_handler);
+    // this.svg.call(this.zoom_handler.transform, this.initialTransform);
+
   }
+
+
+
+  zoom_actions() {
+    this.zoomGroup.attr("transform", d3.event.transform);
+    console.log(d3.event.transform)
+  }
+
 
 
   setIon() {
@@ -105,8 +135,16 @@ export default class Network {
   }
 
 
+  render(){
+    this.setLink();
+    this.setNode();
+    this.setLabel();
+    this.setSimulation();
+  }
+
+
   setLink() {
-    this.link = this.svg
+    this.link = this.zoomGroup.append("g")
         .selectAll("line")
         .data(this.linkData)
         .enter()
@@ -122,7 +160,7 @@ export default class Network {
 
 
   setNode() {
-    this.node = this.svg
+    this.node = this.zoomGroup.append("g")
         .selectAll("circle")
         .filter(function () {
           return !this.classList.contains('legendCircle')
@@ -146,7 +184,7 @@ export default class Network {
 
 
   setLabel() {
-    this.label = this.svg
+    this.label = this.zoomGroup.append("g")
         .selectAll("text")
         .filter(function () {
           return !this.classList.contains('legendText')
@@ -229,10 +267,10 @@ export default class Network {
 
     this.label
         .attr("x", (d) => {
-          return d.x;
+          return Math.max(this.wallMargin, Math.min(this.width - this.wallMargin, d.x));
         })
         .attr("y", (d) => {
-          return d.y;
+          return Math.max(this.wallMargin, Math.min(this.height - this.wallMargin, d.y));
         });
   }
 

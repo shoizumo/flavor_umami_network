@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "d3": "^5.9.2",
+    "gulp-cli": "^2.2.0",
     "ion-sound": "^3.0.7"
   }
 }

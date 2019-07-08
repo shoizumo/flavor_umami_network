@@ -14,15 +14,15 @@ import umamiData from './data/umami_data';
   console.log(isSp);
 
 
-  const network = new Network(flavorData, umamiData, isSp);
-
+  const network = new Network(flavorData, umamiData, isSp, '#graph');
   network.setLegend();
-  network.setLink();
-  network.setNode();
-  network.setLabel();
-  network.setSimulation();
-
+  network.render();
   network.setMouseAction();
+
+  // const network2 = new Network(flavorData, umamiData, isSp, '#graph2');
+  // network2.setLegend();
+  // network2.render();
+  // network2.setMouseAction();
 
   const dataTypeSelector = document.getElementById('dataType');
   dataTypeSelector.onchange = function () {
@@ -31,6 +31,7 @@ import umamiData from './data/umami_data';
     network.setMouseAction();
     document.getElementById('h1').textContent = selectedType + ' Network';
   };
+
 
 })();
 
