@@ -78,7 +78,7 @@ export default class Network {
   }
 
   zoom_start() {
-    this.simulation.alphaTarget(0.3).restart();
+    this.simulation.alphaTarget(0.5).restart();
   }
 
   zoom_end() {
@@ -103,9 +103,6 @@ export default class Network {
 
     }
 
-    if (scale > 1){
-      return {'scale': 1.0, 'X': 0, 'Y': 0};
-    }
     return {scale, X, Y};
   }
 
@@ -281,40 +278,71 @@ export default class Network {
 
   ////////////////////////////////////////////////////////////////////////////////////////////////
   ticked() {
-    const marginXright = this.wallMargin - this.zoomScale.X / this.zoomScale.scale;
-    const marginYup = this.wallMargin - this.zoomScale.Y / this.zoomScale.scale;
+    if (this.zoomScale.scale <= 1) {
+      const marginXright = this.wallMargin - this.zoomScale.X / this.zoomScale.scale;
+      const marginYup = this.wallMargin - this.zoomScale.Y / this.zoomScale.scale;
 
-    const marginXleft = (this.width - this.zoomScale.X) / this.zoomScale.scale  - this.wallMargin;
-    const marginYdown = (this.height - this.zoomScale.Y) / this.zoomScale.scale  - this.wallMargin;
+      const marginXleft = (this.width - this.zoomScale.X) / this.zoomScale.scale - this.wallMargin;
+      const marginYdown = (this.height - this.zoomScale.Y) / this.zoomScale.scale - this.wallMargin;
 
-    this.link
-        .attr("x1", (d) => {
-          return Math.max(marginXright, Math.min(marginXleft, d.source.x));
-        })
-        .attr("y1", (d) => {
-          return Math.max(marginYup, Math.min(marginYdown, d.source.y));
-        })
-        .attr("x2", (d) => {
-          return Math.max(marginXright, Math.min(marginXleft, d.target.x));
-        })
-        .attr("y2", (d) => {
-          return Math.max(marginYup, Math.min(marginYdown, d.target.y));
-        });
-    this.node
-        .attr("cx", (d) => {
-          return Math.max(marginXright, Math.min(marginXleft, d.x));
-        })
-        .attr("cy", (d) => {
-          return Math.max(marginYup, Math.min(marginYdown, d.y));
-        });
+      this.link
+          .attr("x1", (d) => {
+            return Math.max(marginXright, Math.min(marginXleft, d.source.x));
+          })
+          .attr("y1", (d) => {
+            return Math.max(marginYup, Math.min(marginYdown, d.source.y));
+          })
+          .attr("x2", (d) => {
+            return Math.max(marginXright, Math.min(marginXleft, d.target.x));
+          })
+          .attr("y2", (d) => {
+            return Math.max(marginYup, Math.min(marginYdown, d.target.y));
+          });
+      this.node
+          .attr("cx", (d) => {
+            return Math.max(marginXright, Math.min(marginXleft, d.x));
+          })
+          .attr("cy", (d) => {
+            return Math.max(marginYup, Math.min(marginYdown, d.y));
+          });
 
-    this.label
-        .attr("x", (d) => {
-          return Math.max(marginXright, Math.min(marginXleft, d.x));
-        })
-        .attr("y", (d) => {
-          return Math.max(marginYup, Math.min(marginYdown, d.y));
-        });
+      this.label
+          .attr("x", (d) => {
+            return Math.max(marginXright, Math.min(marginXleft, d.x));
+          })
+          .attr("y", (d) => {
+            return Math.max(marginYup, Math.min(marginYdown, d.y));
+          });
+    } else {
+      this.link
+          .attr("x1", (d) => {
+            return d.source.x;
+          })
+          .attr("y1", (d) => {
+            return d.source.y;
+          })
+          .attr("x2", (d) => {
+            return d.target.x;
+          })
+          .attr("y2", (d) => {
+            return d.target.y;
+          });
+      this.node
+          .attr("cx", (d) => {
+            return d.x;
+          })
+          .attr("cy", (d) => {
+            return d.y;
+          });
+
+      this.label
+          .attr("x", (d) => {
+            return d.x;
+          })
+          .attr("y", (d) => {
+            return d.y;
+          });
+    }
   }
 
 
