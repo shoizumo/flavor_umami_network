@@ -21,6 +21,7 @@ export default class Network {
     this.body = d3.select("body");
     this.svg = d3.select(svgID);
     this.scaleRatio = 1.0;
+    this.zoomScale = {'scale': 1.0, 'X': 0, 'Y': 0};
 
     this.svg
         .attr("style", "outline: 1px solid #ff8e1e;")
@@ -52,24 +53,61 @@ export default class Network {
 
     this.zoomGroup = this.svg.append("g");
     this.zoom_handler = d3.zoom()
-        .scaleExtent([0.1, 40])
-        .on("zoom", this.zoom_actions.bind(this));
+        .scaleExtent([0.5, 2])
+        // .translateExtent([
+        //   [-this.width / 2, -this.height / 2], [this.width + this.width / 2, this.height + this.height / 2]
+        // ])
+        .on("zoom", this.zoom_actions.bind(this))
+        .on("start", this.zoom_start.bind(this))
+        .on("end", this.zoom_end.bind(this));
 
     //zoom initialises
-    this.initialTransform = d3.zoomIdentity
-        .translate(this.width / 2, this.height / 2)
-        .scale(0.25);
+    // this.initialTransform = d3.zoomIdentity
+    //     .translate(this.width / 2, this.height / 2)
+    //     .scale(0.25);
 
     this.svg.call(this.zoom_handler);
     // this.svg.call(this.zoom_handler.transform, this.initialTransform);
 
   }
 
-
-
+  
   zoom_actions() {
     this.zoomGroup.attr("transform", d3.event.transform);
-    console.log(d3.event.transform)
+    this.zoomScale = this.getScale();
+  }
+
+  zoom_start() {
+    this.simulation.alphaTarget(0.3).restart();
+  }
+
+  zoom_end() {
+    this.simulation.alphaTarget(0);
+  }
+
+
+  getScale() {
+    let scale, X, Y;
+    let scale_ = this.zoomGroup.attr('transform');
+    console.log(scale_);
+    if (scale_ === "none") {
+      scale = 1.0;
+    } else {
+      let values = scale_.split("scale(")[1];
+      scale = values.split(")")[0];
+
+      let values_ = scale_.split("(")[1];
+      values_ = values_.split(")")[0];
+      values_ = values_.split(",");
+      X = values_[0];
+      Y = values_[1];
+
+    }
+
+    if (scale > 1){
+      return {'scale': 1.0, 'X': 0, 'Y': 0};
+    }
+    return {scale, X, Y};
   }
 
 
@@ -244,33 +282,39 @@ export default class Network {
 
   ////////////////////////////////////////////////////////////////////////////////////////////////
   ticked() {
+    const marginXright = this.wallMargin - this.zoomScale.X / this.zoomScale.scale;
+    const marginYup = this.wallMargin - this.zoomScale.Y / this.zoomScale.scale;
+
+    const marginXleft = (this.width - this.zoomScale.X) / this.zoomScale.scale  - this.wallMargin;
+    const marginYdown = (this.height - this.zoomScale.Y) / this.zoomScale.scale  - this.wallMargin;
+
     this.link
         .attr("x1", (d) => {
-          return Math.max(this.wallMargin, Math.min(this.width - this.wallMargin, d.source.x));
+          return Math.max(marginXright, Math.min(marginXleft, d.source.x));
         })
         .attr("y1", (d) => {
-          return Math.max(this.wallMargin, Math.min(this.height - this.wallMargin, d.source.y));
+          return Math.max(marginYup, Math.min(marginYdown, d.source.y));
         })
         .attr("x2", (d) => {
-          return Math.max(this.wallMargin, Math.min(this.width - this.wallMargin, d.target.x));
+          return Math.max(marginXright, Math.min(marginXleft, d.target.x));
         })
         .attr("y2", (d) => {
-          return Math.max(this.wallMargin, Math.min(this.height - this.wallMargin, d.target.y));
+          return Math.max(marginYup, Math.min(marginYdown, d.target.y));
         });
     this.node
         .attr("cx", (d) => {
-          return Math.max(this.wallMargin, Math.min(this.width - this.wallMargin, d.x));
+          return Math.max(marginXright, Math.min(marginXleft, d.x));
         })
         .attr("cy", (d) => {
-          return Math.max(this.wallMargin, Math.min(this.height - this.wallMargin, d.y));
+          return Math.max(marginYup, Math.min(marginYdown, d.y));
         });
 
     this.label
         .attr("x", (d) => {
-          return Math.max(this.wallMargin, Math.min(this.width - this.wallMargin, d.x));
+          return Math.max(marginXright, Math.min(marginXleft, d.x));
         })
         .attr("y", (d) => {
-          return Math.max(this.wallMargin, Math.min(this.height - this.wallMargin, d.y));
+          return Math.max(marginYup, Math.min(marginYdown, d.y));
         });
   }
 
