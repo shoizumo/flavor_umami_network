@@ -71,7 +71,7 @@ export default class Network {
 
   }
 
-  
+
   zoom_actions() {
     this.zoomGroup.attr("transform", d3.event.transform);
     this.zoomScale = this.getScale();
@@ -89,7 +89,6 @@ export default class Network {
   getScale() {
     let scale, X, Y;
     let scale_ = this.zoomGroup.attr('transform');
-    console.log(scale_);
     if (scale_ === "none") {
       scale = 1.0;
     } else {
@@ -436,10 +435,16 @@ export default class Network {
       });
 
 
-      d3.select("body").on("mouseup", () => {
+      // d3.select("body").on("mouseup", () => {
+      //   console.log('mouseup')
+      //   Mouse.reset(this.linkData, this.link, this.node, this.label);
+      //   Mouse.cursor('grab', this.body, this.node);
+      //
+      // });
+
+      this.svg.on("mouseenter", () => {
         Mouse.reset(this.linkData, this.link, this.node, this.label);
         Mouse.cursor('grab', this.body, this.node);
-
       });
     }
 
