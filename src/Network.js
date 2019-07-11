@@ -502,7 +502,7 @@ export default class Network {
 
       this.svg.on("mouseenter", () => {
         Mouse.reset(this.linkData, this.link, this.node, this.label);
-        Mouse.cursor('grab', this.body, this.node);
+        Mouse.cursor(this.vizType === 'Main' ?'grab' : 'pointer', this.body, this.node);
       });
     }
 

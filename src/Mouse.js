@@ -169,24 +169,27 @@ export default class Mouse {
 
 
   static cursor(type, body, circle) {
-    let grabTypeC;
-    let grabTypeB;
+    let grabTypeCircle;
+    let grabTypeBody;
     if (type === 'grabbing') {
-      grabTypeC = "grabbing";
-      grabTypeB = "grabbing";
-    } else {
-      grabTypeC = "grab";
-      grabTypeB = "auto";
+      grabTypeCircle = "grabbing";
+      grabTypeBody = "grabbing";
+    } else if (type === 'grab') {
+      grabTypeCircle = "grab";
+      grabTypeBody = "auto";
+    }else if (type === 'pointer') {
+      grabTypeCircle = "pointer";
+      grabTypeBody = "auto";
     }
 
     //grabbing
-    circle.style("cursor", "-webkit-" + grabTypeC);
-    circle.style("cursor", "-moz-" + grabTypeC);
-    circle.style("cursor", grabTypeC);
+    circle.style("cursor", "-webkit-" + grabTypeCircle);
+    circle.style("cursor", "-moz-" + grabTypeCircle);
+    circle.style("cursor", grabTypeCircle);
 
-    body.style("cursor", "-webkit-" + grabTypeB);
-    body.style("cursor", "-moz-" + grabTypeB);
-    body.style("cursor", grabTypeB);
+    body.style("cursor", "-webkit-" + grabTypeBody);
+    body.style("cursor", "-moz-" + grabTypeBody);
+    body.style("cursor", grabTypeBody);
   }
 
 }
