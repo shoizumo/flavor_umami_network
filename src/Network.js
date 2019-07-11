@@ -6,11 +6,13 @@ import Update from './Update'
 
 
 export default class Network {
-  constructor(flavorData, umamiData, isSp, svgID) {
+  constructor(flavorData, umamiData, isSp, svgID, dataType, vizType) {
     this.flavorData = flavorData;
     this.umamiData = umamiData;
-    this.linkData = this.flavorData.links;
-    this.nodeData = this.flavorData.nodes;
+    this.dataType = dataType;
+
+    this.linkData = dataType === 'Flavor' ? this.flavorData.links : this.umamiData.links;
+    this.nodeData = dataType === 'Flavor' ? this.flavorData.nodes : this.umamiData.nodes;
 
     this.width = 1000;
     this.height = 650;
@@ -20,13 +22,15 @@ export default class Network {
 
     this.body = d3.select("body");
     this.svg = d3.select(svgID);
-    this.scaleRatio = 1.0;
+    // this.scaleRatio = 1.0;
     this.zoomScale = {'scale': 1.0, 'X': 0, 'Y': 0};
 
     this.svg
         .attr("style", "outline: 1px solid #ff8e1e;")
-        .attr("width", this.width / this.scaleRatio)
-        .attr("height", this.height / this.scaleRatio)
+        // .attr("width", this.width / this.scaleRatio)
+        // .attr("height", this.height / this.scaleRatio)
+        .attr("width", vizType === 'Main' ? this.width : 0)
+        .attr("height", vizType === 'Main' ? this.height : 0)
         .attr("viewBox", "0 0 1000 650");
 
 
@@ -259,11 +263,15 @@ export default class Network {
             })
             .strength(0.7)
             .iterations(1.0)
-    )
-        .force("charge", d3.forceManyBody().strength(-300))
+    ).force("charge", d3.forceManyBody().strength(-300))
         .force("center", d3.forceCenter(this.centerX, this.centerY))
         .force("x", d3.forceX().strength(0.25).x(this.centerX))
         .force("y", d3.forceY().strength(0.35).y(this.centerY));
+
+
+    if (this.dataType === 'Umami' ) {
+      Update.umamiSimulation(this.simulation, this.centerX, this.centerY);
+    }
 
     this.simulation
         .nodes(this.nodeData)

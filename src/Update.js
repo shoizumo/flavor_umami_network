@@ -240,7 +240,7 @@ export default class Update {
   static umamiSimulation(simulation, centerX, centerY) {
     simulation
         .force("link",
-            d3.forceLink().distance(200)
+            d3.forceLink().distance(250)
                 .id( (d) => {
                   return d.name;
                 }))
