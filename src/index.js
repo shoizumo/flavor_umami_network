@@ -27,12 +27,6 @@ import * as d3 from "d3";
   network.setMouseAction();
 
 
-  // const networkSub = new Network(flavorData, umamiData, isSp, '#graphSub2', 'Umami', 'Sub');
-  // networkSub.setLegend();
-  // networkSub.render();
-  // networkSub.setMouseAction();
-
-
   document.addEventListener("dblclick", function(){
     network.svg
       .transition()
@@ -40,6 +34,8 @@ import * as d3 from "d3";
       .ease(d3.easeLinear)
       .attr("width", 500)
       .attr("height", 325);
+
+    network.setVizType('Sub');
 
 
     const networkSub = new Network(flavorData, umamiData, isSp, '#graphSub2', 'Umami', 'Sub');

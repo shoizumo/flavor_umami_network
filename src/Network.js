@@ -9,7 +9,9 @@ export default class Network {
   constructor(flavorData, umamiData, isSp, svgID, dataType, vizType) {
     this.flavorData = flavorData;
     this.umamiData = umamiData;
+
     this.dataType = dataType;
+    this.vizType = vizType;
 
     this.linkData = dataType === 'Flavor' ? this.flavorData.links : this.umamiData.links;
     this.nodeData = dataType === 'Flavor' ? this.flavorData.nodes : this.umamiData.nodes;
@@ -75,59 +77,9 @@ export default class Network {
 
   }
 
-
-  zoom_actions() {
-    this.zoomGroup.attr("transform", d3.event.transform);
-    this.zoomScale = this.getScale();
+  setVizType(vizType){
+    this.vizType = vizType;
   }
-
-  zoom_start() {
-    this.simulation.alphaTarget(0.5).restart();
-  }
-
-  zoom_end() {
-    this.simulation.alphaTarget(0);
-  }
-
-
-  getScale() {
-    let scale, X, Y;
-    let scale_ = this.zoomGroup.attr('transform');
-    if (scale_ === "none") {
-      scale = 1.0;
-    } else {
-      let values = scale_.split("scale(")[1];
-      scale = values.split(")")[0];
-
-      let values_ = scale_.split("(")[1];
-      values_ = values_.split(")")[0];
-      values_ = values_.split(",");
-      X = values_[0];
-      Y = values_[1];
-
-    }
-
-    return {scale, X, Y};
-  }
-
-
-
-  setIon() {
-    ion.sound({
-      sounds: [{name: "opening"},
-        {name: "mouseover"},
-        {name: "grabNode"},
-        {name: "releaseNode"},
-        {name: "legend"}],
-
-      // main config
-      path: "src/data/sound/",
-      preload: true,
-      multiplay: true,
-      volume: 0.5
-    });
-  }
-
 
   color(n) {
     return this.legendColor[n];
@@ -284,7 +236,8 @@ export default class Network {
   }
 
 
-  ////////////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////
+  // tick event
   ticked() {
     if (this.zoomScale.scale <= 1) {
       const marginXright = this.wallMargin - this.zoomScale.X / this.zoomScale.scale;
@@ -354,41 +307,108 @@ export default class Network {
   }
 
 
+  ////////////////////////////////////////////////////////////////////
   // drag event
   dragstarted(d) {
-    if (!d3.event.active) this.simulation.alphaTarget(0.3).restart();
-    d.fx = d.x;
-    d.fy = d.y;
+    if (this.vizType === 'Main') {
+      if (!d3.event.active) this.simulation.alphaTarget(0.3).restart();
+      d.fx = d.x;
+      d.fy = d.y;
 
-    Mouse.mousedown(d, this.linkData, this.link, this.node, this.label);
-    Mouse.cursor('grabbing', this.body, this.node);
-    ion.sound.play("grabNode", {
-      volume: 0.2 // turn down
-    });
+      Mouse.mousedown(d, this.linkData, this.link, this.node, this.label);
+      Mouse.cursor('grabbing', this.body, this.node);
+      ion.sound.play("grabNode", {
+        volume: 0.2 // turn down
+      });
+    }
     this.mouseDown = 1;
   }
 
   dragging(d) {
-    d.fx = d3.event.x;
-    d.fy = d3.event.y;
+    if (this.vizType === 'Main') {
+      d.fx = d3.event.x;
+      d.fy = d3.event.y;
+    }
   }
 
   dragended(d) {
-    if (!d3.event.active) this.simulation.alphaTarget(0);
-    d.fx = null;
-    d.fy = null;
+    if (this.vizType === 'Main') {
+      if (!d3.event.active) this.simulation.alphaTarget(0);
+      d.fx = null;
+      d.fy = null;
 
-    Mouse.mouseup(d, this.linkData, this.link, this.node, this.label);
-    Mouse.cursor('grab', this.body, this.node);
-    ion.sound.play("releaseNode", {
-      volume: 0.5
-    });
+      Mouse.mouseup(d, this.linkData, this.link, this.node, this.label);
+      Mouse.cursor('grab', this.body, this.node);
+      ion.sound.play("releaseNode", {
+        volume: 0.5
+      });
+    }
     this.mouseDown = 0;
   }
 
-  ////////////////////////////////////////////////////////////////////////////////////////////////
+
+  ////////////////////////////////////////////////////////////////////
+  // zoom event
+  zoom_actions() {
+    this.zoomGroup.attr("transform", d3.event.transform);
+    this.zoomScale = this.getScale();
+  }
+
+  zoom_start() {
+    if (this.vizType === 'Main') {
+      this.simulation.alphaTarget(0.5).restart();
+    }
+  }
+
+  zoom_end() {
+    if (this.vizType === 'Main') {
+      this.simulation.alphaTarget(0);
+    }
+  }
 
 
+  getScale() {
+    let scale, X, Y;
+    let scale_ = this.zoomGroup.attr('transform');
+    if (scale_ === "none") {
+      scale = 1.0;
+    } else {
+      let values = scale_.split("scale(")[1];
+      scale = values.split(")")[0];
+
+      let values_ = scale_.split("(")[1];
+      values_ = values_.split(")")[0];
+      values_ = values_.split(",");
+      X = values_[0];
+      Y = values_[1];
+
+    }
+
+    return {scale, X, Y};
+  }
+
+
+  ////////////////////////////////////////////////////////////////////
+  // sound
+  setIon() {
+    ion.sound({
+      sounds: [{name: "opening"},
+        {name: "mouseover"},
+        {name: "grabNode"},
+        {name: "releaseNode"},
+        {name: "legend"}],
+
+      // main config
+      path: "src/data/sound/",
+      preload: true,
+      multiplay: true,
+      volume: 0.5
+    });
+  }
+
+
+  ////////////////////////////////////////////////////////////////////
+  // update network data
   update(selectedType) {
     let prevNodePosition = [];
     if (selectedType === 'Flavor') {
@@ -455,6 +475,8 @@ export default class Network {
   }
 
 
+  ////////////////////////////////////////////////////////////////////
+  // set mouse action (utility)
   setMouseAction() {
     if (!this.isSp) {
       this.node.on("mouseover", (d) => {
@@ -518,6 +540,7 @@ export default class Network {
     //   });
     // }
   }
+
 
   /*
   /////////////////////////////////////////////////////////////
