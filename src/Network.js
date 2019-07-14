@@ -6,12 +6,13 @@ import Update from './Update'
 
 
 export default class Network {
-  constructor(flavorData, umamiData, isSp, svgID, dataType, vizType) {
+  constructor(flavorData, umamiData, isSp, svgID, dataType, vizMode, vizID, nodeInfo) {
     this.flavorData = flavorData;
     this.umamiData = umamiData;
 
     this.dataType = dataType;
-    this.vizType = vizType;
+    this.vizMode = vizMode;
+    this.vizID = vizID;
 
     this.linkData = dataType === 'Flavor' ? this.flavorData.links : this.umamiData.links;
     this.nodeData = dataType === 'Flavor' ? this.flavorData.nodes : this.umamiData.nodes;
@@ -31,8 +32,8 @@ export default class Network {
         .attr("style", "outline: 1px solid #ff8e1e;")
         // .attr("width", this.width / this.scaleRatio)
         // .attr("height", this.height / this.scaleRatio)
-        .attr("width", vizType === 'Main' ? this.width : 0)
-        .attr("height", vizType === 'Main' ? this.height : 0)
+        .attr("width", vizMode === 'Single' ? this.width : 0)
+        .attr("height", vizMode === 'Single' ? this.height : 0)
         .attr("viewBox", "0 0 1000 650");
 
 
@@ -40,6 +41,8 @@ export default class Network {
     this.node = '';
     this.label = '';
     this.simulation = d3.forceSimulation();
+
+    this.nodeInfo = nodeInfo;
 
     this.legend = '';
     this.legendName = ["plant", "fruit", "meat", "vegetable", "cereal/crop",
@@ -74,11 +77,10 @@ export default class Network {
 
     this.svg.call(this.zoom_handler);
     // this.svg.call(this.zoom_handler.transform, this.initialTransform);
-
   }
 
-  setVizType(vizType){
-    this.vizType = vizType;
+  setVizMode(vizMode){
+    this.vizMode = vizMode;
   }
 
   color(n) {
@@ -310,12 +312,12 @@ export default class Network {
   ////////////////////////////////////////////////////////////////////
   // drag event
   dragstarted(d) {
-    if (this.vizType === 'Main') {
+    if (this.vizMode === 'Single') {
       if (!d3.event.active) this.simulation.alphaTarget(0.3).restart();
       d.fx = d.x;
       d.fy = d.y;
 
-      Mouse.mousedown(d, this.linkData, this.link, this.node, this.label);
+      Mouse.mousedown(d.index, this.linkData, this.link, this.node, this.label);
       Mouse.cursor('grabbing', this.body, this.node);
       ion.sound.play("grabNode", {
         volume: 0.2 // turn down
@@ -325,19 +327,19 @@ export default class Network {
   }
 
   dragging(d) {
-    if (this.vizType === 'Main') {
+    if (this.vizMode === 'Single') {
       d.fx = d3.event.x;
       d.fy = d3.event.y;
     }
   }
 
   dragended(d) {
-    if (this.vizType === 'Main') {
+    if (this.vizMode === 'Single') {
       if (!d3.event.active) this.simulation.alphaTarget(0);
       d.fx = null;
       d.fy = null;
 
-      Mouse.mouseup(d, this.linkData, this.link, this.node, this.label);
+      Mouse.mouseup(d.index, this.linkData, this.link, this.node, this.label);
       Mouse.cursor('grab', this.body, this.node);
       ion.sound.play("releaseNode", {
         volume: 0.5
@@ -355,13 +357,13 @@ export default class Network {
   }
 
   zoom_start() {
-    if (this.vizType === 'Main') {
+    if (this.vizMode === 'Single') {
       this.simulation.alphaTarget(0.5).restart();
     }
   }
 
   zoom_end() {
-    if (this.vizType === 'Main') {
+    if (this.vizMode === 'Single') {
       this.simulation.alphaTarget(0);
     }
   }
@@ -480,16 +482,31 @@ export default class Network {
   setMouseAction() {
     if (!this.isSp) {
       this.node.on("mouseover", (d) => {
-        Mouse.mouseover(d, this.linkData, this.link, this.node, this.label);
+        Mouse.mouseover(d.index, this.linkData, this.link, this.node, this.label);
         if (this.mouseDown === 0) {
           ion.sound.play("mouseover", {
             volume: 0.1 // turn down
           });
         }
+
+        // 内容が変わったときだけ変更する必要はない
+        // if(this.nodeInfo.name !== d.name){
+        //   this.nodeInfo.name = d.name;
+        // }
+        this.nodeInfo.network = this.vizID;
+        this.nodeInfo.name = d.name;
+        this.nodeInfo.mouseAction = 'mouseover';  // event trigger
       });
 
       this.node.on("mouseout", (d) => {
-        Mouse.mouseout(d, this.linkData, this.link, this.node, this.label)
+        Mouse.mouseout(d.index, this.linkData, this.link, this.node, this.label);
+        this.nodeInfo.mouseAction = 'mouseout';  // event trigger
+      });
+
+
+      this.node.on("click", (d) => {
+        // console.log('click', d.name);
+        this.nodeInfo.mouseAction = 'click';  // event trigger
       });
 
 
@@ -502,7 +519,8 @@ export default class Network {
 
       this.svg.on("mouseenter", () => {
         Mouse.reset(this.linkData, this.link, this.node, this.label);
-        Mouse.cursor(this.vizType === 'Main' ?'grab' : 'pointer', this.body, this.node);
+        Mouse.cursor(this.vizMode === 'Single' ?'grab' : 'pointer', this.body, this.node);
+        this.nodeInfo.mouseAction = 'mouseenter';  // event trigger
       });
     }
 
@@ -517,7 +535,7 @@ export default class Network {
     //   });
     //
     //   this.node.on("touchstart", (d) => {
-    //     Mouse.touchStart(d, this.linkData, this.link, this.node, this.label);
+    //     Mouse.touchStart(d.index, this.linkData, this.link, this.node, this.label);
     //   });
     //
     //   node.on("touchend", () => {
@@ -539,6 +557,22 @@ export default class Network {
     //     touchmove = 0
     //   });
     // }
+  }
+
+
+  ////////////////////////////////////////////////////////////////////
+  // comparision mode
+  // getNodeName() {
+  //   console.log(this.nodeInfo.name);
+  //   return this.nodeInfo.name;
+  // }
+
+  detectNodeIndex(nodeName) {
+    for (let i = 0, l = this.nodeData.length; l > i; i++) {
+      if (this.nodeData[i].name === nodeName) {
+        return i;
+      }
+    }
   }
 
 

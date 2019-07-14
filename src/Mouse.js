@@ -2,9 +2,8 @@ import * as d3 from 'd3';
 
 export default class Mouse {
 
-  static mouseover(d, linkData, linkLine, nodeCircle, nodeText) {
+  static mouseover(nodeIndex, linkData, linkLine, nodeCircle, nodeText) {
     // console.log('mouseover');
-    const nodeIndex = d.index;
     for (let i = 0, l = linkData.length; l > i; i++) {
       if (linkData[i].source.index === nodeIndex ||
           linkData[i].target.index === nodeIndex) {
@@ -31,9 +30,8 @@ export default class Mouse {
   }
 
 
-  static mouseout(d, linkData, linkLine, nodeCircle, nodeText) {
+  static mouseout(nodeIndex, linkData, linkLine, nodeCircle, nodeText) {
     // console.log('mouseout');
-    const nodeIndex = d.index;
     for (let i = 0, l = linkData.length; l > i; i++) {
       if (linkData[i].source.index === nodeIndex ||
           linkData[i].target.index === nodeIndex) {
@@ -60,14 +58,13 @@ export default class Mouse {
   }
 
 
-  static mousedown(d, linkData, linkLine, nodeCircle, nodeText) {
+  static mousedown(nodeIndex, linkData, linkLine, nodeCircle, nodeText) {
     // console.log('mousedown');
     // at first, make all node & line fade
     d3.selectAll(nodeCircle)['_groups'][0].attr("class", "nodeColorFade");
     d3.selectAll(linkLine)['_groups'][0].attr("class", "lineColorFade");
     d3.selectAll(nodeText)['_groups'][0].attr("class", "nodeTextFade");
 
-    const nodeIndex = d.index;
     for (let i = 0, l = linkData.length; l > i; i++) {
       if (linkData[i].source.index === nodeIndex ||
           linkData[i].target.index === nodeIndex) {
@@ -94,13 +91,12 @@ export default class Mouse {
   }
 
 
-  static touchStart(d, linkData, linkLine, nodeCircle, nodeText) {
+  static touchStart(nodeIndex, linkData, linkLine, nodeCircle, nodeText) {
     // at first, make all node & line fade
     d3.selectAll(nodeCircle)['_groups'][0].attr("class", "nodeColorFadeSp");
     d3.selectAll(linkLine)['_groups'][0].attr("class", "lineColorFade");
     d3.selectAll(nodeText)['_groups'][0].attr("class", "nodeTextFade");
 
-    const nodeIndex = d.index;
     for (let i = 0, l = linkData.length; l > i; i++) {
       if (linkData[i].source.index === nodeIndex ||
           linkData[i].target.index === nodeIndex) {
@@ -127,13 +123,12 @@ export default class Mouse {
   }
 
 
-  static mouseup(d, linkData, linkLine, nodeCircle, nodeText) {
+  static mouseup(nodeIndex, linkData, linkLine, nodeCircle, nodeText) {
     // console.log('mouseup');
     d3.selectAll(nodeCircle)['_groups'][0].attr("class", "nodeReturnFade");
     d3.selectAll(linkLine)['_groups'][0].attr("class", "lineReturnFade");
     d3.selectAll(nodeText)['_groups'][0].attr("class", "nodeTextReturnFade");
 
-    const nodeIndex = d.index;
     for (let i = 0, l = linkData.length; l > i; i++) {
       if (linkData[i].source.index === nodeIndex ||
           linkData[i].target.index === nodeIndex) {
@@ -163,8 +158,6 @@ export default class Mouse {
     d3.selectAll(nodeCircle)['_groups'][0].attr("class", "nodeReturnFade");
     d3.selectAll(linkLine)['_groups'][0].attr("class", "lineReturnFade");
     d3.selectAll(nodeText)['_groups'][0].attr("class", "nodeTextReturnFade");
-
-    console.log('reset')
   }
 
 
