@@ -49,7 +49,7 @@ import Mouse from "./Mouse";
   }
 
   function onChange(oldVal, obj) {
-    console.log(oldVal, ' -> ', obj.mouseAction, 'network: ', obj.network);
+    if (networkMain.vizMode === 'Single') return;
     let N;
     if(obj.network === 'Main'){
       N = networkSub;
@@ -63,14 +63,27 @@ import Mouse from "./Mouse";
       return;
     }
 
+    // const index = N.detectNodeIndex(obj.name);
+    // if (obj.mouseAction === 'mouseover') {
+    //    Mouse.mouseover(index, N.linkData, N.link, N.node, N.label)
+    // }else if (obj.mouseAction === 'mouseout') {
+    //   Mouse.mouseout(index, N.linkData, N.link, N.node, N.label);
+    // }else if (obj.mouseAction === 'mouseout') {
+    //   console.log('click', obj.name);
+    // }
+
     const index = N.detectNodeIndex(obj.name);
     if (obj.mouseAction === 'mouseover') {
        Mouse.mouseover(index, N.linkData, N.link, N.node, N.label)
-    }else if (obj.mouseAction === 'mouseout') {
-      Mouse.mouseout(index, N.linkData, N.link, N.node, N.label);
-    }else if (obj.mouseAction === 'mouseout') {
-      console.log('click', obj.name);
+    } else if (obj.mouseAction === 'mouseout') {
+      Mouse.mouseout(N.linkData, N.link, N.node, N.label);
     }
+
+    // else if (obj.mouseAction === 'mouseout') {
+    //   Mouse.mouseout(index, N.linkData, N.link, N.node, N.label);
+    // }else if (obj.mouseAction === 'mouseout') {
+    //   console.log('click', obj.name);
+    // }
 
   }
   watchMouseAction(nodeInfo, 'mouseAction', onChange);

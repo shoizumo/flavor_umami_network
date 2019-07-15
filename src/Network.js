@@ -1,5 +1,4 @@
 import * as d3 from 'd3';
-import 'ion-sound';
 
 import Mouse from './Mouse';
 import Update from './Update'
@@ -43,6 +42,8 @@ export default class Network {
     this.simulation = d3.forceSimulation();
 
     this.nodeInfo = nodeInfo;
+    this.isDragging = 0;
+
 
     this.legend = '';
     this.legendName = ["plant", "fruit", "meat", "vegetable", "cereal/crop",
@@ -56,8 +57,6 @@ export default class Network {
     this.wallMargin = 7.5;
 
 
-    this.mouseDown = 0;
-    this.setIon();
     this.isSp = isSp;
 
     this.zoomGroup = this.svg.append("g");
@@ -78,6 +77,7 @@ export default class Network {
     this.svg.call(this.zoom_handler);
     // this.svg.call(this.zoom_handler.transform, this.initialTransform);
   }
+
 
   setVizMode(vizMode){
     this.vizMode = vizMode;
@@ -319,11 +319,10 @@ export default class Network {
 
       Mouse.mousedown(d.index, this.linkData, this.link, this.node, this.label);
       Mouse.cursor('grabbing', this.body, this.node);
-      ion.sound.play("grabNode", {
-        volume: 0.2 // turn down
-      });
     }
-    this.mouseDown = 1;
+
+    this.isDragging = 1;
+    console.log('dragstarted');
   }
 
   dragging(d) {
@@ -341,11 +340,9 @@ export default class Network {
 
       Mouse.mouseup(d.index, this.linkData, this.link, this.node, this.label);
       Mouse.cursor('grab', this.body, this.node);
-      ion.sound.play("releaseNode", {
-        volume: 0.5
-      });
     }
-    this.mouseDown = 0;
+
+    this.isDragging = 0;
   }
 
 
@@ -383,29 +380,8 @@ export default class Network {
       values_ = values_.split(",");
       X = values_[0];
       Y = values_[1];
-
     }
-
     return {scale, X, Y};
-  }
-
-
-  ////////////////////////////////////////////////////////////////////
-  // sound
-  setIon() {
-    ion.sound({
-      sounds: [{name: "opening"},
-        {name: "mouseover"},
-        {name: "grabNode"},
-        {name: "releaseNode"},
-        {name: "legend"}],
-
-      // main config
-      path: "src/data/sound/",
-      preload: true,
-      multiplay: true,
-      volume: 0.5
-    });
   }
 
 
@@ -482,30 +458,32 @@ export default class Network {
   setMouseAction() {
     if (!this.isSp) {
       this.node.on("mouseover", (d) => {
-        Mouse.mouseover(d.index, this.linkData, this.link, this.node, this.label);
-        if (this.mouseDown === 0) {
-          ion.sound.play("mouseover", {
-            volume: 0.1 // turn down
-          });
-        }
+        // Mouse.mouseover(d.index, this.linkData, this.link, this.node, this.label);
 
-        // 内容が変わったときだけ変更する必要はない
-        // if(this.nodeInfo.name !== d.name){
-        //   this.nodeInfo.name = d.name;
-        // }
-        this.nodeInfo.network = this.vizID;
-        this.nodeInfo.name = d.name;
-        this.nodeInfo.mouseAction = 'mouseover';  // event trigger
+        if (this.isDragging === 0) {
+          Mouse.mouseover(d.index, this.linkData, this.link, this.node, this.label);
+          console.log('mouseover');
+
+          // 内容が変わったときだけ変更する必要はない
+          // if(this.nodeInfo.name !== d.name){
+          //   this.nodeInfo.name = d.name;
+          // }
+          this.nodeInfo.network = this.vizID;
+          this.nodeInfo.name = d.name;
+          this.nodeInfo.mouseAction = 'mouseover';  // event trigger
+        }
       });
 
-      this.node.on("mouseout", (d) => {
-        Mouse.mouseout(d.index, this.linkData, this.link, this.node, this.label);
-        this.nodeInfo.mouseAction = 'mouseout';  // event trigger
+      this.node.on("mouseout", () => {
+        if (this.isDragging === 0){
+          Mouse.mouseout(this.linkData, this.link, this.node, this.label);
+          this.nodeInfo.mouseAction = 'mouseout';  // event trigger
+        }
       });
 
 
       this.node.on("click", (d) => {
-        // console.log('click', d.name);
+        console.log('click', d.name);
         this.nodeInfo.mouseAction = 'click';  // event trigger
       });
 
@@ -590,16 +568,12 @@ export default class Network {
       const legendId = this.id.slice(9);
       Legend.mouseoverFilter(legendId, circle, cell, this.color);
 
-      ion.sound.play("mouseover", {
-        volume: 0.1 // turn down
-      });
     });
 
     legendFilter.on("click", function () {
       const legendId = this.id.slice(9);
       Legend.mouseoverClick(legendId, circle, cell, this.color);
 
-      ion.sound.play("legend");
     });
 
     // legend filter(mouse out)
