@@ -108,7 +108,7 @@ export default class Update {
         // .transition()
         // .duration(1000)
         // .ease(d3.easeLinear)
-        .attr("opacity", 0.6);
+        // .attr("opacity", 0.6);
 
     return nodeCircle;
   }
@@ -137,7 +137,7 @@ export default class Update {
         });
 
     nodeText
-        .attr("opacity", 1.0)
+        // .attr("opacity", 1.0)
         .attr("font-size", ".7em")
         .attr("font-weight", "300")
         .attr("class", "nonDrag")
@@ -150,6 +150,19 @@ export default class Update {
      //    .style("opacity", 0.6);
 
     return nodeText;
+  }
+
+
+  static nodeLabelOpacity(selectedType, nodeCircle, nodeText, nodeData) {
+    if (selectedType === 'Umami') {
+      for (let i = 0, l = nodeData.length; l > i; i++) {
+        nodeCircle['_groups'][0][i].setAttribute("opacity", nodeData[i].umami === 1 ? "0.6" : "0.2");
+        nodeText['_groups'][0][i].setAttribute("opacity", nodeData[i].umami === 1 ? "1.0" : "0.5");
+      }
+    } else {
+      nodeCircle.attr("opacity", 0.6);
+      nodeText.attr("opacity", 1.0);
+    }
   }
 
 

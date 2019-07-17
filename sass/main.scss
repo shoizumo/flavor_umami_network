@@ -25,11 +25,6 @@ body {
 }
 
 
-//.graph {
-//  width: 0;
-//  height: 0;
-//}
-
 h1 {
   width: 1000px;
   margin-top: 0;
@@ -139,19 +134,21 @@ svg {
   cursor: grab;
 }
 
-.nodeText {
-  font-weight: 500;
-  font-size: 0.95em;
-  pointer-events: none;
-  cursor: default;
-
-
-  /* animation */
-  animation: animScaleNodeText 0.15s linear;
-  animation-play-state: running;
-}
+//.nodeText {
+//  opacity: 1.0;
+//  font-weight: 500;
+//  font-size: 0.95em;
+//  pointer-events: none;
+//  cursor: default;
+//
+//
+//  /* animation */
+//  animation: animScaleNodeText 0.15s linear;
+//  animation-play-state: running;
+//}
 
 .linkedNodeText {
+  opacity: 1.0;
   font-weight: 500;
   font-size: 0.85em;
   pointer-events: none;
@@ -164,17 +161,17 @@ svg {
 
 }
 
-@keyframes animScaleNodeText {
-  0% {
-    font-size: 1.0em;
-  }
-  50% {
-    font-size: 1.1em;
-  }
-  100% {
-    font-size: 1.0em;
-  }
-}
+//@keyframes animScaleNodeText {
+//  0% {
+//    font-size: 1.0em;
+//  }
+//  50% {
+//    font-size: 1.1em;
+//  }
+//  100% {
+//    font-size: 1.0em;
+//  }
+//}
 
 .lineColor {
   stroke: #d70035;
@@ -182,26 +179,26 @@ svg {
 }
 
 /* mouseout */
-.nodeColorDefault {
-  opacity: 0.6;
-  cursor: -webkit-grab;
-  cursor: -moz-grab;
-  cursor: grab;
-}
-
-.textSizeDefault {
-  pointer-events: none;
-}
-
-.lineColorDefault {
-  opacity: 0.5;
-}
+//.nodeColorDefault {
+//  //opacity: 0.6;
+//  cursor: -webkit-grab;
+//  cursor: -moz-grab;
+//  cursor: grab;
+//}
+//
+//.textSizeDefault {
+//  pointer-events: none;
+//}
+//
+//.lineColorDefault {
+//  opacity: 0.5;
+//}
 
 /* click */
-.nodeColorFade {
+.nodeColorFadeNonDrag {
   fill: #E5E5E5;
   stroke: #bfbec5;
-  opacity: 0.6;
+  //opacity: 0.6;
   //cursor: -webkit-grab;
   //cursor: -moz-grab;
   //cursor: grab;
@@ -209,10 +206,10 @@ svg {
   pointer-events: none;
 }
 
-.nodeColorFadeSp {
+.nodeColorFade {
   fill: #E5E5E5;
   stroke: #bfbec5;
-  opacity: 0.6;
+  //opacity: 0.6;
   cursor: -webkit-grab;
   cursor: -moz-grab;
   cursor: grab;
@@ -223,20 +220,17 @@ svg {
   opacity: 0.3;
   pointer-events: none;
   transition-duration: 0.5s;
-  pointer-events: none;
   cursor: default;
-
 }
 
 .lineColorFade {
   stroke: #E5E5E5;
   opacity: 0.5;
   transition-duration: 0.5s;
-
 }
 
 .nodeReturnFade {
-  opacity: 0.6;
+  //opacity: 0.6;
   //cursor: -webkit-grab;
   //cursor: -moz-grab;
   //cursor: grab;
@@ -244,7 +238,7 @@ svg {
 }
 
 .nodeTextReturnFade {
-  opacity: 1.0;
+  //opacity: 1.0;
   pointer-events: none;
   transition-duration: 0.5s;
   cursor: default;

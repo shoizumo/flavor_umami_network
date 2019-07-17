@@ -160,7 +160,7 @@ export default class Network {
         .data(this.nodeData)
         .enter()
         .append("circle")
-        .attr("opacity", "0.6")
+        // .attr("opacity", "0.6")
         .attr("r", (d) => {
           return Math.sqrt(d.size) * 4 + 2.5;
         })
@@ -172,6 +172,14 @@ export default class Network {
             .on("start", this.dragstarted.bind(this))
             .on("drag", this.dragging.bind(this))
             .on("end", this.dragended.bind(this)));
+
+    if (this.dataType === 'Flavor') {
+      this.node.attr("opacity", "0.6")
+    } else {
+      this.node.attr("opacity", (d) => {
+        return d.umami === 1 ? "0.6" : "0.2";
+      })
+    }
   }
 
 
@@ -197,6 +205,14 @@ export default class Network {
         .attr("class", "nonDrag")
         .attr("fill", "#352622")
         .attr({"font-family": ["Futura", "Nunito", "Helvetica Neue", "Arial", "sans-serif"]});
+
+    if (this.dataType === 'Flavor') {
+      this.label.attr("opacity", "1.0")
+    } else {
+      this.label.attr("opacity", (d) => {
+        return d.umami === 1 ? "1.0" : "0.5";
+      })
+    }
   }
 
 
@@ -388,6 +404,8 @@ export default class Network {
   ////////////////////////////////////////////////////////////////////
   // update network data
   update(selectedType) {
+    this.dataType = selectedType;
+
     let prevNodePosition = [];
     if (selectedType === 'Flavor') {
       Update.flavorSimulation(this.simulation, this.centerX, this.centerY);
@@ -437,6 +455,11 @@ export default class Network {
 
     }).then(() => {
 
+      setTimeout(() => {
+        Update.nodeLabelOpacity(selectedType, this.node, this.label, this.nodeData);
+      }, 500);
+
+
       this.simulation.tick(30);
       const t = 3000;
       return new Promise((resolve) => {
@@ -448,7 +471,6 @@ export default class Network {
           )
         }, 50);
       });
-
     });
   }
 
