@@ -1,9 +1,11 @@
-import Network from './Network';
+import * as d3 from "d3";
 
 import flavorData from './data/flavor_data';
 import umamiData from './data/umami_data';
-import * as d3 from "d3";
+
+import Network from './Network';
 import Mouse from "./Mouse";
+import Connection from "./Connection";
 
 
 (() => {
@@ -48,6 +50,7 @@ import Mouse from "./Mouse";
     });
   }
 
+  watchMouseAction(nodeInfo, 'mouseAction', onChange);
   function onChange(oldVal, obj) {
     if (networkMain.vizMode === 'Single') return;
     let N;
@@ -63,30 +66,25 @@ import Mouse from "./Mouse";
       return;
     }
 
-    // const index = N.detectNodeIndex(obj.name);
-    // if (obj.mouseAction === 'mouseover') {
-    //    Mouse.mouseover(index, N.linkData, N.link, N.node, N.label)
-    // }else if (obj.mouseAction === 'mouseout') {
-    //   Mouse.mouseout(index, N.linkData, N.link, N.node, N.label);
-    // }else if (obj.mouseAction === 'mouseout') {
-    //   console.log('click', obj.name);
-    // }
-
     const index = N.detectNodeIndex(obj.name);
     if (obj.mouseAction === 'mouseover') {
-       Mouse.mouseover(index, N.linkData, N.link, N.node, N.label)
+      Mouse.mouseover(index, N.linkData, N.link, N.node, N.label);
+
+      let F = Connection.makeNodeList(networkMain.detectNodeIndex(obj.name), networkMain.linkData);
+      let U = Connection.makeNodeList(networkSub.detectNodeIndex(obj.name), networkSub.linkData);
+      console.log(F);
+      console.log(U);
+
+
+      Connection.displayDetail(obj.name, F.sameNodes, F.diffNodes, 'detailFlavor');
+      Connection.displayDetail(obj.name, U.sameNodes, U.diffNodes, 'detailUmami');
+
+
     } else if (obj.mouseAction === 'mouseout') {
       Mouse.mouseout(N.linkData, N.link, N.node, N.label);
     }
-
-    // else if (obj.mouseAction === 'mouseout') {
-    //   Mouse.mouseout(index, N.linkData, N.link, N.node, N.label);
-    // }else if (obj.mouseAction === 'mouseout') {
-    //   console.log('click', obj.name);
-    // }
-
   }
-  watchMouseAction(nodeInfo, 'mouseAction', onChange);
+
 
 
   document.addEventListener("dblclick", function(){
@@ -112,7 +110,13 @@ import Mouse from "./Mouse";
         .attr("width", 500)
         .attr("height", 325);
 
+
+    document.getElementById("detailFlavor").style.display = 'block';
+    document.getElementById("detailUmami").style.display = 'block';
+
+
   }, false);
+
 
 
 

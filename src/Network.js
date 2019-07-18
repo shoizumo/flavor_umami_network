@@ -338,7 +338,6 @@ export default class Network {
     }
 
     this.isDragging = 1;
-    console.log('dragstarted');
   }
 
   dragging(d) {
@@ -484,7 +483,6 @@ export default class Network {
 
         if (this.isDragging === 0) {
           Mouse.mouseover(d.index, this.linkData, this.link, this.node, this.label);
-          console.log('mouseover');
 
           // 内容が変わったときだけ変更する必要はない
           // if(this.nodeInfo.name !== d.name){
