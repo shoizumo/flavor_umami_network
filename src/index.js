@@ -90,10 +90,10 @@ import Connection from "./Connection";
   document.addEventListener("dblclick", function(){
     networkMain.svg
       .transition()
-      .duration(1000)
+      .duration(500)
       .ease(d3.easeLinear)
-      .attr("width", 500)
-      .attr("height", 325);
+      .attr("width", networkMain.width / 2 - 1)
+      .attr("height", networkMain.height / 2 - 1);
 
     networkMain.setVizMode('Multi');
 
@@ -105,15 +105,27 @@ import Connection from "./Connection";
 
     networkSub.svg
         .transition()
-        .duration(1000)
+        .duration(500)
         .ease(d3.easeLinear)
-        .attr("width", 500)
-        .attr("height", 325);
+        .attr("width", networkMain.width / 2 - 1)
+        .attr("height", networkMain.height / 2 - 1);
 
 
-    document.getElementById("detailFlavor").style.display = 'block';
-    document.getElementById("detailUmami").style.display = 'block';
+    // setTimeout(() => {
+      document.getElementById("graphMain").classList.add("networkFlavor");
+      document.getElementById("graphSub2").classList.add("networkUmami");
+      document.getElementById("detailFlavor").classList.add("detailFlavor");
+      document.getElementById("detailUmami").classList.add("detailUmami");
 
+      document.getElementById("detailFlavor").style.display = 'block';
+      document.getElementById("detailUmami").style.display = 'block';
+      document.getElementById("visGrid").style.display = 'grid';
+    // }, 1000);
+
+
+    // document.getElementById("detailFlavor").style.display = 'block';
+    // document.getElementById("detailUmami").style.display = 'block';
+    // document.getElementById("visGrid").style.display = 'grid';
 
   }, false);
 

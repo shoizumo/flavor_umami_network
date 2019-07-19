@@ -64,25 +64,40 @@
 
 <!--    <div id="chart" align="center">-->
     <div align="center">
-      <svg id="graphSub1" class="graph">
-        <text class="node_link" x="5" y="625">※&ensp;Node size : Ingredient prevalence in recipes</text>
-        <text class="node_link" x="5" y="640">&emsp;Link thickness : Number of shared compounds</text>
-      </svg>
-      <svg id="graphMain" class="graph">
-        <text class="node_link" x="5" y="625">※&ensp;Node size : Ingredient prevalence in recipes</text>
-        <text class="node_link" x="5" y="640">&emsp;Link thickness : Number of shared compounds</text>
-      </svg>
-      <svg id="graphSub2" class="graph">
-        <text class="node_link" x="5" y="625">※&ensp;Node size : Ingredient prevalence in recipes</text>
-        <text class="node_link" x="5" y="640">&emsp;Link thickness : Number of shared compounds</text>
-      </svg>
-
-      <div align="center">
-        <div id="detailFlavor" class="graph"></div>
-        <div id="detailUmami" class="graph"></div>
+      <div id="visGrid">
+        <svg id="graphMain" class="graph">
+          <text class="node_link" x="5" y="625">※&ensp;Node size : Ingredient prevalence in recipes</text>
+          <text class="node_link" x="5" y="640">&emsp;Link thickness : Number of shared compounds</text>
+        </svg>
+        <svg id="graphSub2" class="graph">
+          <text class="node_link" x="5" y="625">※&ensp;Node size : Ingredient prevalence in recipes</text>
+          <text class="node_link" x="5" y="640">&emsp;Link thickness : Number of shared compounds</text>
+        </svg>
+        <div id="detailFlavor"></div>
+        <div id="detailUmami"></div>
       </div>
 
+<!--      <div id="networkContainer">-->
+<!--        <svg id="graphSub1" class="graph" >-->
+<!--          <text class="node_link" x="5" y="625">※&ensp;Node size : Ingredient prevalence in recipes</text>-->
+<!--          <text class="node_link" x="5" y="640">&emsp;Link thickness : Number of shared compounds</text>-->
+<!--        </svg>-->
+<!--        <svg id="graphMain" class="graph">-->
+<!--          <text class="node_link" x="5" y="625">※&ensp;Node size : Ingredient prevalence in recipes</text>-->
+<!--          <text class="node_link" x="5" y="640">&emsp;Link thickness : Number of shared compounds</text>-->
+<!--        </svg>-->
+<!--        <svg id="graphSub2" class="graph">-->
+<!--          <text class="node_link" x="5" y="625">※&ensp;Node size : Ingredient prevalence in recipes</text>-->
+<!--          <text class="node_link" x="5" y="640">&emsp;Link thickness : Number of shared compounds</text>-->
+<!--        </svg>-->
+<!--&lt;!&ndash;      </div>&ndash;&gt;-->
+
+<!--      <div id="detailContainer">-->
+<!--        <div id="detailFlavor"></div>-->
+<!--        <div id="detailUmami"></div>-->
+<!--      </div>-->
     </div>
+
 <!--    <div id="description">-->
 <!--      <p>-->
 <!--        This interactive network shows which ingredients go well together. The basic ideas behind this are “Flavor-->

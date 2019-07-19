@@ -14,15 +14,9 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
-#graphMain {
-  //viewBox: 0, 0, 400, 400;
-  //width: 1000px;
-  //height: 650px;
-  //border: 1px solid #ff8e1e;
-  /*background-color: #fff5e3;*/
-  align: center;
-  cursor: default;
-}
+//#graphMain {
+//  cursor: default;
+//}
 
 
 h1 {
@@ -37,6 +31,9 @@ h1 {
   font-family: "Helvetica Neue", "Arial", sans-serif;
 }
 
+#h1 select:focus {
+  outline: 0;
+}
 
 .node_link {
   fill: #352622;
@@ -44,37 +41,6 @@ h1 {
   font-family: "Helvetica Neue", "Arial", sans-serif;
 }
 
-#description {
-  text-align: center;
-}
-
-p {
-  margin-top: 3px;
-  margin-bottom: 3px;
-  margin-left: auto;
-  margin-right: auto;
-  width: 1000px;
-  text-align: left;
-  font-size: 1.5em;
-  font-weight: 300;
-  line-height: 150%;
-  color: #a9a9a9;
-  font-family: "Helvetica Neue", "Arial", sans-serif;
-}
-
-#name {
-  margin-top: 3px;
-  margin-bottom: 30px;
-  margin-left: auto;
-  margin-right: auto;
-  width: 1000px;
-  text-align: center;
-  font-size: 1.0em;
-  font-weight: 300;
-  line-height: 150%;
-  color: #a9a9a9;
-  font-family: "Helvetica Neue", "Arial", sans-serif;
-}
 
 #dataTypeContainer {
   width: 1000px;
@@ -86,13 +52,6 @@ p {
   color: #302833;
   font-family: "Helvetica Neue", "Arial", sans-serif;
 }
-
-/*#dataType{*/
-/*font-size: 1.0em;*/
-/*color: #302833;*/
-/*font-weight: 600;*/
-/*font-family: "Helvetica Neue", "Arial", sans-serif;*/
-/*}*/
 
 select {
   -webkit-appearance: none;
@@ -115,14 +74,7 @@ select::-ms-expand {
   display: none;
 }
 
-#h1 select:focus {
-  outline: 0;
-}
 
-
-svg {
-  margin-bottom: 5px;
-}
 
 /* mouseover */
 .nodeColor {
@@ -134,18 +86,6 @@ svg {
   cursor: grab;
 }
 
-//.nodeText {
-//  opacity: 1.0;
-//  font-weight: 500;
-//  font-size: 0.95em;
-//  pointer-events: none;
-//  cursor: default;
-//
-//
-//  /* animation */
-//  animation: animScaleNodeText 0.15s linear;
-//  animation-play-state: running;
-//}
 
 .linkedNodeText {
   opacity: 1.0;
@@ -153,286 +93,68 @@ svg {
   font-size: 0.85em;
   pointer-events: none;
   cursor: default;
-
-
-  /* animation */
-  //animation: animScaleNodeText 0.15s linear;
-  //animation-play-state: running;
-
 }
 
-//@keyframes animScaleNodeText {
-//  0% {
-//    font-size: 1.0em;
-//  }
-//  50% {
-//    font-size: 1.1em;
-//  }
-//  100% {
-//    font-size: 1.0em;
-//  }
-//}
 
 .lineColor {
   stroke: #d70035;
   opacity: 1.0;
 }
 
-/* mouseout */
-//.nodeColorDefault {
-//  //opacity: 0.6;
-//  cursor: -webkit-grab;
-//  cursor: -moz-grab;
-//  cursor: grab;
-//}
-//
-//.textSizeDefault {
-//  pointer-events: none;
-//}
-//
-//.lineColorDefault {
-//  opacity: 0.5;
-//}
 
 /* click */
 .nodeColorFadeNonDrag {
   fill: #E5E5E5;
   stroke: #bfbec5;
-  //opacity: 0.6;
-  //cursor: -webkit-grab;
-  //cursor: -moz-grab;
-  //cursor: grab;
-  //transition-duration: 0.5s;
   pointer-events: none;
 }
 
 .nodeColorFade {
   fill: #E5E5E5;
   stroke: #bfbec5;
-  //opacity: 0.6;
   cursor: -webkit-grab;
   cursor: -moz-grab;
   cursor: grab;
-  ////transition-duration: 0.5s;
 }
 
 .nodeTextFade {
   opacity: 0.3;
   pointer-events: none;
-  //transition-duration: 0.5s;
   cursor: default;
 }
 
 .lineColorFade {
   stroke: #E5E5E5;
   opacity: 0.5;
-  //transition-duration: 0.5s;
 }
 
 .nodeReturnFade {
-  //opacity: 0.6;
-  //cursor: -webkit-grab;
-  //cursor: -moz-grab;
-  //cursor: grab;
-  //transition-duration: 0.5s;
 }
 
 .nodeTextReturnFade {
-  //opacity: 1.0;
   pointer-events: none;
-  //transition-duration: 0.5s;
   cursor: default;
-
 }
 
 .lineReturnFade {
   opacity: 0.5;
-  //transition-duration: 0.5s;
-}
-
-/* for text not to drag */
-.nonDrag {
-  pointer-events: none;
-  cursor: default;
-
 }
 
 
-//
-///* legend filter */
-//.filteredCircle {
-//  stroke-width: 0.5;
-//
-//  /* bound animation */
-//  animation: animScaleCircle 20s ease-out;
-//  animation-play-state: running;
-//
-//}
-//
-//@keyframes animScaleCircle {
-//  0% {
-//    transform: scale(0.8, 0.8);
-//  }
-//  1% {
-//    transform: scale(2.2, 2.2);
-//  }
-//  2% {
-//    transform: scale(1.6, 1.6);
-//  }
-//  3% {
-//    transform: scale(2.1, 2.1);
-//  }
-//  4% {
-//    transform: scale(1.9, 1.9);
-//  }
-//  5% {
-//    transform: scale(2.0, 2.0);
-//  }
-//  6% {
-//    transform: scale(1.95, 1.95);
-//  }
-//  7% {
-//    transform: scale(2.0, 2.0);
-//  }
-//  8% {
-//    transform: scale(1.97, 1.97);
-//  }
-//  9% {
-//    transform: scale(2.0, 2.0);
-//  }
-//  10% {
-//    transform: scale(1.99, 1.99);
-//  }
-//  11% {
-//    transform: scale(2.0, 2.0);
-//  }
-//  100% {
-//    transform: scale(2.0, 2.0);
-//  }
-//}
-//
-//.filteredText {
-//  pointer-events: none;
-//  cursor: default;
-//
-//
-//  /* bound animation */
-//  animation: animScaleText 20s ease-out;
-//  animation-play-state: running;
-//
-//}
-//
-//@keyframes animScaleText {
-//  0% {
-//    transform: scale(0.8, 0.8);
-//  }
-//  1% {
-//    transform: scale(1.1, 1.1);
-//  }
-//  2% {
-//    transform: scale(1.0, 1.0);
-//  }
-//  3% {
-//    transform: scale(1.1, 1.1);
-//  }
-//  4% {
-//    transform: scale(1.0, 1.0);
-//  }
-//  5% {
-//    transform: scale(1.1, 1.1);
-//  }
-//  6% {
-//    transform: scale(1.05, 1.05);
-//  }
-//  7% {
-//    transform: scale(1.1, 1.1);
-//  }
-//  8% {
-//    transform: scale(1.07, 1.07);
-//  }
-//  9% {
-//    transform: scale(1.1, 1.1);
-//  }
-//  10% {
-//    transform: scale(1.09, 1.09);
-//  }
-//  11% {
-//    transform: scale(1.1, 1.1);
-//  }
-//  100% {
-//    transform: scale(1.1, 1.1);
-//  }
-//}
-//
-//.returnFilteredCircle {
-//  stroke-width: 1;
-//
-//  /* animation */
-//  animation: animScaleCircleReturn 0.3s ease-out;
-//  animation-play-state: running;
-//
-//}
-//
-//@keyframes animScaleCircleReturn {
-//  0% {
-//    transform: scale(2.0, 2.0);
-//  }
-//  100% {
-//    transform: scale(1.0, 1.0);
-//  }
-//}
-//
-//.returnFilteredText {
-//  pointer-events: none;
-//  cursor: default;
-//
-//
-//  /* animation */
-//  animation: animScaleTextReturn 0.3s ease-out;
-//  animation-play-state: running;
-//
-//}
-//
-//@keyframes animScaleTextReturn {
-//  0% {
-//    transform: scale(1.1, 1.1);
-//  }
-//  100% {
-//    transform: scale(1.0, 1.0);
-//  }
-//}
-//
-///* grab & grabing */
-//
-//.svg_grabing {
-//  margin-bottom: 50px;
-//  cursor: -webkit-grabbing;
-//}
-
-
-//説明文
 #detailFlavor {
-  //position: absolute;
-  //left: 720px;
-  //top: 80px;
-  width: 500px;
-  height: 325px;
+  width: 500px - 2px;
+  height: 325px - 2px;
   border: 1px solid #fc9f94;
   overflow: scroll;
   display: none;
-  float: left;
 }
 
 #detailUmami {
-  //position: absolute;
-  //left: 720px;
-  //top: 80px;
-  width: 500px;
-  height: 325px;
+  width: 500px - 2;
+  height: 325px - 2;
   border: 1px solid #fc9f94;
   overflow: scroll;
   display: none;
-  float: right;
 }
 
 
@@ -497,4 +219,33 @@ svg {
   text-decoration: underline;
   font-family: "ヒラギノ角ゴ ProN W3", "游ゴシック体", sans-serif;
   cursor: pointer;
+}
+
+
+#visGrid{
+  width: 500px * 2;
+  height: 325px * 2;
+  grid-template-columns: 500px 500px;
+  grid-template-rows: 325px 325px;
+  display: block;
+}
+
+.networkFlavor{
+  grid-column: 1 / 2;
+  grid-row: 1 / 2;
+}
+
+.networkUmami{
+  grid-column: 2 / 3;
+  grid-row: 1 / 2;
+}
+
+.detailFlavor{
+  grid-column: 1 / 2;
+  grid-row: 2 / 3;
+}
+
+.detailUmami{
+  grid-column: 2 / 3;
+  grid-row: 2 / 3;
 }

@@ -16,8 +16,8 @@ export default class Network {
     this.linkData = dataType === 'Flavor' ? this.flavorData.links : this.umamiData.links;
     this.nodeData = dataType === 'Flavor' ? this.flavorData.nodes : this.umamiData.nodes;
 
-    this.width = 1000;
-    this.height = 650;
+    this.width = 1000 - 2;
+    this.height = 650 - 2;
 
     this.centerX = this.width / 2 + 30;
     this.centerY = this.height / 2 + 15;
