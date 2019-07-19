@@ -70,14 +70,13 @@ import Connection from "./Connection";
     if (obj.mouseAction === 'mouseover') {
       Mouse.mouseover(index, N.linkData, N.link, N.node, N.label);
 
-      let F = Connection.makeNodeList(networkMain.detectNodeIndex(obj.name), networkMain.linkData);
-      let U = Connection.makeNodeList(networkSub.detectNodeIndex(obj.name), networkSub.linkData);
-      console.log(F);
-      console.log(U);
+      let M = Connection.makeNodeList(networkMain.detectNodeIndex(obj.name), networkMain.linkData);
+      let S = Connection.makeNodeList(networkSub.detectNodeIndex(obj.name), networkSub.linkData);
+      console.log(M);
+      console.log(S);
 
-
-      Connection.displayDetail(obj.name, F.sameNodes, F.diffNodes, 'detailFlavor');
-      Connection.displayDetail(obj.name, U.sameNodes, U.diffNodes, 'detailUmami');
+      Connection.displayDetail(obj.name, M.sameNodes, M.diffNodes, 'detailMain');
+      Connection.displayDetail(obj.name, S.sameNodes, S.diffNodes, 'detailSub');
 
 
     } else if (obj.mouseAction === 'mouseout') {
@@ -86,46 +85,62 @@ import Connection from "./Connection";
   }
 
 
+  document.addEventListener("keydown", function (event) {
+    if (event.keyCode === 78) {// N
+      networkMain.svg
+          .transition()
+          .duration(500)
+          .ease(d3.easeLinear)
+          .attr("width", networkMain.width / 2 - 1)
+          .attr("height", networkMain.height / 2 - 1);
 
-  document.addEventListener("dblclick", function(){
-    networkMain.svg
-      .transition()
-      .duration(500)
-      .ease(d3.easeLinear)
-      .attr("width", networkMain.width / 2 - 1)
-      .attr("height", networkMain.height / 2 - 1);
-
-    networkMain.setVizMode('Multi');
-
-
-    networkSub = new Network(flavorData, umamiData, isSp, '#graphSub2', 'Umami', 'Multi', 'Sub', nodeInfo);
-    networkSub.setLegend();
-    networkSub.render();
-    networkSub.setMouseAction();
-
-    networkSub.svg
-        .transition()
-        .duration(500)
-        .ease(d3.easeLinear)
-        .attr("width", networkMain.width / 2 - 1)
-        .attr("height", networkMain.height / 2 - 1);
+      networkMain.setVizMode('Multi');
 
 
-    // setTimeout(() => {
-      document.getElementById("graphMain").classList.add("networkFlavor");
-      document.getElementById("graphSub2").classList.add("networkUmami");
-      document.getElementById("detailFlavor").classList.add("detailFlavor");
-      document.getElementById("detailUmami").classList.add("detailUmami");
+      const dataType = networkMain.dataType === 'Flavor' ? 'Umami' : 'Flavor';
+      networkSub = new Network(flavorData, umamiData, isSp, '#graphSub', dataType, 'Multi', 'Sub', nodeInfo);
+      networkSub.setLegend();
+      networkSub.render();
+      networkSub.setMouseAction();
 
-      document.getElementById("detailFlavor").style.display = 'block';
-      document.getElementById("detailUmami").style.display = 'block';
+      networkSub.svg
+          .transition()
+          .duration(500)
+          .ease(d3.easeLinear)
+          .attr("width", networkMain.width / 2 - 1)
+          .attr("height", networkMain.height / 2 - 1);
+
+
       document.getElementById("visGrid").style.display = 'grid';
-    // }, 1000);
+      setTimeout(() => {
+        document.getElementById("detailMain").style.display = 'block';
+        document.getElementById("detailSub").style.display = 'block';
+      }, 500);
+    }
 
+    if (event.keyCode === 68) {
+      networkMain.svg
+          .transition()
+          .duration(500)
+          .ease(d3.easeLinear)
+          .attr("width", networkMain.width)
+          .attr("height", networkMain.height);
 
-    // document.getElementById("detailFlavor").style.display = 'block';
-    // document.getElementById("detailUmami").style.display = 'block';
-    // document.getElementById("visGrid").style.display = 'grid';
+      networkSub.svg
+          .transition()
+          .duration(500)
+          .ease(d3.easeLinear)
+          .attr("width", 0)
+          .attr("height", 0);
+
+      setTimeout(() => {
+        networkSub.deleteContents();
+        networkSub.svg.attr("style", "outline: 0px;");
+        document.getElementById("detailMain").style.display = 'none';
+        document.getElementById("detailSub").style.display = 'none';
+      }, 500);
+
+    }
 
   }, false);
 

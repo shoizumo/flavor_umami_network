@@ -87,6 +87,9 @@ export default class Network {
     return this.legendColor[n];
   };
 
+  deleteContents(){
+    this.svg.selectAll("*").remove();
+  }
 
   setLegend() {
     this.legend = this.svg
@@ -239,8 +242,10 @@ export default class Network {
         .force("y", d3.forceY().strength(0.35).y(this.centerY));
 
 
+    this.simulation.alpha([0.7])
     if (this.dataType === 'Umami' ) {
       Update.umamiSimulation(this.simulation, this.centerX, this.centerY);
+      this.simulation.alpha([0.3])
     }
 
     this.simulation

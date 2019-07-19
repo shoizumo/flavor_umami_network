@@ -53,80 +53,22 @@
         </select>
     </div>
 
-    <!--<h1 id="h1">-->
-      <!--<select name="dataType" id="dataType">-->
-        <!--<option value="Flavor">Flavor</option>-->
-        <!--<option value="Umami">Umami</option>-->
-      <!--</select>-->
-      <!--Network-->
-    <!--</h1>-->
 
-
-<!--    <div id="chart" align="center">-->
     <div align="center">
       <div id="visGrid">
         <svg id="graphMain" class="graph">
           <text class="node_link" x="5" y="625">※&ensp;Node size : Ingredient prevalence in recipes</text>
           <text class="node_link" x="5" y="640">&emsp;Link thickness : Number of shared compounds</text>
         </svg>
-        <svg id="graphSub2" class="graph">
+        <svg id="graphSub" class="graph">
           <text class="node_link" x="5" y="625">※&ensp;Node size : Ingredient prevalence in recipes</text>
           <text class="node_link" x="5" y="640">&emsp;Link thickness : Number of shared compounds</text>
         </svg>
-        <div id="detailFlavor"></div>
-        <div id="detailUmami"></div>
+        <div id="detailMain"></div>
+        <div id="detailSub"></div>
       </div>
-
-<!--      <div id="networkContainer">-->
-<!--        <svg id="graphSub1" class="graph" >-->
-<!--          <text class="node_link" x="5" y="625">※&ensp;Node size : Ingredient prevalence in recipes</text>-->
-<!--          <text class="node_link" x="5" y="640">&emsp;Link thickness : Number of shared compounds</text>-->
-<!--        </svg>-->
-<!--        <svg id="graphMain" class="graph">-->
-<!--          <text class="node_link" x="5" y="625">※&ensp;Node size : Ingredient prevalence in recipes</text>-->
-<!--          <text class="node_link" x="5" y="640">&emsp;Link thickness : Number of shared compounds</text>-->
-<!--        </svg>-->
-<!--        <svg id="graphSub2" class="graph">-->
-<!--          <text class="node_link" x="5" y="625">※&ensp;Node size : Ingredient prevalence in recipes</text>-->
-<!--          <text class="node_link" x="5" y="640">&emsp;Link thickness : Number of shared compounds</text>-->
-<!--        </svg>-->
-<!--&lt;!&ndash;      </div>&ndash;&gt;-->
-
-<!--      <div id="detailContainer">-->
-<!--        <div id="detailFlavor"></div>-->
-<!--        <div id="detailUmami"></div>-->
-<!--      </div>-->
     </div>
 
-<!--    <div id="description">-->
-<!--      <p>-->
-<!--        This interactive network shows which ingredients go well together. The basic ideas behind this are “Flavor-->
-<!--        pairing(Food Pairing Theory)” and “Umami pairing”.-->
-<!--        “Flavor pairing” suggests that different ingredients are more likely to pair well in a recipe when they share-->
-<!--        share many flavor compounds.-->
-<!--        The main umami compounds are glutamate, inosinate and guanylate, and “Umami pairing” suggests that umami is-->
-<!--        sensed strongly when they are combined.-->
-<!--      </p>-->
-<!--      </br>-->
-<!--      <p>-->
-<!--        For further information on “food pairing theory” and the data set used for constructing the network, please see the-->
-<!--        below paper:-->
-<!--      <p/>-->
-<!--      <a href="http://www.nature.com/articles/srep00196" target=”_blank”>-->
-<!--        <p>-->
-<!--          "Flavor network and the principles of food pairing" Yong-Yeol Ahn, Sebastian E. Ahnert, James P. Bagrow and-->
-<!--          Albert-László Barabási-->
-<!--        </p>-->
-<!--      </a>-->
-<!--      </br>-->
-<!--      <hr color="#eeeeee">-->
-<!--      <p id="name">-->
-<!--        Created by Sho Izumo&nbsp|&nbsp-->
-<!--        <a href="http://foodgalaxy.jp/" target=”_blank”>-->
-<!--          Home-->
-<!--        </a>-->
-<!--      </p>-->
-<!--    </div>-->
     <script src="js/main.js"></script>
   </body>
 </html>
