@@ -2,6 +2,8 @@ import * as d3 from 'd3';
 
 export default class Update {
 
+  ///////////////////////////////////////////////////////////////////////////////////////
+  /* update data */
   static deleteObj(linkLine, nodeCircle, nodeText, linkData, nodeData) {
     return {
       link: Update.deleteLinkData(linkLine, linkData),
@@ -259,7 +261,11 @@ export default class Update {
                 }))
         .force("charge", d3.forceManyBody().strength(-2000))
         .force("x", d3.forceX().strength(1.5).x(centerX))
-        .force("y", d3.forceY().strength(2.25).y(centerY));
+        .force("y", d3.forceY().strength(2.0).y(centerY));
   }
+
+
+  ///////////////////////////////////////////////////////////////////////////////////////
+  /* update data */
 
 }

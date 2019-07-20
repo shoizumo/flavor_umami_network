@@ -79,17 +79,16 @@ export default class Network {
   }
 
 
-  setVizMode(vizMode){
-    this.vizMode = vizMode;
+
+  render(){
+    this.setLegend();
+    this.setLink();
+    this.setNode();
+    this.setLabel();
+    this.setSimulation();
+    this.setMouseAction();
   }
 
-  color(n) {
-    return this.legendColor[n];
-  };
-
-  deleteContents(){
-    this.svg.selectAll("*").remove();
-  }
 
   setLegend() {
     this.legend = this.svg
@@ -127,14 +126,6 @@ export default class Network {
         // .attr("class", "textselected")
         .style("text-anchor", "start")
         .style("font-size", 15);
-  }
-
-
-  render(){
-    this.setLink();
-    this.setNode();
-    this.setLabel();
-    this.setSimulation();
   }
 
 
@@ -242,7 +233,7 @@ export default class Network {
         .force("y", d3.forceY().strength(0.35).y(this.centerY));
 
 
-    this.simulation.alpha([0.7])
+    this.simulation.alpha([0.7]);
     if (this.dataType === 'Umami' ) {
       Update.umamiSimulation(this.simulation, this.centerX, this.centerY);
       this.simulation.alpha([0.3])
@@ -259,228 +250,6 @@ export default class Network {
   }
 
 
-  ////////////////////////////////////////////////////////////////////
-  // tick event
-  ticked() {
-    if (this.zoomScale.scale <= 1) {
-      const marginXright = this.wallMargin - this.zoomScale.X / this.zoomScale.scale;
-      const marginYup = this.wallMargin - this.zoomScale.Y / this.zoomScale.scale;
-
-      const marginXleft = (this.width - this.zoomScale.X) / this.zoomScale.scale - this.wallMargin;
-      const marginYdown = (this.height - this.zoomScale.Y) / this.zoomScale.scale - this.wallMargin;
-
-      this.link
-          .attr("x1", (d) => {
-            return Math.max(marginXright, Math.min(marginXleft, d.source.x));
-          })
-          .attr("y1", (d) => {
-            return Math.max(marginYup, Math.min(marginYdown, d.source.y));
-          })
-          .attr("x2", (d) => {
-            return Math.max(marginXright, Math.min(marginXleft, d.target.x));
-          })
-          .attr("y2", (d) => {
-            return Math.max(marginYup, Math.min(marginYdown, d.target.y));
-          });
-      this.node
-          .attr("cx", (d) => {
-            return Math.max(marginXright, Math.min(marginXleft, d.x));
-          })
-          .attr("cy", (d) => {
-            return Math.max(marginYup, Math.min(marginYdown, d.y));
-          });
-
-      this.label
-          .attr("x", (d) => {
-            return Math.max(marginXright, Math.min(marginXleft, d.x));
-          })
-          .attr("y", (d) => {
-            return Math.max(marginYup, Math.min(marginYdown, d.y));
-          });
-    } else {
-      this.link
-          .attr("x1", (d) => {
-            return d.source.x;
-          })
-          .attr("y1", (d) => {
-            return d.source.y;
-          })
-          .attr("x2", (d) => {
-            return d.target.x;
-          })
-          .attr("y2", (d) => {
-            return d.target.y;
-          });
-      this.node
-          .attr("cx", (d) => {
-            return d.x;
-          })
-          .attr("cy", (d) => {
-            return d.y;
-          });
-
-      this.label
-          .attr("x", (d) => {
-            return d.x;
-          })
-          .attr("y", (d) => {
-            return d.y;
-          });
-    }
-  }
-
-
-  ////////////////////////////////////////////////////////////////////
-  // drag event
-  dragstarted(d) {
-    if (this.vizMode === 'Single') {
-      if (!d3.event.active) this.simulation.alphaTarget(0.3).restart();
-      d.fx = d.x;
-      d.fy = d.y;
-
-      Mouse.mousedown(d.index, this.linkData, this.link, this.node, this.label);
-      Mouse.cursor('grabbing', this.body, this.node);
-    }
-
-    this.isDragging = 1;
-  }
-
-  dragging(d) {
-    if (this.vizMode === 'Single') {
-      d.fx = d3.event.x;
-      d.fy = d3.event.y;
-    }
-  }
-
-  dragended(d) {
-    if (this.vizMode === 'Single') {
-      if (!d3.event.active) this.simulation.alphaTarget(0);
-      d.fx = null;
-      d.fy = null;
-
-      Mouse.mouseup(d.index, this.linkData, this.link, this.node, this.label);
-      Mouse.cursor('grab', this.body, this.node);
-    }
-
-    this.isDragging = 0;
-  }
-
-
-  ////////////////////////////////////////////////////////////////////
-  // zoom event
-  zoom_actions() {
-    this.zoomGroup.attr("transform", d3.event.transform);
-    this.zoomScale = this.getScale();
-  }
-
-  zoom_start() {
-    if (this.vizMode === 'Single') {
-      this.simulation.alphaTarget(0.5).restart();
-    }
-  }
-
-  zoom_end() {
-    if (this.vizMode === 'Single') {
-      this.simulation.alphaTarget(0);
-    }
-  }
-
-
-  getScale() {
-    let scale, X, Y;
-    let scale_ = this.zoomGroup.attr('transform');
-    if (scale_ === "none") {
-      scale = 1.0;
-    } else {
-      let values = scale_.split("scale(")[1];
-      scale = values.split(")")[0];
-
-      let values_ = scale_.split("(")[1];
-      values_ = values_.split(")")[0];
-      values_ = values_.split(",");
-      X = values_[0];
-      Y = values_[1];
-    }
-    return {scale, X, Y};
-  }
-
-
-  ////////////////////////////////////////////////////////////////////
-  // update network data
-  update(selectedType) {
-    this.dataType = selectedType;
-
-    let prevNodePosition = [];
-    if (selectedType === 'Flavor') {
-      Update.flavorSimulation(this.simulation, this.centerX, this.centerY);
-      this.nodeData = this.flavorData.nodes;
-      this.linkData = this.flavorData.links;
-    } else if (selectedType === 'Umami') {
-      Update.umamiSimulation(this.simulation, this.centerX, this.centerY);
-      this.nodeData = this.umamiData.nodes;
-      this.linkData = this.umamiData.links;
-    }
-
-
-    this.simulation.stop();
-    let resDeleteObj;
-    let resAddObj;
-    new Promise((resolve) => {
-
-      resDeleteObj = Update.deleteObj(this.link, this.node, this.label, this.linkData, this.nodeData);
-      setTimeout(() => {
-        resolve(
-            this.link = resDeleteObj.link,
-            this.node = resDeleteObj.node,
-            this.label = resDeleteObj.label,
-            console.log(1)
-        );
-      }, 500);
-
-    }).then(() => {
-
-      resAddObj = Update.addObj(this.link, this.node, this.label, this.nodeData, this.linkData, this.legendColor, this.dragstarted, this.dragging, this.dragended);
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          resolve(
-              this.link = resAddObj.link,
-              this.node = resAddObj.node,
-              this.label = resAddObj.label,
-              console.log(2)
-          )
-        }, 500);
-      });
-
-    }).then(() => {
-
-      prevNodePosition = Update.storePreviousNodePosition(this.node, this.nodeData, prevNodePosition);
-      Update.simulation(this.linkData, this.nodeData, this.simulation, this.ticked.bind(this));
-      console.log(3);
-
-    }).then(() => {
-
-      setTimeout(() => {
-        Update.nodeLabelOpacity(selectedType, this.node, this.label, this.nodeData);
-      }, 500);
-
-
-      this.simulation.tick(30);
-      const t = 3000;
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          resolve(
-              Update.transitNodePosition(this.node, this.label, this.nodeData, prevNodePosition, t),
-              Update.transitLinkPosition(this.link, this.linkData, prevNodePosition, t),
-              console.log(4)
-          )
-        }, 50);
-      });
-    });
-  }
-
-
-  ////////////////////////////////////////////////////////////////////
-  // set mouse action (utility)
   setMouseAction() {
     if (!this.isSp) {
       this.node.on("mouseover", (d) => {
@@ -564,12 +333,265 @@ export default class Network {
 
 
   ////////////////////////////////////////////////////////////////////
-  // comparision mode
-  // getNodeName() {
-  //   console.log(this.nodeInfo.name);
-  //   return this.nodeInfo.name;
-  // }
+  // tick event
+  ticked() {
+    if (this.vizMode === 'Single' && this.zoomScale.scale <= 1) {
+      this.tickBounceWall();
+    } else {
+      this.tickNoBounce();
+    }
+  }
 
+
+  tickBounceWall() {
+    const marginXright = this.wallMargin - this.zoomScale.X / this.zoomScale.scale;
+    const marginYtop = this.wallMargin - this.zoomScale.Y / this.zoomScale.scale;
+
+    const marginXleft = (this.width - this.zoomScale.X) / this.zoomScale.scale - this.wallMargin;
+    const marginYbottom = (this.height - this.zoomScale.Y) / this.zoomScale.scale - this.wallMargin;
+
+    this.link
+        .attr("x1", (d) => {
+          return Math.max(marginXright, Math.min(marginXleft, d.source.x));
+        })
+        .attr("y1", (d) => {
+          return Math.max(marginYtop, Math.min(marginYbottom, d.source.y));
+        })
+        .attr("x2", (d) => {
+          return Math.max(marginXright, Math.min(marginXleft, d.target.x));
+        })
+        .attr("y2", (d) => {
+          return Math.max(marginYtop, Math.min(marginYbottom, d.target.y));
+        });
+    this.node
+        .attr("cx", (d) => {
+          return Math.max(marginXright, Math.min(marginXleft, d.x));
+        })
+        .attr("cy", (d) => {
+          return Math.max(marginYtop, Math.min(marginYbottom, d.y));
+        });
+
+    this.label
+        .attr("x", (d) => {
+          return Math.max(marginXright, Math.min(marginXleft, d.x));
+        })
+        .attr("y", (d) => {
+          return Math.max(marginYtop, Math.min(marginYbottom, d.y));
+        });
+  }
+
+
+  tickNoBounce() {
+    this.link
+        .attr("x1", (d) => {
+          return d.source.x;
+        })
+        .attr("y1", (d) => {
+          return d.source.y;
+        })
+        .attr("x2", (d) => {
+          return d.target.x;
+        })
+        .attr("y2", (d) => {
+          return d.target.y;
+        });
+    this.node
+        .attr("cx", (d) => {
+          return d.x;
+        })
+        .attr("cy", (d) => {
+          return d.y;
+        });
+
+    this.label
+        .attr("x", (d) => {
+          return d.x;
+        })
+        .attr("y", (d) => {
+          return d.y;
+        });
+  }
+
+
+  ////////////////////////////////////////////////////////////////////
+  // drag event
+  dragstarted(d) {
+    if (this.vizMode === 'Single') {
+      if (!d3.event.active) this.simulation.alphaTarget(0.3).restart();
+      d.fx = d.x;
+      d.fy = d.y;
+
+      Mouse.mousedown(d.index, this.linkData, this.link, this.node, this.label);
+      Mouse.cursor('grabbing', this.body, this.node);
+    }
+
+    this.isDragging = 1;
+  }
+
+  dragging(d) {
+    if (this.vizMode === 'Single') {
+      d.fx = d3.event.x;
+      d.fy = d3.event.y;
+    }
+  }
+
+  dragended(d) {
+    if (this.vizMode === 'Single') {
+      if (!d3.event.active) this.simulation.alphaTarget(0);
+      d.fx = null;
+      d.fy = null;
+
+      Mouse.mouseup(d.index, this.linkData, this.link, this.node, this.label);
+      Mouse.cursor('grab', this.body, this.node);
+    }
+
+    this.isDragging = 0;
+  }
+
+
+  ////////////////////////////////////////////////////////////////////
+  // zoom event
+  zoom_actions() {
+    this.zoomGroup.attr("transform", d3.event.transform);
+    this.zoomScale = this.getScale();
+  }
+
+  zoom_start() {
+    if (this.vizMode === 'Single') {
+      this.simulation.alphaTarget(0.5).restart();
+    }
+  }
+
+  zoom_end() {
+    if (this.vizMode === 'Single') {
+      this.simulation.alphaTarget(0);
+    }
+  }
+
+
+  getScale() {
+    let scale, X, Y;
+    let scale_ = this.zoomGroup.attr('transform');
+    if (scale_ === "none") {
+      scale = 1.0;
+    } else {
+      let values = scale_.split("scale(")[1];
+      scale = values.split(")")[0];
+
+      let values_ = scale_.split("(")[1];
+      values_ = values_.split(")")[0];
+      values_ = values_.split(",");
+      X = values_[0];
+      Y = values_[1];
+    }
+    return {scale, X, Y};
+  }
+
+
+  ////////////////////////////////////////////////////////////////////
+  // update network data
+  update(selectedType) {
+    let prevNodePosition = [];
+    this.updateData(selectedType);
+    this.simulation.stop();
+    const updateObjTime = 500;
+    const transitionTime = 3000;
+
+    new Promise((resolve) => {
+      this.updateDeletedObj(resolve, updateObjTime);
+
+    }).then(() => {
+      return this.upadteAddedObj(updateObjTime);
+
+    }).then(() => {
+      return this.upadtePositionData(prevNodePosition);
+
+    }).then(() => {
+      return this.transitPosition(selectedType, prevNodePosition, transitionTime);
+
+    }).then(() => {
+      setTimeout(() => {
+        this.simulation.alphaTarget(0.3).restart();
+        console.log(5)
+      }, transitionTime);
+
+    });
+  }
+
+
+  updateData(selectedType) {
+    this.dataType = selectedType;
+    if (selectedType === 'Flavor') {
+      Update.flavorSimulation(this.simulation, this.centerX, this.centerY);
+      this.nodeData = this.flavorData.nodes;
+      this.linkData = this.flavorData.links;
+    } else if (selectedType === 'Umami') {
+      Update.umamiSimulation(this.simulation, this.centerX, this.centerY);
+      this.nodeData = this.umamiData.nodes;
+      this.linkData = this.umamiData.links;
+    }
+  }
+
+
+  updateDeletedObj(resolve, updateObjTime) {
+    const resDeletedObj = Update.deleteObj(this.link, this.node, this.label, this.linkData, this.nodeData);
+    setTimeout(() => {
+      resolve(
+          this.link = resDeletedObj.link,
+          this.node = resDeletedObj.node,
+          this.label = resDeletedObj.label,
+          console.log(1)
+      );
+    }, updateObjTime);
+  }
+
+
+  upadteAddedObj(updateObjTime) {
+    const resAddedObj = Update.addObj(this.link, this.node, this.label, this.nodeData, this.linkData, this.legendColor, this.dragstarted, this.dragging, this.dragended);
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(
+            this.link = resAddedObj.link,
+            this.node = resAddedObj.node,
+            this.label = resAddedObj.label,
+            console.log(2)
+        )
+      }, updateObjTime);
+    });
+  }
+
+
+  upadtePositionData(prevNodePosition) {
+    return new Promise((resolve) => {
+      resolve(
+          prevNodePosition = Update.storePreviousNodePosition(this.node, this.nodeData, prevNodePosition),
+          Update.simulation(this.linkData, this.nodeData, this.simulation, this.ticked.bind(this)),
+          console.log(3)
+      )
+    });
+  }
+
+
+  transitPosition(selectedType, prevNodePosition, transitionTime) {
+    setTimeout(() => {
+      Update.nodeLabelOpacity(selectedType, this.node, this.label, this.nodeData);
+    }, 500);
+
+    this.simulation.tick(30);
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(
+            Update.transitNodePosition(this.node, this.label, this.nodeData, prevNodePosition, transitionTime),
+            Update.transitLinkPosition(this.link, this.linkData, prevNodePosition, transitionTime),
+            console.log(4)
+        )
+      }, 50);
+    });
+  }
+
+
+  ////////////////////////////////////////////////////////////////////
+  // utility
   detectNodeIndex(nodeName) {
     for (let i = 0, l = this.nodeData.length; l > i; i++) {
       if (this.nodeData[i].name === nodeName) {
@@ -577,6 +599,19 @@ export default class Network {
       }
     }
   }
+
+  setVizMode(vizMode){
+    this.vizMode = vizMode;
+  }
+
+  color(n) {
+    return this.legendColor[n];
+  };
+
+  deleteContents(){
+    this.svg.selectAll("*").remove();
+  }
+
 
 
   /*

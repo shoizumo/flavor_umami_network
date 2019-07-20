@@ -32,9 +32,7 @@ import Connection from "./Connection";
 
   // Base graph
   networkMain = new Network(flavorData, umamiData, isSp, '#graphMain', 'Flavor', 'Single', 'Main', nodeInfo);
-  networkMain.setLegend();
   networkMain.render();
-  networkMain.setMouseAction();
 
 
   function watchMouseAction(obj, propName, func) {
@@ -99,9 +97,7 @@ import Connection from "./Connection";
 
       const dataType = networkMain.dataType === 'Flavor' ? 'Umami' : 'Flavor';
       networkSub = new Network(flavorData, umamiData, isSp, '#graphSub', dataType, 'Multi', 'Sub', nodeInfo);
-      networkSub.setLegend();
       networkSub.render();
-      networkSub.setMouseAction();
 
       networkSub.svg
           .transition()
@@ -136,17 +132,17 @@ import Connection from "./Connection";
       setTimeout(() => {
         networkSub.deleteContents();
         networkSub.svg.attr("style", "outline: 0px;");
-        document.getElementById("detailMain").style.display = 'none';
-        document.getElementById("detailSub").style.display = 'none';
       }, 500);
+
+      document.getElementById("detailMain").style.display = 'none';
+      document.getElementById("detailSub").style.display = 'none';
 
     }
 
   }, false);
 
 
-
-
+  
   const dataTypeSelector = document.getElementById('dataType');
   dataTypeSelector.onchange = function () {
     const selectedType = this.options[this.selectedIndex].value;
