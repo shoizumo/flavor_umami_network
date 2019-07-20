@@ -227,7 +227,7 @@ select::-ms-expand {
   height: 325px * 2;
   grid-template-columns: 500px 500px;
   grid-template-rows: 325px 325px;
-  display: block;
+  display: grid;
 }
 
 //.networkFlavor{

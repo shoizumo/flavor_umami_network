@@ -1,4 +1,5 @@
 import * as d3 from 'd3';
+import Connection from "./Connection";
 
 export default class Mouse {
 
@@ -39,7 +40,7 @@ export default class Mouse {
   }
 
 
-  static mousedown(nodeIndex, linkData, linkLine, nodeCircle, nodeText) {
+  static mousedown(nodeIndex, linkData, linkLine, nodeCircle) {
     // make node non-drag
     d3.selectAll(nodeCircle)['_groups'][0].attr("class", "nodeColorFadeNonDrag");
 
@@ -95,6 +96,54 @@ export default class Mouse {
     body.style("cursor", "-webkit-" + grabTypeBody);
     body.style("cursor", "-moz-" + grabTypeBody);
     body.style("cursor", grabTypeBody);
+  }
+
+
+  static watchMouseAction(obj, propName, networkMain, networkSub) {
+    let value = obj[propName];
+    Object.defineProperty(obj, propName, {
+      get: () => value,
+      set: newValue => {
+        const oldValue = value;
+        value = newValue;
+        Mouse.onChange(oldValue, obj, networkMain, networkSub);
+      },
+      configurable: true
+    });
+  }
+
+  static onChange(oldVal, obj, networkMain, networkSub) {
+    if (networkMain.vizMode === 'Single') return;
+    // console.log(oldVal, obj);
+    let anotherNetwork;
+    if(obj.network === 'Main'){
+      anotherNetwork = networkSub;
+    }else{
+      anotherNetwork = networkMain;
+    }
+    console.log(anotherNetwork.vizMode,
+        anotherNetwork.dataType === 'Flavor' ? 'U' : 'F', obj.mouseAction);
+
+    if (obj.mouseAction === 'mouseenter') {
+      Mouse.reset(anotherNetwork.linkData, anotherNetwork.link, anotherNetwork.node, anotherNetwork.label);
+      Mouse.cursor(anotherNetwork.vizMode === 'Single' ?'grab' : 'pointer', anotherNetwork.body, anotherNetwork.node);
+      return;
+    }
+
+    const index = anotherNetwork.detectNodeIndex(obj.name);
+    if (obj.mouseAction === 'mouseover') {
+      Mouse.mouseover(index, anotherNetwork.linkData, anotherNetwork.link, anotherNetwork.node, anotherNetwork.label);
+
+      let M = Connection.makeNodeList(networkMain.detectNodeIndex(obj.name), networkMain.linkData);
+      let S = Connection.makeNodeList(networkSub.detectNodeIndex(obj.name), networkSub.linkData);
+
+      Connection.displayDetail(obj.name, M.sameNodes, M.diffNodes, 'detailMain');
+      Connection.displayDetail(obj.name, S.sameNodes, S.diffNodes, 'detailSub');
+
+
+    } else if (obj.mouseAction === 'mouseout') {
+      Mouse.mouseout(anotherNetwork.linkData, anotherNetwork.link, anotherNetwork.node, anotherNetwork.label);
+    }
   }
 
 }

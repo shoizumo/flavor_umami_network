@@ -1,9 +1,8 @@
 import * as d3 from 'd3';
 
 export default class Update {
-
   ///////////////////////////////////////////////////////////////////////////////////////
-  /* update data */
+  /* Update Data */
   static deleteObj(linkLine, nodeCircle, nodeText, linkData, nodeData) {
     return {
       link: Update.deleteLinkData(linkLine, linkData),
@@ -106,7 +105,7 @@ export default class Update {
             .on("end", dragended))
         .merge(nodeCircle);
 
-    nodeCircle
+    // nodeCircle
         // .transition()
         // .duration(1000)
         // .ease(d3.easeLinear)
@@ -144,7 +143,7 @@ export default class Update {
         .attr("font-weight", "300")
         .attr("class", "nonDrag")
         .attr("fill", "#352622")
-        .attr({"font-family": ["Futura", "Nunito", "Helvetica Neue", "Arial", "sans-serif"]})
+        .attr({"font-family": ["Futura", "Nunito", "Helvetica Neue", "Arial", "sans-serif"]});
 
      // nodeText.transition()
      //    .duration(1000)
@@ -266,6 +265,68 @@ export default class Update {
 
 
   ///////////////////////////////////////////////////////////////////////////////////////
-  /* update data */
+  /* Update Mode */
+  // multi mode
+  static multiMode(networkMain, networkSub, duration){
+    Update.multiModeNetwork(networkMain, duration);
+    Update.multiModeNetwork(networkSub, duration);
+    Update.multiModeGrid(duration);
+  }
+
+
+  static multiModeNetwork(network, duration){
+    network.svg
+          .transition()
+          .duration(duration)
+          .ease(d3.easeLinear)
+          .attr("width", network.width / 2 - 1)
+          .attr("height", network.height / 2 - 1);
+
+      network.setVizMode('Multi');
+  }
+
+
+  static multiModeGrid(duration) {
+    // document.getElementById("visGrid").style.display = 'grid';
+    setTimeout(() => {
+      document.getElementById("detailMain").style.display = 'block';
+      document.getElementById("detailSub").style.display = 'block';
+    }, duration);
+  }
+
+
+  // single mode
+  static singleMode(networkMain, networkSub, duration) {
+    Update.singleModeNetwork(networkMain, duration);
+    Update.singleModeNetwork(networkSub, duration);
+    Update.deleteNetwork(networkSub, duration);
+    Update.singleModeGrid();
+  }
+
+
+  static singleModeNetwork(network, duration) {
+    network.setVizMode('Single');
+    network.svg
+        .transition()
+        .duration(duration)
+        .ease(d3.easeLinear)
+        .attr("width", network.vizID === 'Main' ? network.width : 0)
+        .attr("height", network.vizID === 'Main' ? network.height : 0);
+  }
+
+
+  static deleteNetwork(network, duration) {
+    setTimeout(() => {
+      network.deleteContents();
+      network.svg.attr("style", "outline: 0px;");
+    }, duration);
+  }
+
+
+  static singleModeGrid() {
+      document.getElementById("detailMain").style.display = 'none';
+      document.getElementById("detailSub").style.display = 'none';
+  }
+
 
 }

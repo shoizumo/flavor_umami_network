@@ -1,8 +1,6 @@
 import * as d3 from 'd3';
-
 import Mouse from './Mouse';
 import Update from './Update'
-
 
 export default class Network {
   constructor(flavorData, umamiData, isSp, svgID, dataType, vizMode, vizID, nodeInfo) {
@@ -262,8 +260,8 @@ export default class Network {
           // if(this.nodeInfo.name !== d.name){
           //   this.nodeInfo.name = d.name;
           // }
-          this.nodeInfo.network = this.vizID;
           this.nodeInfo.name = d.name;
+          this.nodeInfo.network = this.vizID;
           this.nodeInfo.mouseAction = 'mouseover';  // event trigger
         }
       });
@@ -271,6 +269,7 @@ export default class Network {
       this.node.on("mouseout", () => {
         if (this.isDragging === 0){
           Mouse.mouseout(this.linkData, this.link, this.node, this.label);
+          this.nodeInfo.network = this.vizID;
           this.nodeInfo.mouseAction = 'mouseout';  // event trigger
         }
       });
@@ -278,6 +277,7 @@ export default class Network {
 
       this.node.on("click", (d) => {
         console.log('click', d.name);
+        this.nodeInfo.network = this.vizID;
         this.nodeInfo.mouseAction = 'click';  // event trigger
       });
 
@@ -292,6 +292,7 @@ export default class Network {
       this.svg.on("mouseenter", () => {
         Mouse.reset(this.linkData, this.link, this.node, this.label);
         Mouse.cursor(this.vizMode === 'Single' ?'grab' : 'pointer', this.body, this.node);
+        this.nodeInfo.network = this.vizID;
         this.nodeInfo.mouseAction = 'mouseenter';  // event trigger
       });
     }
@@ -421,7 +422,7 @@ export default class Network {
       d.fx = d.x;
       d.fy = d.y;
 
-      Mouse.mousedown(d.index, this.linkData, this.link, this.node, this.label);
+      Mouse.mousedown(d.index, this.linkData, this.link, this.node);
       Mouse.cursor('grabbing', this.body, this.node);
     }
 
