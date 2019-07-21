@@ -271,6 +271,7 @@ export default class Update {
     Update.multiModeNetwork(networkMain, duration);
     Update.multiModeNetwork(networkSub, duration);
     Update.multiModeGrid(duration);
+    networkMain.setMouseAction();
   }
 
 
@@ -301,6 +302,7 @@ export default class Update {
     Update.singleModeNetwork(networkSub, duration);
     Update.deleteNetwork(networkSub, duration);
     Update.singleModeGrid();
+    networkMain.setMouseAction();
   }
 
 

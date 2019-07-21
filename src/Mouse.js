@@ -3,7 +3,7 @@ import Connection from "./Connection";
 
 export default class Mouse {
 
-  static mouseover(nodeIndex, linkData, linkLine, nodeCircle, nodeText) {
+  static fadeClickable(nodeIndex, linkData, linkLine, nodeCircle, nodeText) {
     // at first, make all node & line fade
     d3.selectAll(nodeCircle)['_groups'][0].attr("class", "nodeColorFade");
     d3.selectAll(linkLine)['_groups'][0].attr("class", "lineColorFade");
@@ -35,14 +35,11 @@ export default class Mouse {
   }
 
 
-  static mouseout(linkData, linkLine, nodeCircle, nodeText) {
-    Mouse.reset(linkData, linkLine, nodeCircle, nodeText)
-  }
-
-
-  static mousedown(nodeIndex, linkData, linkLine, nodeCircle) {
+  static fadeNoClick(nodeIndex, linkData, linkLine, nodeCircle, nodeText) {
     // make node non-drag
     d3.selectAll(nodeCircle)['_groups'][0].attr("class", "nodeColorFadeNonDrag");
+    d3.selectAll(linkLine)['_groups'][0].attr("class", "lineColorFade");
+    d3.selectAll(nodeText)['_groups'][0].attr("class", "nodeTextFade");
 
     for (let i = 0, l = linkData.length; l > i; i++) {
       if (linkData[i].source.index === nodeIndex ||
@@ -52,19 +49,55 @@ export default class Mouse {
         const nodeSource = linkData[lineIndex].source.index;
         const nodeTarget = linkData[lineIndex].target.index;
 
+        // line
+        const selectLine = linkLine['_groups'][0][lineIndex];
+        selectLine.setAttribute('class', 'lineColor');
+        // node
         nodeCircle['_groups'][0][nodeSource].setAttribute("class", "nodeColor");
         nodeCircle['_groups'][0][nodeTarget].setAttribute("class", "nodeColor");
+        // text
+        nodeText['_groups'][0][nodeSource].setAttribute("class", "linkedNodeText");
+        nodeText['_groups'][0][nodeTarget].setAttribute("class", "linkedNodeText");
       }
     }
     // selectNode
     nodeCircle['_groups'][0][nodeIndex].setAttribute("class", "nodeColor");
+    // selectNodeText
+    nodeText['_groups'][0][nodeIndex].setAttribute("class", "linkedNodeText");
   }
 
 
-  static mouseup(nodeIndex, linkData, linkLine, nodeCircle, nodeText) {
-     Mouse.reset(linkData, linkLine, nodeCircle, nodeText);
-     Mouse.mouseover(nodeIndex, linkData, linkLine, nodeCircle, nodeText);
+  static noFadeNoClick(nodeIndex, linkData, linkLine, nodeCircle, nodeText) {
+    for (let i = 0, l = linkData.length; l > i; i++) {
+      if (linkData[i].source.index === nodeIndex ||
+          linkData[i].target.index === nodeIndex) {
+
+        const lineIndex = i;
+        const nodeSource = linkData[lineIndex].source.index;
+        const nodeTarget = linkData[lineIndex].target.index;
+
+        // line
+        const selectLine = linkLine['_groups'][0][lineIndex];
+        selectLine.setAttribute('class', 'lineColor');
+        // node
+        nodeCircle['_groups'][0][nodeSource].setAttribute("class", "nodeColor");
+        nodeCircle['_groups'][0][nodeTarget].setAttribute("class", "nodeColor");
+        // text
+        nodeText['_groups'][0][nodeSource].setAttribute("class", "linkedNodeText");
+        nodeText['_groups'][0][nodeTarget].setAttribute("class", "linkedNodeText");
+      }
+    }
+    // selectNode
+    nodeCircle['_groups'][0][nodeIndex].setAttribute("class", "nodeColor");
+    // selectNodeText
+    nodeText['_groups'][0][nodeIndex].setAttribute("class", "linkedNodeText");
   }
+
+
+  // static mouseup(nodeIndex, linkData, linkLine, nodeCircle, nodeText) {
+  //    Mouse.reset(linkData, linkLine, nodeCircle, nodeText);
+  //    Mouse.fadeClickable(nodeIndex, linkData, linkLine, nodeCircle, nodeText);
+  // }
 
 
   static reset(linkData, linkLine, nodeCircle, nodeText) {
@@ -121,8 +154,8 @@ export default class Mouse {
     }else{
       anotherNetwork = networkMain;
     }
-    console.log(anotherNetwork.vizMode,
-        anotherNetwork.dataType === 'Flavor' ? 'U' : 'F', obj.mouseAction);
+    // console.log(anotherNetwork.vizMode,
+    //     anotherNetwork.dataType === 'Flavor' ? 'U' : 'F', obj.mouseAction);
 
     if (obj.mouseAction === 'mouseenter') {
       Mouse.reset(anotherNetwork.linkData, anotherNetwork.link, anotherNetwork.node, anotherNetwork.label);
@@ -132,7 +165,7 @@ export default class Mouse {
 
     const index = anotherNetwork.detectNodeIndex(obj.name);
     if (obj.mouseAction === 'mouseover') {
-      Mouse.mouseover(index, anotherNetwork.linkData, anotherNetwork.link, anotherNetwork.node, anotherNetwork.label);
+      Mouse.fadeClickable(index, anotherNetwork.linkData, anotherNetwork.link, anotherNetwork.node, anotherNetwork.label);
 
       let M = Connection.makeNodeList(networkMain.detectNodeIndex(obj.name), networkMain.linkData);
       let S = Connection.makeNodeList(networkSub.detectNodeIndex(obj.name), networkSub.linkData);
@@ -141,8 +174,14 @@ export default class Mouse {
       Connection.displayDetail(obj.name, S.sameNodes, S.diffNodes, 'detailSub');
 
 
-    } else if (obj.mouseAction === 'mouseout') {
-      Mouse.mouseout(anotherNetwork.linkData, anotherNetwork.link, anotherNetwork.node, anotherNetwork.label);
+    }
+
+    else if (obj.mouseAction === 'mouseout') {
+      Mouse.reset(anotherNetwork.linkData, anotherNetwork.link, anotherNetwork.node, anotherNetwork.label);
+    }
+
+    else if (obj.mouseAction === 'click') {
+      anotherNetwork.clickedNodeIndex = networkSub.detectNodeIndex(obj.name);
     }
   }
 

@@ -1,6 +1,7 @@
 import * as d3 from 'd3';
 import Mouse from './Mouse';
 import Update from './Update'
+import Connection from "./Connection";
 
 export default class Network {
   constructor(flavorData, umamiData, isSp, svgID, dataType, vizMode, vizID, nodeInfo) {
@@ -39,7 +40,10 @@ export default class Network {
     this.simulation = d3.forceSimulation();
 
     this.nodeInfo = nodeInfo;
+    this.clickedNodeIndex = -1;
+    this.isClicked = 0;
     this.isDragging = 0;
+
     this.mouseoutSetTimeout = '';
     this.mouseoutSetTimeoutDuration = 1000;
 
@@ -78,8 +82,7 @@ export default class Network {
   }
 
 
-
-  render(){
+  render() {
     this.setLegend();
     this.setLink();
     this.setNode();
@@ -233,7 +236,7 @@ export default class Network {
 
 
     this.simulation.alpha([0.7]);
-    if (this.dataType === 'Umami' ) {
+    if (this.dataType === 'Umami') {
       Update.umamiSimulation(this.simulation, this.centerX, this.centerY);
       this.simulation.alpha([0.3])
     }
@@ -250,90 +253,268 @@ export default class Network {
 
 
   setMouseAction() {
-    if (!this.isSp) {
-      this.node.on("mouseover", (d) => {
-        // Mouse.mouseover(d.index, this.linkData, this.link, this.node, this.label);
-
-        if (this.isDragging === 0) {
-          Mouse.mouseover(d.index, this.linkData, this.link, this.node, this.label);
-          clearInterval(this.mouseoutSetTimeout);
-          console.log('clearInterval');
-
-          this.nodeInfo.name = d.name;
-          this.nodeInfo.network = this.vizID;
-          this.nodeInfo.mouseAction = 'mouseover';  // event trigger
-        }
-      });
-
-      this.node.on("mouseout", () => {
-        if (this.isDragging === 0){
-          this.mouseoutSetTimeout = setTimeout(() => {
-            Mouse.mouseout(this.linkData, this.link, this.node, this.label);
-            this.nodeInfo.network = this.vizID;
-            this.nodeInfo.mouseAction = 'mouseout';  // event trigger
-
-            console.log('mouseout')
-          }, this.mouseoutSetTimeoutDuration);
-        }
-      });
-
-
-      this.node.on("click", (d) => {
-        console.log('click', d.name);
-        this.nodeInfo.network = this.vizID;
-        this.nodeInfo.mouseAction = 'click';  // event trigger
-      });
-
-
-      // d3.select("body").on("mouseup", () => {
-      //   console.log('mouseup')
-      //   Mouse.reset(this.linkData, this.link, this.node, this.label);
-      //   Mouse.cursor('grab', this.body, this.node);
-      //
-      // });
-
-      this.svg.on("mouseenter", () => {
-        Mouse.reset(this.linkData, this.link, this.node, this.label);
-        Mouse.cursor(this.vizMode === 'Single' ?'grab' : 'pointer', this.body, this.node);
-        this.nodeInfo.network = this.vizID;
-        this.nodeInfo.mouseAction = 'mouseenter';  // event trigger
-      });
+    if (this.vizMode === 'Single') {
+      this.setMouseActionSingle();
+    }else{
+      this.setMouseActionMulti();
     }
-
-    /////////////////////////////////////////////////////////////
-    // for SmartPhone
-
-    // if (this.isSp) {
-    //   let touchColored = 0;
-    //   let touchmove = 0;
-    //   this.svg.on("touchmove", () => {
-    //     touchmove = 1
-    //   });
-    //
-    //   this.node.on("touchstart", (d) => {
-    //     Mouse.touchStart(d.index, this.linkData, this.link, this.node, this.label);
-    //   });
-    //
-    //   node.on("touchend", () => {
-    //     touchColored = 0;
-    //   });
-    //
-    //   this.svg.on("touchstart", () => {
-    //     touchColored = 1;
-    //   });
-    //
-    //   this.svg.on("touchend", () => {
-    //     if (touchmove === 0) {
-    //       if (touchColored === 1) {
-    //         this.node.attr("class", "nodeReturnFade");
-    //         this.link.attr("class", "lineReturnFade");
-    //         this.label.attr("class", "nodeTextReturnFade");
-    //       }
-    //     }
-    //     touchmove = 0
-    //   });
-    // }
   }
+
+
+
+  setMouseActionSingle() {
+    this.node.on("mouseover", (d) => {
+      if (this.isDragging === 0) {
+       this.mouseover(d);
+       console.log('single', 'mouseover');
+      }
+    });
+
+
+    this.node.on("mouseout", () => {
+      if (this.isDragging === 0) {
+        this.mouseoutSetTimeout = setTimeout(() => {
+          this.mouseout();
+        }, this.mouseoutSetTimeoutDuration);
+      }
+    });
+
+
+    this.svg.on("mouseenter", () => {
+      this.mouseenter();
+    });
+
+  }
+
+
+  setMouseActionMulti() {
+    this.node.on("mouseover", (d) => {
+      // if (this.isClicked !== 0 && d.index === this.clickedNodeIndex) return;
+
+      if (this.isClicked === 0){
+        this.mouseover(d);
+        console.log('multi', 'mouseover1');
+      }
+      else{
+        if (d.index !== this.clickedNodeIndex) {
+          this.mouseover2nd(this.clickedNodeIndex, d.index);
+
+          // this.mouseover(d);
+          console.log('multi', 'mouseover2');
+        }
+      }
+
+
+    });
+
+
+    this.node.on("mouseout", (d) => {
+      if (this.isClicked === 0) {
+        this.mouseoutSetTimeout = setTimeout(() => {
+          console.log('reset', this.isClicked, 'this.isClicked === 0');
+          this.mouseout();
+          Connection.removeDetail('detailMain');
+          Connection.removeDetail('detailSub')
+
+        }, this.mouseoutSetTimeoutDuration);
+      }
+      // clicked(fade node cannot be clicked)
+      else {
+        if (d.index !== this.clickedNodeIndex) {
+          console.log('reset', this.isClicked, 'this.isClicked === 1');
+          this.mouseout();
+
+          Mouse.fadeNoClick(this.clickedNodeIndex, this.linkData, this.link, this.node, this.label);
+        }
+      }
+    });
+
+
+    this.node.on("click", (d) => {
+      console.log('click');
+      this.mouseclick(d);
+    });
+
+
+    this.svg.on("mouseenter", () => {
+      if (this.isClicked === 0) {
+        this.mouseenter();
+      }
+    });
+
+  }
+
+
+  mouseover(d) {
+    Mouse.fadeClickable(d.index, this.linkData, this.link, this.node, this.label);
+    clearInterval(this.mouseoutSetTimeout);
+
+    this.nodeInfo.name = d.name;
+    this.nodeInfo.network = this.vizID;
+    this.nodeInfo.mouseAction = 'mouseover';  // event trigger
+  }
+
+  mouseover2nd(oldIndex, newIndex) {
+    Mouse.fadeNoClick(newIndex, this.linkData, this.link, this.node, this.label);
+    Mouse.noFadeNoClick(oldIndex, this.linkData, this.link, this.node, this.label);
+    clearInterval(this.mouseoutSetTimeout);
+  }
+
+  mouseout() {
+    Mouse.reset(this.linkData, this.link, this.node, this.label);
+    this.nodeInfo.network = this.vizID;
+    this.nodeInfo.mouseAction = 'mouseout';  // event trigger
+  }
+
+  mouseenter() {
+    Mouse.reset(this.linkData, this.link, this.node, this.label);
+    Mouse.cursor(this.vizMode === 'Single' ? 'grab' : 'pointer', this.body, this.node);
+    this.nodeInfo.network = this.vizID;
+    this.nodeInfo.mouseAction = 'mouseenter';  // event trigger
+  }
+
+  mouseclick(d) {
+    Mouse.fadeNoClick(d.index, this.linkData, this.link, this.node, this.label);
+    this.isClicked = 1;
+    this.clickedNodeIndex = d.index;
+    this.nodeInfo.network = this.vizID;
+    this.nodeInfo.mouseAction = 'click';  // event trigger
+  }
+
+
+
+
+
+
+  // setMouseAction() {
+  //   if (!this.isSp) {
+  //     /* multi & single mode */
+  //     this.node.on("mouseover", (d) => {
+  //       // multi
+  //       if (this.vizMode === 'Single') {
+  //         if (this.isDragging === 0) {
+  //           Mouse.fadeClickable(d.index, this.linkData, this.link, this.node, this.label);
+  //           clearInterval(this.mouseoutSetTimeout);
+  //
+  //           this.nodeInfo.name = d.name;
+  //           this.nodeInfo.network = this.vizID;
+  //           this.nodeInfo.mouseAction = 'mouseover';  // event trigger
+  //         }
+  //       }// multi(click / not click)
+  //       else {
+  //
+  //       }
+  //
+  //
+  //
+  //     });
+  //
+  //
+  //     /* multi & single mode */
+  //     this.node.on("mouseout", (d) => {
+  //       // single(not drag)
+  //       if (this.vizMode === 'Single') {
+  //         if (this.isDragging === 0) {
+  //           this.mouseoutSetTimeout = setTimeout(() => {
+  //             Mouse.reset(this.linkData, this.link, this.node, this.label);
+  //             this.nodeInfo.network = this.vizID;
+  //             this.nodeInfo.mouseAction = 'mouseout';  // event trigger
+  //           }, this.mouseoutSetTimeoutDuration);
+  //         }
+  //       }
+  //       // multi(click / not click)
+  //       else {
+  //         if (this.vizMode === 'Multi') {
+  //           // not clicked(fade node can be clicked)
+  //           if (this.isClicked === 0) {
+  //             console.log('reset', this.isClicked, 'this.isClicked === 0');
+  //             this.mouseoutSetTimeout = setTimeout(() => {
+  //               Mouse.reset(this.linkData, this.link, this.node, this.label);
+  //               this.nodeInfo.network = this.vizID;
+  //               this.nodeInfo.mouseAction = 'mouseout';  // event trigger
+  //             }, this.mouseoutSetTimeoutDuration);
+  //           }
+  //           // clicked(fade node cannot be clicked)
+  //           else {
+  //             if (d.index !== this.clickedNodeIndex) {
+  //               console.log('reset', this.isClicked, 'this.isClicked === 1');
+  //               Mouse.reset(this.linkData, this.link, this.node, this.label);
+  //               Mouse.fadeNoClick(d.index, this.linkData, this.link, this.node, this.label);
+  //               this.nodeInfo.network = this.vizID;
+  //               this.nodeInfo.mouseAction = 'mouseout';  // event trigger
+  //             }
+  //           }
+  //
+  //         }
+  //       }
+  //     });
+  //
+  //
+  //     /* multi mode */
+  //     this.node.on("click", (d) => {
+  //       if (this.vizMode === 'Multi') {
+  //         Mouse.fadeNoClick(d.index, this.linkData, this.link, this.node, this.label);
+  //         this.isClicked = 1;
+  //         this.clickedNodeIndex = d.index;
+  //         this.nodeInfo.network = this.vizID;
+  //         this.nodeInfo.mouseAction = 'click';  // event trigger
+  //       }
+  //     });
+  //
+  //
+  //     // d3.select("body").on("mouseup", () => {
+  //     //   console.log('mouseup')
+  //     //   Mouse.reset(this.linkData, this.link, this.node, this.label);
+  //     //   Mouse.cursor('grab', this.body, this.node);
+  //     //
+  //     // });
+  //
+  //
+  //     /* multi & single mode */
+  //     this.svg.on("mouseenter", () => {
+  //       if (this.isClicked === 0) {
+  //         Mouse.reset(this.linkData, this.link, this.node, this.label);
+  //         Mouse.cursor(this.vizMode === 'Single' ? 'grab' : 'pointer', this.body, this.node);
+  //         this.nodeInfo.network = this.vizID;
+  //         this.nodeInfo.mouseAction = 'mouseenter';  // event trigger
+  //       }
+  //     });
+  //   }
+  //
+  //   /////////////////////////////////////////////////////////////
+  //   // for SmartPhone
+  //
+  //   // if (this.isSp) {
+  //   //   let touchColored = 0;
+  //   //   let touchmove = 0;
+  //   //   this.svg.on("touchmove", () => {
+  //   //     touchmove = 1
+  //   //   });
+  //   //
+  //   //   this.node.on("touchstart", (d) => {
+  //   //     Mouse.touchStart(d.index, this.linkData, this.link, this.node, this.label);
+  //   //   });
+  //   //
+  //   //   node.on("touchend", () => {
+  //   //     touchColored = 0;
+  //   //   });
+  //   //
+  //   //   this.svg.on("touchstart", () => {
+  //   //     touchColored = 1;
+  //   //   });
+  //   //
+  //   //   this.svg.on("touchend", () => {
+  //   //     if (touchmove === 0) {
+  //   //       if (touchColored === 1) {
+  //   //         this.node.attr("class", "nodeReturnFade");
+  //   //         this.link.attr("class", "lineReturnFade");
+  //   //         this.label.attr("class", "nodeTextReturnFade");
+  //   //       }
+  //   //     }
+  //   //     touchmove = 0
+  //   //   });
+  //   // }
+  // }
 
 
   ////////////////////////////////////////////////////////////////////
@@ -425,7 +606,7 @@ export default class Network {
       d.fx = d.x;
       d.fy = d.y;
 
-      Mouse.mousedown(d.index, this.linkData, this.link, this.node);
+      Mouse.fadeNoClick(d.index, this.linkData, this.link, this.node, this.label);
       Mouse.cursor('grabbing', this.body, this.node);
     }
 
@@ -445,7 +626,8 @@ export default class Network {
       d.fx = null;
       d.fy = null;
 
-      Mouse.mouseup(d.index, this.linkData, this.link, this.node, this.label);
+      Mouse.reset(this.linkData, this.link, this.node, this.label);
+      Mouse.fadeClickable(d.index, this.linkData, this.link, this.node, this.label);
       Mouse.cursor('grab', this.body, this.node);
     }
 
@@ -604,7 +786,7 @@ export default class Network {
     }
   }
 
-  setVizMode(vizMode){
+  setVizMode(vizMode) {
     this.vizMode = vizMode;
   }
 
@@ -612,10 +794,9 @@ export default class Network {
     return this.legendColor[n];
   };
 
-  deleteContents(){
+  deleteContents() {
     this.svg.selectAll("*").remove();
   }
-
 
 
   /*
