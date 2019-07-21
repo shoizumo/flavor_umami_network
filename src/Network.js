@@ -4,6 +4,7 @@ import Update from './Update'
 
 export default class Network {
   constructor(flavorData, umamiData, isSp, svgID, dataType, vizMode, vizID, nodeInfo) {
+    this.isSp = isSp;
     this.flavorData = flavorData;
     this.umamiData = umamiData;
 
@@ -22,8 +23,6 @@ export default class Network {
 
     this.body = d3.select("body");
     this.svg = d3.select(svgID);
-    // this.scaleRatio = 1.0;
-    this.zoomScale = {'scale': 1.0, 'X': 0, 'Y': 0};
 
     this.svg
         .attr("style", "outline: 1px solid #ff8e1e;")
@@ -41,6 +40,8 @@ export default class Network {
 
     this.nodeInfo = nodeInfo;
     this.isDragging = 0;
+    this.mouseoutSetTimeout = '';
+    this.mouseoutSetTimeoutDuration = 1000;
 
 
     this.legend = '';
@@ -55,8 +56,8 @@ export default class Network {
     this.wallMargin = 7.5;
 
 
-    this.isSp = isSp;
-
+    // this.scaleRatio = 1.0;
+    this.zoomScale = {'scale': 1.0, 'X': 0, 'Y': 0};
     this.zoomGroup = this.svg.append("g");
     this.zoom_handler = d3.zoom()
         .scaleExtent([0.5, 2])
@@ -255,11 +256,9 @@ export default class Network {
 
         if (this.isDragging === 0) {
           Mouse.mouseover(d.index, this.linkData, this.link, this.node, this.label);
+          clearInterval(this.mouseoutSetTimeout);
+          console.log('clearInterval');
 
-          // 内容が変わったときだけ変更する必要はない
-          // if(this.nodeInfo.name !== d.name){
-          //   this.nodeInfo.name = d.name;
-          // }
           this.nodeInfo.name = d.name;
           this.nodeInfo.network = this.vizID;
           this.nodeInfo.mouseAction = 'mouseover';  // event trigger
@@ -268,9 +267,13 @@ export default class Network {
 
       this.node.on("mouseout", () => {
         if (this.isDragging === 0){
-          Mouse.mouseout(this.linkData, this.link, this.node, this.label);
-          this.nodeInfo.network = this.vizID;
-          this.nodeInfo.mouseAction = 'mouseout';  // event trigger
+          this.mouseoutSetTimeout = setTimeout(() => {
+            Mouse.mouseout(this.linkData, this.link, this.node, this.label);
+            this.nodeInfo.network = this.vizID;
+            this.nodeInfo.mouseAction = 'mouseout';  // event trigger
+
+            console.log('mouseout')
+          }, this.mouseoutSetTimeoutDuration);
         }
       });
 
