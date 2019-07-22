@@ -251,7 +251,8 @@ export default class Network {
 
   }
 
-
+  ////////////////////////////////////////////////////////////////////////////////////////////
+  // mouse action
   setMouseAction() {
     if (this.vizMode === 'Single') {
       this.setMouseActionSingle();
@@ -259,7 +260,6 @@ export default class Network {
       this.setMouseActionMulti();
     }
   }
-
 
 
   setMouseActionSingle() {
@@ -289,21 +289,18 @@ export default class Network {
 
   setMouseActionMulti() {
     this.node.on("mouseover", (d) => {
-      // if (this.isClicked !== 0 && d.index === this.clickedNodeIndex) return;
 
       if (this.isClicked === 0){
         this.mouseover(d);
         console.log('multi', 'mouseover1');
       }
       else{
+        // if (d.index === this.clickedNodeIndex) -> no action
         if (d.index !== this.clickedNodeIndex) {
-          this.mouseover2nd(this.clickedNodeIndex, d.index);
-
-          // this.mouseover(d);
+          this.mouseover2nd(this.clickedNodeIndex, d);
           console.log('multi', 'mouseover2');
         }
       }
-
 
     });
 
@@ -311,20 +308,19 @@ export default class Network {
     this.node.on("mouseout", (d) => {
       if (this.isClicked === 0) {
         this.mouseoutSetTimeout = setTimeout(() => {
-          console.log('reset', this.isClicked, 'this.isClicked === 0');
+          // console.log('reset', this.isClicked, 'this.isClicked === 0');
           this.mouseout();
           Connection.removeDetail('detailMain');
           Connection.removeDetail('detailSub')
-
         }, this.mouseoutSetTimeoutDuration);
       }
-      // clicked(fade node cannot be clicked)
+      // after clicked
       else {
         if (d.index !== this.clickedNodeIndex) {
-          console.log('reset', this.isClicked, 'this.isClicked === 1');
+          // highlight clicked nodes & links
+          // console.log('reset', this.isClicked, 'this.isClicked === 1');
           this.mouseout();
-
-          Mouse.fadeNoClick(this.clickedNodeIndex, this.linkData, this.link, this.node, this.label);
+          this.returnToPrevClickedNodeMouseover(this.clickedNodeIndex);
         }
       }
     });
@@ -338,6 +334,7 @@ export default class Network {
 
     this.svg.on("mouseenter", () => {
       if (this.isClicked === 0) {
+        console.log('mouseenter');
         this.mouseenter();
       }
     });
@@ -348,16 +345,18 @@ export default class Network {
   mouseover(d) {
     Mouse.fadeClickable(d.index, this.linkData, this.link, this.node, this.label);
     clearInterval(this.mouseoutSetTimeout);
-
     this.nodeInfo.name = d.name;
     this.nodeInfo.network = this.vizID;
     this.nodeInfo.mouseAction = 'mouseover';  // event trigger
   }
 
-  mouseover2nd(oldIndex, newIndex) {
-    Mouse.fadeNoClick(newIndex, this.linkData, this.link, this.node, this.label);
-    Mouse.noFadeNoClick(oldIndex, this.linkData, this.link, this.node, this.label);
+  mouseover2nd(oldIndex, newNode) {
+    Mouse.fadeNoClick2nd(newNode.index, this.linkData, this.link, this.node, this.label);
+    Mouse.noFadeNoClick2nd(oldIndex, this.linkData, this.link, this.node, this.label);
     clearInterval(this.mouseoutSetTimeout);
+    this.nodeInfo.name2nd = newNode.name;
+    this.nodeInfo.network = this.vizID;
+    this.nodeInfo.mouseAction = 'mouseover2nd';  // event trigger
   }
 
   mouseout() {
@@ -375,112 +374,20 @@ export default class Network {
 
   mouseclick(d) {
     Mouse.fadeNoClick(d.index, this.linkData, this.link, this.node, this.label);
+    this.nodeInfo.name = d.name;
+    this.nodeInfo.network = this.vizID;
     this.isClicked = 1;
     this.clickedNodeIndex = d.index;
-    this.nodeInfo.network = this.vizID;
     this.nodeInfo.mouseAction = 'click';  // event trigger
   }
 
+  returnToPrevClickedNodeMouseover(prevIndex){
+    Mouse.fadeNoClick(prevIndex, this.linkData, this.link, this.node, this.label);
+    this.nodeInfo.mouseAction = 'mouseover';  // event trigger
+  }
 
+  ////////////////////////////////////////////////////////////////////////////////////////////
 
-
-
-
-  // setMouseAction() {
-  //   if (!this.isSp) {
-  //     /* multi & single mode */
-  //     this.node.on("mouseover", (d) => {
-  //       // multi
-  //       if (this.vizMode === 'Single') {
-  //         if (this.isDragging === 0) {
-  //           Mouse.fadeClickable(d.index, this.linkData, this.link, this.node, this.label);
-  //           clearInterval(this.mouseoutSetTimeout);
-  //
-  //           this.nodeInfo.name = d.name;
-  //           this.nodeInfo.network = this.vizID;
-  //           this.nodeInfo.mouseAction = 'mouseover';  // event trigger
-  //         }
-  //       }// multi(click / not click)
-  //       else {
-  //
-  //       }
-  //
-  //
-  //
-  //     });
-  //
-  //
-  //     /* multi & single mode */
-  //     this.node.on("mouseout", (d) => {
-  //       // single(not drag)
-  //       if (this.vizMode === 'Single') {
-  //         if (this.isDragging === 0) {
-  //           this.mouseoutSetTimeout = setTimeout(() => {
-  //             Mouse.reset(this.linkData, this.link, this.node, this.label);
-  //             this.nodeInfo.network = this.vizID;
-  //             this.nodeInfo.mouseAction = 'mouseout';  // event trigger
-  //           }, this.mouseoutSetTimeoutDuration);
-  //         }
-  //       }
-  //       // multi(click / not click)
-  //       else {
-  //         if (this.vizMode === 'Multi') {
-  //           // not clicked(fade node can be clicked)
-  //           if (this.isClicked === 0) {
-  //             console.log('reset', this.isClicked, 'this.isClicked === 0');
-  //             this.mouseoutSetTimeout = setTimeout(() => {
-  //               Mouse.reset(this.linkData, this.link, this.node, this.label);
-  //               this.nodeInfo.network = this.vizID;
-  //               this.nodeInfo.mouseAction = 'mouseout';  // event trigger
-  //             }, this.mouseoutSetTimeoutDuration);
-  //           }
-  //           // clicked(fade node cannot be clicked)
-  //           else {
-  //             if (d.index !== this.clickedNodeIndex) {
-  //               console.log('reset', this.isClicked, 'this.isClicked === 1');
-  //               Mouse.reset(this.linkData, this.link, this.node, this.label);
-  //               Mouse.fadeNoClick(d.index, this.linkData, this.link, this.node, this.label);
-  //               this.nodeInfo.network = this.vizID;
-  //               this.nodeInfo.mouseAction = 'mouseout';  // event trigger
-  //             }
-  //           }
-  //
-  //         }
-  //       }
-  //     });
-  //
-  //
-  //     /* multi mode */
-  //     this.node.on("click", (d) => {
-  //       if (this.vizMode === 'Multi') {
-  //         Mouse.fadeNoClick(d.index, this.linkData, this.link, this.node, this.label);
-  //         this.isClicked = 1;
-  //         this.clickedNodeIndex = d.index;
-  //         this.nodeInfo.network = this.vizID;
-  //         this.nodeInfo.mouseAction = 'click';  // event trigger
-  //       }
-  //     });
-  //
-  //
-  //     // d3.select("body").on("mouseup", () => {
-  //     //   console.log('mouseup')
-  //     //   Mouse.reset(this.linkData, this.link, this.node, this.label);
-  //     //   Mouse.cursor('grab', this.body, this.node);
-  //     //
-  //     // });
-  //
-  //
-  //     /* multi & single mode */
-  //     this.svg.on("mouseenter", () => {
-  //       if (this.isClicked === 0) {
-  //         Mouse.reset(this.linkData, this.link, this.node, this.label);
-  //         Mouse.cursor(this.vizMode === 'Single' ? 'grab' : 'pointer', this.body, this.node);
-  //         this.nodeInfo.network = this.vizID;
-  //         this.nodeInfo.mouseAction = 'mouseenter';  // event trigger
-  //       }
-  //     });
-  //   }
-  //
   //   /////////////////////////////////////////////////////////////
   //   // for SmartPhone
   //
@@ -517,7 +424,7 @@ export default class Network {
   // }
 
 
-  ////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////
   // tick event
   ticked() {
     if (this.vizMode === 'Single' && this.zoomScale.scale <= 1) {
@@ -598,7 +505,7 @@ export default class Network {
   }
 
 
-  ////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////
   // drag event
   dragstarted(d) {
     if (this.vizMode === 'Single') {
@@ -635,7 +542,7 @@ export default class Network {
   }
 
 
-  ////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////
   // zoom event
   zoom_actions() {
     this.zoomGroup.attr("transform", d3.event.transform);
@@ -674,7 +581,7 @@ export default class Network {
   }
 
 
-  ////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////
   // update network data
   update(selectedType) {
     let prevNodePosition = [];
@@ -776,7 +683,7 @@ export default class Network {
   }
 
 
-  ////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////
   // utility
   detectNodeIndex(nodeName) {
     for (let i = 0, l = this.nodeData.length; l > i; i++) {
@@ -800,7 +707,7 @@ export default class Network {
 
 
   /*
-  /////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////
 
   Legend.putId2Legend(cell, legendName);
   // ノードを更新する場合は再度クラスを付与する必要あり

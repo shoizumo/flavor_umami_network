@@ -1,5 +1,28 @@
 @charset "UTF-8";
 
+
+/* mouse action */
+// highlight
+$highlight_node_opacity: 0.8;
+$highlight_text_opacity: 1.0;
+$highlight_line_opacity: 1.0;
+$highlight_color: #d70035;
+
+$highlight_color_2nd: #3500d7;
+
+
+// fade
+$fade_fill_color: #E5E5E5;
+$fade_stroke_color: #bfbec5;
+$fade_text_opacity: 0.3;
+
+// return(default)
+$default_line_opacity: 0.5;
+
+////////////////////////////////////////////////////////////////////////////////////////
+/* page */
+////////////////////////////////////////////////////////////////////////////////////////
+
 body {
   /*background-color: #fffcf0;*/
   text-size-adjust: 100%;
@@ -41,7 +64,18 @@ h1 {
   font-family: "Helvetica Neue", "Arial", sans-serif;
 }
 
+#visGrid{
+  width: 500px * 2;
+  height: 325px * 2;
+  grid-template-columns: 500px 500px;
+  grid-template-rows: 325px 325px;
+  display: grid;
+}
 
+////////////////////////////////////////////////////////////////////////////////////////
+/* selector */
+////////////////////////////////////////////////////////////////////////////////////////
+/* data type */
 #dataTypeContainer {
   width: 1000px;
   /*height: 70px;*/
@@ -75,72 +109,97 @@ select::-ms-expand {
 }
 
 
+////////////////////////////////////////////////////////////////////////////////////////
+/* mouse action */
+////////////////////////////////////////////////////////////////////////////////////////
 
 /* mouseover */
 .nodeColor {
-  stroke: #d70035;
+  stroke: $highlight_color;
   stroke-width: 2;
-  opacity: 0.8;
-  cursor: -webkit-grab;
-  cursor: -moz-grab;
-  cursor: grab;
+  opacity: $highlight_node_opacity;
+  //cursor: -webkit-grab;
+  //cursor: -moz-grab;
+  //cursor: grab;
 }
 
 
 .linkedNodeText {
-  opacity: 1.0;
+  opacity: $highlight_text_opacity;
   font-weight: 500;
   font-size: 0.85em;
   pointer-events: none;
-  cursor: default;
+  //cursor: default;
 }
 
 
 .lineColor {
-  stroke: #d70035;
-  opacity: 1.0;
+  stroke: $highlight_color;
+  opacity: $highlight_line_opacity;
+}
+
+
+/* mouseover 2nd(multi mode) */
+.nodeColor_2nd {
+  stroke: $highlight_color_2nd;
+  stroke-width: 2;
+  opacity: $highlight_node_opacity;
+  //cursor: -webkit-grab;
+  //cursor: -moz-grab;
+  //cursor: grab;
+}
+
+.lineColor_2nd {
+  stroke: $highlight_color_2nd;
+  opacity: $highlight_line_opacity;
 }
 
 
 /* click */
 .nodeColorFadeNonDrag {
-  fill: #E5E5E5;
-  stroke: #bfbec5;
+  fill: $fade_fill_color;
+  stroke: $fade_stroke_color;
   pointer-events: none;
 }
 
 .nodeColorFade {
-  fill: #E5E5E5;
-  stroke: #bfbec5;
-  cursor: -webkit-grab;
-  cursor: -moz-grab;
-  cursor: grab;
+  fill: $fade_fill_color;
+  stroke: $fade_stroke_color;
+  //cursor: -webkit-grab;
+  //cursor: -moz-grab;
+  //cursor: grab;
 }
 
 .nodeTextFade {
-  opacity: 0.3;
+  opacity: $fade_text_opacity;
   pointer-events: none;
   cursor: default;
 }
 
 .lineColorFade {
-  stroke: #E5E5E5;
-  opacity: 0.5;
-}
-
-.nodeReturnFade {
-}
-
-.nodeTextReturnFade {
-  pointer-events: none;
-  cursor: default;
-}
-
-.lineReturnFade {
-  opacity: 0.5;
+  stroke: $fade_fill_color;
+  opacity: $default_line_opacity;
 }
 
 
+/* return(default color) */
+//.nodeReturnFade {
+//}
+//
+//.nodeTextReturnFade {
+//  //pointer-events: none;
+//  //cursor: default;
+//}
+//
+//.lineReturnFade {
+//  //opacity: $default_line_opacity;
+//}
+
+
+////////////////////////////////////////////////////////////////////////////////////////
+/* selected node info */
+////////////////////////////////////////////////////////////////////////////////////////
+/* area */
 #detailMain {
   width: 500px - 2px;
   height: 325px - 2px;
@@ -158,6 +217,7 @@ select::-ms-expand {
 }
 
 
+/* text */
 .detailSelected {
   font-size: 0.8em;
   margin-top: 10px;
@@ -221,31 +281,3 @@ select::-ms-expand {
   cursor: pointer;
 }
 
-
-#visGrid{
-  width: 500px * 2;
-  height: 325px * 2;
-  grid-template-columns: 500px 500px;
-  grid-template-rows: 325px 325px;
-  display: grid;
-}
-
-//.networkFlavor{
-//  grid-column: 1 / 2;
-//  grid-row: 1 / 2;
-//}
-//
-//.networkUmami{
-//  grid-column: 2 / 3;
-//  grid-row: 1 / 2;
-//}
-//
-//.detailFlavor{
-//  grid-column: 1 / 2;
-//  grid-row: 2 / 3;
-//}
-//
-//.detailUmami{
-//  grid-column: 2 / 3;
-//  grid-row: 2 / 3;
-//}

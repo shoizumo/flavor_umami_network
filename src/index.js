@@ -28,7 +28,7 @@ import Connection from "./Connection";
   // network: network object is being manipulated
   // mouseAction: mouseAction which is event trigger
   */
-  let nodeInfo = {'name': '', 'network': '', 'mouseAction': ''};
+  let nodeInfo = {'name': '', 'name2nd': '', 'network': '', 'mouseAction': ''};
   let networkMain, networkSub;
 
   /* Base Network */
@@ -45,8 +45,8 @@ import Connection from "./Connection";
 
       Update.multiMode(networkMain, networkSub, 500);
       Mouse.watchMouseAction(nodeInfo, 'mouseAction', networkMain, networkSub);
-
     }
+
     if (event.keyCode === 68) {  // key:D
       Update.singleMode(networkMain, networkSub, 500);
       Connection.removeDetail('detailMain');

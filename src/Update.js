@@ -1,4 +1,5 @@
 import * as d3 from 'd3';
+import Mouse from "./Mouse";
 
 export default class Update {
   ///////////////////////////////////////////////////////////////////////////////////////
@@ -272,6 +273,8 @@ export default class Update {
     Update.multiModeNetwork(networkSub, duration);
     Update.multiModeGrid(duration);
     networkMain.setMouseAction();
+    Mouse.cursor(networkMain.vizMode === 'Single' ? 'grab' : 'pointer', networkMain.body, networkMain.node);
+    Mouse.cursor(networkSub.vizMode === 'Single' ? 'grab' : 'pointer', networkSub.body, networkSub.node);
   }
 
 
@@ -303,6 +306,8 @@ export default class Update {
     Update.deleteNetwork(networkSub, duration);
     Update.singleModeGrid();
     networkMain.setMouseAction();
+    Mouse.cursor(networkMain.vizMode === 'Single' ? 'grab' : 'pointer', networkMain.body, networkMain.node);
+    Mouse.cursor(networkSub.vizMode === 'Single' ? 'grab' : 'pointer', networkSub.body, networkSub.node);
   }
 
 
