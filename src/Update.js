@@ -293,8 +293,8 @@ export default class Update {
   static multiModeGrid(duration) {
     // document.getElementById("visGrid").style.display = 'grid';
     setTimeout(() => {
-      document.getElementById("detailMain").style.display = 'block';
-      document.getElementById("detailSub").style.display = 'block';
+      document.getElementById("detailMain").style.display = 'grid';
+      document.getElementById("detailSub").style.display = 'grid';
     }, duration);
   }
 

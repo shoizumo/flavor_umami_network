@@ -43,6 +43,8 @@ export default class Network {
     this.clickedNodeIndex = -1;
     this.isClicked = 0;
     this.isDragging = 0;
+    this.isMouseoutFirst = true;
+    this.prevName2nd = '';
 
     this.mouseoutSetTimeout = '';
     this.mouseoutSetTimeoutDuration = 1000;
@@ -295,7 +297,6 @@ export default class Network {
         console.log('multi', 'mouseover1');
       }
       else{
-        // if (d.index === this.clickedNodeIndex) -> no action
         if (d.index !== this.clickedNodeIndex) {
           this.mouseover2nd(this.clickedNodeIndex, d);
           console.log('multi', 'mouseover2');
@@ -310,17 +311,35 @@ export default class Network {
         this.mouseoutSetTimeout = setTimeout(() => {
           // console.log('reset', this.isClicked, 'this.isClicked === 0');
           this.mouseout();
-          Connection.removeDetail('detailMain');
-          Connection.removeDetail('detailSub')
+          Connection.removeDetail('detailMain1');
+          Connection.removeDetail('detailMain2');
+          Connection.removeDetail('detailSub1');
+          Connection.removeDetail('detailSub2');
         }, this.mouseoutSetTimeoutDuration);
       }
       // after clicked
       else {
+
+        console.log(d.index, this.clickedNodeIndex, d.index !== this.clickedNodeIndex);
         if (d.index !== this.clickedNodeIndex) {
-          // highlight clicked nodes & links
-          // console.log('reset', this.isClicked, 'this.isClicked === 1');
-          this.mouseout();
-          this.returnToPrevClickedNodeMouseover(this.clickedNodeIndex);
+
+          console.log(d.name, this.nodeInfo.name2nd, d.name === this.nodeInfo.name2nd);
+          if (this.prevName2nd !== d.name) {
+            this.isMouseoutFirst = true
+          }
+
+          console.log(this.isMouseoutFirst);
+          if (!this.isMouseoutFirst) {
+              this.mouseout();
+              Connection.removeDetail('detailMain2');
+              Connection.removeDetail('detailSub2');
+              this.returnToPrevClickedNodeMouseover(this.clickedNodeIndex);
+              this.isMouseoutFirst = true
+          }
+
+          else {
+            this.isMouseoutFirst = false
+          }
         }
       }
     });
@@ -354,12 +373,14 @@ export default class Network {
     Mouse.fadeNoClick2nd(newNode.index, this.linkData, this.link, this.node, this.label);
     Mouse.noFadeNoClick2nd(oldIndex, this.linkData, this.link, this.node, this.label);
     clearInterval(this.mouseoutSetTimeout);
+    this.prevName2nd = this.nodeInfo.name2nd;
     this.nodeInfo.name2nd = newNode.name;
     this.nodeInfo.network = this.vizID;
     this.nodeInfo.mouseAction = 'mouseover2nd';  // event trigger
   }
 
   mouseout() {
+    this.nodeInfo.name2nd = '';
     Mouse.reset(this.linkData, this.link, this.node, this.label);
     this.nodeInfo.network = this.vizID;
     this.nodeInfo.mouseAction = 'mouseout';  // event trigger

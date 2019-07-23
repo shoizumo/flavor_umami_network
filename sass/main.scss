@@ -1,24 +1,6 @@
 @charset "UTF-8";
 
 
-/* mouse action */
-// highlight
-$highlight_node_opacity: 0.8;
-$highlight_text_opacity: 1.0;
-$highlight_line_opacity: 1.0;
-$highlight_color: #d70035;
-
-$highlight_color_2nd: #3500d7;
-
-
-// fade
-$fade_fill_color: #E5E5E5;
-$fade_stroke_color: #bfbec5;
-$fade_text_opacity: 0.3;
-
-// return(default)
-$default_line_opacity: 0.5;
-
 ////////////////////////////////////////////////////////////////////////////////////////
 /* page */
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -64,14 +46,6 @@ h1 {
   font-family: "Helvetica Neue", "Arial", sans-serif;
 }
 
-#visGrid{
-  width: 500px * 2;
-  height: 325px * 2;
-  grid-template-columns: 500px 500px;
-  grid-template-rows: 325px 325px;
-  display: grid;
-}
-
 ////////////////////////////////////////////////////////////////////////////////////////
 /* selector */
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -112,6 +86,23 @@ select::-ms-expand {
 ////////////////////////////////////////////////////////////////////////////////////////
 /* mouse action */
 ////////////////////////////////////////////////////////////////////////////////////////
+// highlight
+$highlight_node_opacity: 0.8;
+$highlight_text_opacity: 1.0;
+$highlight_line_opacity: 1.0;
+$highlight_color: #d70035;
+
+$highlight_color_2nd: #3500d7;
+
+
+// fade
+$fade_fill_color: #E5E5E5;
+$fade_stroke_color: #bfbec5;
+$fade_text_opacity: 0.3;
+
+// return(default)
+$default_line_opacity: 0.5;
+
 
 /* mouseover */
 .nodeColor {
@@ -144,6 +135,8 @@ select::-ms-expand {
   stroke: $highlight_color_2nd;
   stroke-width: 2;
   opacity: $highlight_node_opacity;
+  pointer-events: none;
+  cursor: default;
   //cursor: -webkit-grab;
   //cursor: -moz-grab;
   //cursor: grab;
@@ -200,22 +193,41 @@ select::-ms-expand {
 /* selected node info */
 ////////////////////////////////////////////////////////////////////////////////////////
 /* area */
+$grid-width: 500px;
+$grid-height: 325px;
+
+
+#visGrid{
+  width: 500px * 2;
+  height: 325px * 2;
+  grid-template-columns: 500px 500px;
+  grid-template-rows: 325px 325px;
+  display: grid;
+}
+
 #detailMain {
-  width: 500px - 2px;
-  height: 325px - 2px;
+  width: $grid-width - 2px;
+  height: $grid-height - 2px;
   border: 1px solid #fc9f94;
-  overflow: scroll;
+  grid-template-columns: ($grid-width / 2) ($grid-width / 2);
+  grid-template-rows: $grid-height;
   display: none;
 }
 
 #detailSub {
-  width: 500px - 2;
-  height: 325px - 2;
+  width: $grid-width - 2px;
+  height: $grid-height - 2px;
   border: 1px solid #fc9f94;
-  overflow: scroll;
+  grid-template-columns: ($grid-width / 2) ($grid-width / 2);
+  grid-template-rows: $grid-height;
   display: none;
 }
 
+.detail {
+  width: $grid-width / 2;
+  height: $grid-height;
+  overflow: scroll;
+}
 
 /* text */
 .detailSelected {

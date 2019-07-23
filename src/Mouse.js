@@ -145,18 +145,24 @@ export default class Mouse {
       return;
     }
 
+    let M = Connection.makeNodeList(networkMain.detectNodeIndex(obj.name), networkMain.linkData);
+    let S = Connection.makeNodeList(networkSub.detectNodeIndex(obj.name), networkSub.linkData);
     const index = AN.detectNodeIndex(obj.name);
     if (obj.mouseAction === 'mouseover') {
       Mouse.fadeClickable(index, AN.linkData, AN.link, AN.node, AN.label);
 
-      let M = Connection.makeNodeList(networkMain.detectNodeIndex(obj.name), networkMain.linkData);
-      let S = Connection.makeNodeList(networkSub.detectNodeIndex(obj.name), networkSub.linkData);
-
-      Connection.displayDetail(obj.name, M.sameNodes, M.diffNodes, 'detailMain');
-      Connection.displayDetail(obj.name, S.sameNodes, S.diffNodes, 'detailSub');
+      Connection.displayDetail(obj.name, M.sameNodes, M.diffNodes, 'detailMain1');
+      Connection.displayDetail(obj.name, S.sameNodes, S.diffNodes, 'detailSub1');
 
     }
 
+    else if (obj.mouseAction === 'mouseover2nd') {
+      Mouse.fadeNoClick2nd(AN.detectNodeIndex(obj.name2nd), AN.linkData, AN.link, AN.node, AN.label);
+      Mouse.noFadeNoClick2nd(AN.clickedNodeIndex, AN.linkData, AN.link, AN.node, AN.label);
+
+      Connection.displayDetail(obj.name, M.sameNodes, M.diffNodes, 'detailMain2');
+      Connection.displayDetail(obj.name, S.sameNodes, S.diffNodes, 'detailSub2');
+    }
 
     else if (obj.mouseAction === 'mouseout') {
       Mouse.reset(AN.linkData, AN.link, AN.node, AN.label);
@@ -167,12 +173,6 @@ export default class Mouse {
       AN.clickedNodeIndex = AN.detectNodeIndex(obj.name);
       Mouse.fadeNoClick(AN.clickedNodeIndex, AN.linkData, AN.link, AN.node, AN.label);
       AN.isClicked = 1;
-    }
-
-
-    else if (obj.mouseAction === 'mouseover2nd') {
-      Mouse.fadeNoClick2nd(AN.detectNodeIndex(obj.name2nd), AN.linkData, AN.link, AN.node, AN.label);
-      Mouse.noFadeNoClick2nd(AN.clickedNodeIndex, AN.linkData, AN.link, AN.node, AN.label);
     }
 
   }
