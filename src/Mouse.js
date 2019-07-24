@@ -115,9 +115,9 @@ export default class Mouse {
   }
 
 
-  static watchMouseAction(obj, propName, networkMain, networkSub) {
-    let value = obj[propName];
-    Object.defineProperty(obj, propName, {
+  static watchMouseAction(obj, watchPropName, networkMain, networkSub) {
+    let value = obj[watchPropName];
+    Object.defineProperty(obj, watchPropName, {
       get: () => value,
       set: newValue => {
         const oldValue = value;
@@ -145,10 +145,11 @@ export default class Mouse {
       return;
     }
 
-    let M = Connection.makeNodeList(networkMain.detectNodeIndex(obj.name), networkMain.linkData);
-    let S = Connection.makeNodeList(networkSub.detectNodeIndex(obj.name), networkSub.linkData);
-    const index = AN.detectNodeIndex(obj.name);
+
     if (obj.mouseAction === 'mouseover') {
+      const index = AN.detectNodeIndex(obj.name);
+      let M = Connection.makeNodeList(networkMain.detectNodeIndex(obj.name), networkMain.linkData);
+      let S = Connection.makeNodeList(networkSub.detectNodeIndex(obj.name), networkSub.linkData);
       Mouse.fadeClickable(index, AN.linkData, AN.link, AN.node, AN.label);
 
       Connection.displayDetail(obj.name, M.sameNodes, M.diffNodes, 'detailMain1');
@@ -160,8 +161,17 @@ export default class Mouse {
       Mouse.fadeNoClick2nd(AN.detectNodeIndex(obj.name2nd), AN.linkData, AN.link, AN.node, AN.label);
       Mouse.noFadeNoClick2nd(AN.clickedNodeIndex, AN.linkData, AN.link, AN.node, AN.label);
 
-      Connection.displayDetail(obj.name, M.sameNodes, M.diffNodes, 'detailMain2');
-      Connection.displayDetail(obj.name, S.sameNodes, S.diffNodes, 'detailSub2');
+      let M1 = Connection.makeNodeList(networkMain.detectNodeIndex(obj.name), networkMain.linkData);
+      let S1 = Connection.makeNodeList(networkSub.detectNodeIndex(obj.name), networkSub.linkData);
+      const MainBaseNodes = M1.sameNodes.concat(M1.diffNodes);
+      const SubBaseNodes = S1.sameNodes.concat(S1.diffNodes);
+
+      const nodeCategory = networkMain.detectNodeCategory(obj.name);
+      let M2 = Connection.makeNodeList2nd(networkMain.detectNodeIndex(obj.name2nd), networkMain.linkData, nodeCategory, MainBaseNodes);
+      let S2 = Connection.makeNodeList2nd(networkSub.detectNodeIndex(obj.name2nd), networkSub.linkData, nodeCategory, SubBaseNodes);
+
+      Connection.displayDetail(obj.name2nd, M2.sameNodes, M2.diffNodes, 'detailMain2');
+      Connection.displayDetail(obj.name2nd, S2.sameNodes, S2.diffNodes, 'detailSub2');
     }
 
     else if (obj.mouseAction === 'mouseout') {

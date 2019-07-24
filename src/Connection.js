@@ -60,7 +60,7 @@ export default class Connection {
   }
 
 
-  static makeNodeList2nd(nodeIndex, linkData, clickedNodeCategory) {
+  static makeNodeList2nd(nodeIndex, linkData, clickedNodeCategory, baseNodes) {
 
     let sameNodes = [];
     let diffNodes = [];
@@ -70,7 +70,6 @@ export default class Connection {
         if (linkData[i].source.group_id ===
             clickedNodeCategory) {
           sameNodes.push(linkData[i].source.name);
-          //console.log(linkData[i].source.name)
         } else {
           diffNodes.push(linkData[i].source.name);
         }
@@ -79,12 +78,14 @@ export default class Connection {
         if (linkData[i].target.group_id ===
             clickedNodeCategory) {
           sameNodes.push(linkData[i].target.name);
-          //console.log(linkData[i].source.name)
         } else {
           diffNodes.push(linkData[i].target.name);
         }
       }
     }
+
+    sameNodes = Connection.existNodeCheck(sameNodes, baseNodes);
+    diffNodes = Connection.existNodeCheck(diffNodes, baseNodes);
 
     sameNodes = sameNodes.sort();
     diffNodes = diffNodes.sort();
@@ -92,8 +93,20 @@ export default class Connection {
   }
 
 
+  static existNodeCheck(nodeList, existNodeList){
+    for (let i = 0, l = nodeList.length; l > i; i++) {
+      for (let j = 0, l = existNodeList.length; l > j; j++) {
+        if (nodeList[i] === existNodeList[j]) {
+          nodeList.splice(i, 1, "");  // replace to space(then delete in same time)
+        }
+      }
+    }
+    return nodeList.filter(e => e !== "");  // delete
+  }
+
+
   static displayDetail(nodeName, sameNodes, diffNodes, areaID) {
-    Connection.removeDetail(areaID);
+    Connection.deleteDetail(areaID);
 
     const detailBox = document.getElementById(areaID);
     let elements = [];
@@ -119,7 +132,7 @@ export default class Connection {
   }
 
 
-  static removeDetail(areaID) {
+  static deleteDetail(areaID) {
     const detailBox = document.getElementById(areaID);
     detailBox.innerHTML = '';
   }

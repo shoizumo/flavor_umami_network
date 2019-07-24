@@ -49,10 +49,10 @@ import Connection from "./Connection";
 
     if (event.keyCode === 68) {  // key:D
       Update.singleMode(networkMain, networkSub, 500);
-      Connection.removeDetail('detailMain1');
-      Connection.removeDetail('detailMain2');
-      Connection.removeDetail('detailSub1');
-      Connection.removeDetail('detailSub2');
+      Connection.deleteDetail('detailMain1');
+      Connection.deleteDetail('detailMain2');
+      Connection.deleteDetail('detailSub1');
+      Connection.deleteDetail('detailSub2');
     }
 
   }, false);

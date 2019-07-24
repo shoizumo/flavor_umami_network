@@ -311,10 +311,10 @@ export default class Network {
         this.mouseoutSetTimeout = setTimeout(() => {
           // console.log('reset', this.isClicked, 'this.isClicked === 0');
           this.mouseout();
-          Connection.removeDetail('detailMain1');
-          Connection.removeDetail('detailMain2');
-          Connection.removeDetail('detailSub1');
-          Connection.removeDetail('detailSub2');
+          Connection.deleteDetail('detailMain1');
+          Connection.deleteDetail('detailMain2');
+          Connection.deleteDetail('detailSub1');
+          Connection.deleteDetail('detailSub2');
         }, this.mouseoutSetTimeoutDuration);
       }
       // after clicked
@@ -331,8 +331,8 @@ export default class Network {
           console.log(this.isMouseoutFirst);
           if (!this.isMouseoutFirst) {
               this.mouseout();
-              Connection.removeDetail('detailMain2');
-              Connection.removeDetail('detailSub2');
+              Connection.deleteDetail('detailMain2');
+              Connection.deleteDetail('detailSub2');
               this.returnToPrevClickedNodeMouseover(this.clickedNodeIndex);
               this.isMouseoutFirst = true
           }
@@ -710,6 +710,14 @@ export default class Network {
     for (let i = 0, l = this.nodeData.length; l > i; i++) {
       if (this.nodeData[i].name === nodeName) {
         return i;
+      }
+    }
+  }
+
+  detectNodeCategory(nodeName) {
+    for (let i = 0, l = this.nodeData.length; l > i; i++) {
+      if (this.nodeData[i].name === nodeName) {
+        return this.nodeData[i].group_id;
       }
     }
   }
