@@ -36,28 +36,8 @@ import Connection from "./Connection";
   networkMain.render();
 
 
-  /* update mode */
-  document.addEventListener("keydown", function (event) {
-    if (event.keyCode === 78) {  // key:N
-      const dataType = networkMain.dataType === 'Flavor' ? 'Umami' : 'Flavor';
-      networkSub = new Network(flavorData, umamiData, isSp, '#graphSub', dataType, 'Multi', 'Sub', nodeInfo);
-      networkSub.render();
-
-      Update.multiMode(networkMain, networkSub, 500);
-      Mouse.watchMouseAction(nodeInfo, 'mouseAction', networkMain, networkSub);
-    }
-
-    if (event.keyCode === 68) {  // key:D
-      Update.singleMode(networkMain, networkSub, 500);
-      Connection.deleteDetail('detailMain1');
-      Connection.deleteDetail('detailMain2');
-      Connection.deleteDetail('detailSub1');
-      Connection.deleteDetail('detailSub2');
-    }
-
-  }, false);
-
-
+  //////////////////////////////////////////////////////////////////////////////////////////
+  // Update
   /* update data */
   const dataTypeSelector = document.getElementById('dataType');
   dataTypeSelector.onchange = function () {
@@ -67,6 +47,41 @@ import Connection from "./Connection";
     document.getElementById('h1').textContent = selectedType + ' Network';
   };
 
+  /* update mode */
+  const vizModeSelector = document.getElementById('vizMode');
+  vizModeSelector.onchange = function () {
+    const selectedType = this.options[this.selectedIndex].value;
+
+    if (selectedType === 'Compare') {
+      const dataType = networkMain.dataType === 'Flavor' ? 'Umami' : 'Flavor';
+      networkSub = new Network(flavorData, umamiData, isSp, '#graphSub', dataType, 'Multi', 'Sub', nodeInfo);
+      networkSub.render();
+
+      Update.multiMode(networkMain, networkSub, 500);
+      Mouse.watchMouseAction(nodeInfo, 'mouseAction', networkMain, networkSub);
+
+
+      document.getElementById('h2Main').textContent = networkMain.dataType;
+      document.getElementById('h2Sub').textContent = networkSub.dataType;
+
+      dataTypeSelector.style.display = 'none';
+      document.getElementById('h1').style.display = 'none';
+      document.getElementById('h2Container').style.display = 'block';
+    }
+    // 'Default'
+    else{
+      Update.singleMode(networkMain, networkSub, 500);
+      Connection.deleteDetail('detailMain1');
+      Connection.deleteDetail('detailMain2');
+      Connection.deleteDetail('detailSub1');
+      Connection.deleteDetail('detailSub2');
+
+      dataTypeSelector.style.display = 'inline';
+      document.getElementById('h1').style.display = 'block';
+      document.getElementById('h2Container').style.display = 'none';
+    }
+
+  };
 
 })();
 

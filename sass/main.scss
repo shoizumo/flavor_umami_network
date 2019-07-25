@@ -40,6 +40,31 @@ h1 {
   outline: 0;
 }
 
+#h2Container{
+  width: 1000px;
+  margin-top: 0;
+  margin-bottom: 0;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  font-size: 2.0em;  // default h2 is 1.5em
+  color: #302833;
+  font-family: "Helvetica Neue", "Arial", sans-serif;
+  display: none;
+}
+
+#h2Main {
+  width: 500px;
+  margin: 0;
+  float :left;
+}
+
+#h2Sub {
+  width: 500px;
+  margin: 0;
+  float :right;
+}
+
 .node_link {
   fill: #352622;
   font-size: 0.8em;
@@ -67,9 +92,9 @@ select {
   appearance: none;
 
   /*background: transparent;*/
-  position: relative;
+  //position: relative;
   z-index: 1;
-  padding: 0 40px 0 10px;
+  padding: 0 30px 0 5px;
   border: 1px solid #b4b3b3;
   /*border-bottom: 1px solid #b4b3b3;*/
   border-radius: 2px;
