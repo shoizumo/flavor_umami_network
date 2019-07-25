@@ -144,7 +144,7 @@ export default class Update {
         .attr("font-weight", "300")
         .attr("class", "nonDrag")
         .attr("fill", "#352622")
-        .attr({"font-family": ["Futura", "Nunito", "Helvetica Neue", "Arial", "sans-serif"]});
+        .attr("font-family", 'Nunito Sans');
 
      // nodeText.transition()
      //    .duration(1000)
