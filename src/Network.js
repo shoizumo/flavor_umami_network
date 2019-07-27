@@ -107,7 +107,7 @@ export default class Network {
         .attr("width", 200)
         .attr("height", 20)
         .attr("fill", "#352622")
-        .attr("font-family", 'Nunito Sans');
+        .attr("font-family", 'Roboto');
 
     // $(".legends").css({"cursor": ["pointer"]});
     d3.selectAll(".legends").style("cursor", "pointer");
@@ -143,7 +143,7 @@ export default class Network {
         .append("line")
         .attr("opacity", "0.5")
         .attr("stroke-width", (d) => {
-          return Math.sqrt(d.weight) * 0.1 + d.weight * 0.015;
+          return Math.sqrt(d.weight) * 0.1 + d.weight * 0.01 + 0.01;
         })
         .attr("stroke", (d) => {
           return this.color(d.group_id_s)
@@ -204,7 +204,7 @@ export default class Network {
         .attr("font-weight", "300")
         .attr("class", "nonDrag")
         .attr("fill", "#352622")
-        .attr("font-family", 'Nunito Sans');
+        .attr("font-family", 'Roboto');
 
     if (this.dataType === 'Flavor') {
       this.label.attr("opacity", "1.0")

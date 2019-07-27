@@ -34,7 +34,7 @@ h1 {
   font-size: 3.0em;
   font-weight: 700;
   color: #302833;
-  font-family: "Lato", sans-serif;
+  font-family: "Roboto", sans-serif;
 }
 
 #h1 select:focus {
@@ -49,9 +49,9 @@ h1 {
   margin-right: auto;
   text-align: center;
   font-size: 2.0em;  // default h2 is 1.5em
-  font-weight: 700;
+  font-weight: 600;
   color: #302833;
-  font-family: "Lato", sans-serif;
+  font-family: "Roboto", sans-serif;
   display: none;
 }
 
@@ -70,7 +70,7 @@ h1 {
 .node_link {
   fill: #352622;
   font-size: 0.8em;
-  font-family: "Lato", sans-serif;
+  font-family: "Roboto", sans-serif;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -85,7 +85,7 @@ h1 {
   text-align: right;
   /*font-size: 3.5em;*/
   color: #302833;
-  font-family: "Lato", sans-serif;
+  font-family: "Roboto", sans-serif;
 }
 
 select {
@@ -266,7 +266,7 @@ $grid-height: 325px;
   line-height: 150%;
   color: #302833;
   text-decoration: underline;
-  font-family: "Lato", sans-serif;
+  font-family: "Roboto", sans-serif;
 }
 
 .detailTitle {
@@ -277,7 +277,7 @@ $grid-height: 325px;
   text-align: left;
   line-height: 150%;
   color: #302833;
-  font-family: "Lato", sans-serif;
+  font-family: "Roboto", sans-serif;
 }
 
 
@@ -290,7 +290,7 @@ $grid-height: 325px;
   line-height: 150%;
   color: #0000FF;
   text-decoration: underline;
-  font-family: "Lato", sans-serif;
+  font-family: "Roboto", sans-serif;
   cursor: pointer;
 }
 

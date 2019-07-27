@@ -44,7 +44,7 @@ export default class Update {
         .append("line")
         // .attr("opacity", 0.0)
         .attr("stroke-width",  (d) => {
-          return Math.sqrt(d.weight) * 0.1 + d.weight * 0.015;
+          return Math.sqrt(d.weight) * 0.1 + d.weight * 0.01 + 0.01;
         })
         .attr("stroke",  (d) => {
           return color[d.group_id_s]
@@ -144,7 +144,7 @@ export default class Update {
         .attr("font-weight", "300")
         .attr("class", "nonDrag")
         .attr("fill", "#352622")
-        .attr("font-family", 'Nunito Sans');
+        .attr("font-family", 'Roboto');
 
      // nodeText.transition()
      //    .duration(1000)
