@@ -83,49 +83,41 @@ export default class Network {
     // this.svg.call(this.zoom_handler.transform, this.initialTransform);
 
 
-    this.gradient = this.svg.append("defs")
-        .append("linearGradient")
-        .attr("id", "gradient")
-        .attr("spreadMethod", "pad");
-    //start color white
-    this.gradient.append("stop")
-        .attr("offset", "0%")
-        .attr("stop-color", "red")
-        .attr("stop-opacity", 1);
-    //end color steel blue
-    this.gradient.append("stop")
-        .attr("offset", "100%")
-        .attr("stop-color", "green")
-        .attr("stop-opacity", 1);
-
-
-    // this.Vector2 = function (x, y) {
-    //   this.magnitude = Math.sqrt(x * x + y * y);
-    //   this.X = x;
-    //   this.Y = y;
-    // };
-    //
-    // // this.Vector2.prototype.perpendicularClockwise = function () {
-    // //   return new this.Vector2(-this.Y, this.X);
-    // // };
-    // //
-    // // this.Vector2.prototype.perpendicularCounterClockwise = function () {
-    // //   return new this.Vector2(this.Y, -this.X);
-    // // };
-    //
-    // this.Vector2.prototype.getUnitVector = function () {
-    //   return new this.Vector2(this.X / this.magnitude, this.Y / this.magnitude);
-    // };
-    //
-    // this.Vector2.prototype.scale = function (ratio) {
-    //   return new this.Vector2(ratio * this.X, ratio * this.Y);
-    // };
+    // gradient link color list for each link
+    this.gradient = [];
   }
 
+
+  setLinkGradientColor(){
+    this.gradient = [];
+    for (let i = 0, l = this.linkData.length; l > i; i++) {
+      this.gradient[i] = this.svg.append("defs")
+        .append("linearGradient")
+        .attr("id", "gradient" + this.dataType + String(i))
+        .attr("spreadMethod", "pad");
+    // source color
+    this.gradient[i].append("stop")
+        .attr("offset", "0%")
+        .attr("stop-color", () => {
+          return this.color(this.linkData[i].group_id_s);
+        })
+        // .attr("stop-color", "red")
+        .attr("stop-opacity", 1);
+    // target color
+    this.gradient[i].append("stop")
+        .attr("offset", "100%")
+        .attr("stop-color", () => {
+          return this.color(this.linkData[i].group_id_t);
+        })
+        // .attr("stop-color", "green")
+        .attr("stop-opacity", 1);
+    }
+  }
 
   render() {
     this.setLegend();
     this.setLink();
+    this.setLinkGradientColor();
     this.setNode();
     this.setLabel();
     this.setSimulation();
@@ -187,7 +179,10 @@ export default class Network {
         // .attr("stroke", (d) => {
         //   // return this.color(d.group_id_s)
         // })
-        .attr("class", "link")
+        .attr("class", (d, i) => {
+          return "link" + this.dataType + String(i);
+        })
+        // .attr("class", "link")
   }
 
 
@@ -423,13 +418,13 @@ export default class Network {
 
   mouseout() {
     this.nodeInfo.name2nd = '';
-    Mouse.reset(this.linkData, this.link, this.node, this.label);
+    Mouse.reset(this.linkData, this.link, this.node, this.label, this.dataType);
     this.nodeInfo.network = this.vizID;
     this.nodeInfo.mouseAction = 'mouseout';  // event trigger
   }
 
   mouseenter() {
-    Mouse.reset(this.linkData, this.link, this.node, this.label);
+    Mouse.reset(this.linkData, this.link, this.node, this.label, this.dataType);
     Mouse.cursor(this.vizMode === 'Single' ? 'grab' : 'pointer', this.body, this.node);
     this.nodeInfo.network = this.vizID;
     this.nodeInfo.mouseAction = 'mouseenter';  // event trigger
@@ -515,20 +510,6 @@ export default class Network {
     const marginXleft = (this.width - this.zoomScale.X) / this.zoomScale.scale - this.wallMargin;
     const marginYbottom = (this.height - this.zoomScale.Y) / this.zoomScale.scale - this.wallMargin;
 
-    // this.link
-    //     .attr("x1", (d) => {
-    //       return Math.max(marginXright, Math.min(marginXleft, d.source.x));
-    //     })
-    //     .attr("y1", (d) => {
-    //       return Math.max(marginYtop, Math.min(marginYbottom, d.source.y));
-    //     })
-    //     .attr("x2", (d) => {
-    //       return Math.max(marginXright, Math.min(marginXleft, d.target.x));
-    //     })
-    //     .attr("y2", (d) => {
-    //       return Math.max(marginYtop, Math.min(marginYbottom, d.target.y));
-    //     });
-
     this.link.attr("x1", (d) => {
           return Math.max(marginXright, Math.min(marginXleft, d.source.x));
         })
@@ -544,23 +525,13 @@ export default class Network {
         .attr("d", (d) => {
 
       const gradientVector = this.gradientVector(d.target.x - d.source.x, d.target.y - d.source.y);
-      this.gradient
+      // loop by index
+      this.gradient[d.index]
           .attr("x1", 0.5 - gradientVector.X)
           .attr("y1", 0.5 - gradientVector.Y)
           .attr("x2", 0.5 + gradientVector.X)
           .attr("y2", 0.5 + gradientVector.Y);
-      const sourceDelta = 5;
-      const targetDelta = 5;
-
-
-      if ((d.target.x > d.source.x && d.target.y < d.source.y) || (d.target.x < d.source.x && d.target.y > d.source.y)) {
-        return "M" + (d.source.x - sourceDelta) + "," + (d.source.y - sourceDelta) + " L" + (d.target.x - targetDelta) + "," + (d.target.y - targetDelta) + " L" + (d.target.x + targetDelta) + "," + (d.target.y + targetDelta) + " L" + (d.source.x + sourceDelta) + "," + (d.source.y + sourceDelta) + " Z";
-      } else {
-        return "M" + (d.source.x - sourceDelta) + "," + (d.source.y + sourceDelta) + " L" + (d.target.x - targetDelta) + "," + (d.target.y + targetDelta) + " L" + (d.target.x + targetDelta) + "," + (d.target.y - targetDelta) + " L" + (d.source.x + sourceDelta) + "," + (d.source.y - sourceDelta) + " Z";
-      }
-    })
-
-
+    });
 
     this.node
         .attr("cx", (d) => {
@@ -582,20 +553,6 @@ export default class Network {
 
 
   tickNoBounce() {
-    // this.link
-    //     .attr("x1", (d) => {
-    //       return d.source.x;
-    //     })
-    //     .attr("y1", (d) => {
-    //       return d.source.y;
-    //     })
-    //     .attr("x2", (d) => {
-    //       return d.target.x;
-    //     })
-    //     .attr("y2", (d) => {
-    //       return d.target.y;
-    //     });
-
     this.link
         .attr("x1", (d) => {
           return d.source.x;
@@ -612,20 +569,11 @@ export default class Network {
         .attr("d", (d) => {
 
       const gradientVector = this.gradientVector(d.target.x - d.source.x, d.target.y - d.source.y);
-      this.gradient
+      this.gradient[d.index]
           .attr("x1", 0.5 - gradientVector.X)
           .attr("y1", 0.5 - gradientVector.Y)
           .attr("x2", 0.5 + gradientVector.X)
           .attr("y2", 0.5 + gradientVector.Y);
-      const sourceDelta = 5;
-      const targetDelta = 5;
-
-
-      if ((d.target.x > d.source.x && d.target.y < d.source.y) || (d.target.x < d.source.x && d.target.y > d.source.y)) {
-        return "M" + (d.source.x - sourceDelta) + "," + (d.source.y - sourceDelta) + " L" + (d.target.x - targetDelta) + "," + (d.target.y - targetDelta) + " L" + (d.target.x + targetDelta) + "," + (d.target.y + targetDelta) + " L" + (d.source.x + sourceDelta) + "," + (d.source.y + sourceDelta) + " Z";
-      } else {
-        return "M" + (d.source.x - sourceDelta) + "," + (d.source.y + sourceDelta) + " L" + (d.target.x - targetDelta) + "," + (d.target.y + targetDelta) + " L" + (d.target.x + targetDelta) + "," + (d.target.y - targetDelta) + " L" + (d.source.x + sourceDelta) + "," + (d.source.y - sourceDelta) + " Z";
-      }
     });
 
     this.node
@@ -674,7 +622,7 @@ export default class Network {
       d.fx = null;
       d.fy = null;
 
-      Mouse.reset(this.linkData, this.link, this.node, this.label);
+      Mouse.reset(this.linkData, this.link, this.node, this.label, this.dataType);
       Mouse.fadeClickable(d.index, this.linkData, this.link, this.node, this.label);
       Mouse.cursor('grab', this.body, this.node);
     }
@@ -764,6 +712,7 @@ export default class Network {
       this.nodeData = this.umamiData.nodes;
       this.linkData = this.umamiData.links;
     }
+    this.setLinkGradientColor();
   }
 
 
@@ -781,7 +730,8 @@ export default class Network {
 
 
   upadteAddedObj(updateObjTime) {
-    const resAddedObj = Update.addObj(this.link, this.node, this.label, this.nodeData, this.linkData, this.legendColor, this.dragstarted, this.dragging, this.dragended);
+    const resAddedObj = Update.addObj(this.link, this.node, this.label, this.nodeData, this.linkData,
+        this.dataType, this.legendColor, this.dragstarted, this.dragging, this.dragended);
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve(

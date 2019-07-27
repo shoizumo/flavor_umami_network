@@ -83,10 +83,15 @@ export default class Mouse {
   }
 
 
-  static reset(linkData, linkLine, nodeCircle, nodeText) {
+  static reset(linkData, linkLine, nodeCircle, nodeText, dataType) {
     d3.selectAll(nodeCircle)['_groups'][0].attr("class", null);
-    d3.selectAll(linkLine)['_groups'][0].attr("class", 'link');
+    // d3.selectAll(linkLine)['_groups'][0].attr("class", 'link');
     d3.selectAll(nodeText)['_groups'][0].attr("class", null);
+
+    for (let i = 0, l = linkData.length; l > i; i++) {
+      d3.selectAll(linkLine)['_groups'][0].attr("class", 'link' + dataType + String(i));
+    }
+
   }
 
 
@@ -140,7 +145,7 @@ export default class Mouse {
     }
 
     if (obj.mouseAction === 'mouseenter') {
-      Mouse.reset(AN.linkData, AN.link, AN.node, AN.label);
+      Mouse.reset(AN.linkData, AN.link, AN.node, AN.label, networkMain.dataType);
       Mouse.cursor(AN.vizMode === 'Single' ?'grab' : 'pointer', AN.body, AN.node);
       return;
     }
@@ -175,7 +180,7 @@ export default class Mouse {
     }
 
     else if (obj.mouseAction === 'mouseout') {
-      Mouse.reset(AN.linkData, AN.link, AN.node, AN.label);
+      Mouse.reset(AN.linkData, AN.link, AN.node, AN.label, networkMain.dataType);
     }
 
 

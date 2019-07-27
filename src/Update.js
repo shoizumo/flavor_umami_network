@@ -13,9 +13,9 @@ export default class Update {
   }
 
 
-  static addObj(linkLine, nodeCircle, nodeText, nodeData, linkData, color, dragstarted, dragging, dragended) {
+  static addObj(linkLine, nodeCircle, nodeText, nodeData, linkData, dataType, color, dragstarted, dragging, dragended) {
     return {
-      link: Update.addLinkData(linkLine, linkData, color),
+      link: Update.addLinkData(linkLine, linkData, dataType),
       node: Update.addNodeData(nodeCircle, nodeData, color, dragstarted, dragging, dragended),
       label: Update.addLabelData(nodeText)
     }
@@ -38,14 +38,18 @@ export default class Update {
   }
 
 
-  static addLinkData (linkLine, linkData, color) {
+  static addLinkData (linkLine, linkData, dataType) {
     let linkLineEnter = linkLine
         .enter()
         .append("line")
         // .attr("opacity", 0.0)
         .attr("stroke-width",  (d) => {
           return Math.sqrt(d.weight) * 0.1 + d.weight * 0.01 + 0.01;
-        }).attr("class", "link");
+        })
+        .attr("class", (d, i) => {
+          return "link" + dataType + String(i);
+        });
+        // .attr("class", "link");
         // .attr("stroke",  (d) => {
         //   return color[d.group_id_s]
         // });
