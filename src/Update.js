@@ -45,10 +45,10 @@ export default class Update {
         // .attr("opacity", 0.0)
         .attr("stroke-width",  (d) => {
           return Math.sqrt(d.weight) * 0.1 + d.weight * 0.01 + 0.01;
-        })
-        .attr("stroke",  (d) => {
-          return color[d.group_id_s]
-        });
+        }).attr("class", "link");
+        // .attr("stroke",  (d) => {
+        //   return color[d.group_id_s]
+        // });
 
     linkLine = linkLineEnter.merge(linkLine);
     linkLine

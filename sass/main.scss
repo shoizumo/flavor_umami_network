@@ -131,6 +131,11 @@ $fade_text_opacity: 0.3;
 $default_line_opacity: 0.5;
 
 
+.link {
+  stroke: url(#gradient);
+}
+
+
 /* mouseover */
 .nodeColor {
   stroke: $highlight_color;

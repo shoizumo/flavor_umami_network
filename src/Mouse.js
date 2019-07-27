@@ -85,7 +85,7 @@ export default class Mouse {
 
   static reset(linkData, linkLine, nodeCircle, nodeText) {
     d3.selectAll(nodeCircle)['_groups'][0].attr("class", null);
-    d3.selectAll(linkLine)['_groups'][0].attr("class", null);
+    d3.selectAll(linkLine)['_groups'][0].attr("class", 'link');
     d3.selectAll(nodeText)['_groups'][0].attr("class", null);
   }
 

@@ -81,6 +81,45 @@ export default class Network {
 
     this.svg.call(this.zoom_handler);
     // this.svg.call(this.zoom_handler.transform, this.initialTransform);
+
+
+    this.gradient = this.svg.append("defs")
+        .append("linearGradient")
+        .attr("id", "gradient")
+        .attr("spreadMethod", "pad");
+    //start color white
+    this.gradient.append("stop")
+        .attr("offset", "0%")
+        .attr("stop-color", "red")
+        .attr("stop-opacity", 1);
+    //end color steel blue
+    this.gradient.append("stop")
+        .attr("offset", "100%")
+        .attr("stop-color", "green")
+        .attr("stop-opacity", 1);
+
+
+    // this.Vector2 = function (x, y) {
+    //   this.magnitude = Math.sqrt(x * x + y * y);
+    //   this.X = x;
+    //   this.Y = y;
+    // };
+    //
+    // // this.Vector2.prototype.perpendicularClockwise = function () {
+    // //   return new this.Vector2(-this.Y, this.X);
+    // // };
+    // //
+    // // this.Vector2.prototype.perpendicularCounterClockwise = function () {
+    // //   return new this.Vector2(this.Y, -this.X);
+    // // };
+    //
+    // this.Vector2.prototype.getUnitVector = function () {
+    //   return new this.Vector2(this.X / this.magnitude, this.Y / this.magnitude);
+    // };
+    //
+    // this.Vector2.prototype.scale = function (ratio) {
+    //   return new this.Vector2(ratio * this.X, ratio * this.Y);
+    // };
   }
 
 
@@ -145,9 +184,10 @@ export default class Network {
         .attr("stroke-width", (d) => {
           return Math.sqrt(d.weight) * 0.1 + d.weight * 0.01 + 0.01;
         })
-        .attr("stroke", (d) => {
-          return this.color(d.group_id_s)
-        });
+        // .attr("stroke", (d) => {
+        //   // return this.color(d.group_id_s)
+        // })
+        .attr("class", "link")
   }
 
 
@@ -458,6 +498,16 @@ export default class Network {
   }
 
 
+  gradientVector (x, y, scale=0.5) {
+      const magnitude = Math.sqrt(x * x + y * y);
+      const X = x / magnitude;
+      const Y = y / magnitude;
+
+      // const unitVector = {'X' : X / magnitude, 'Y' : Y / magnitude};
+      return {'X' : scale * X, 'Y' : scale * Y};
+    };
+
+
   tickBounceWall() {
     const marginXright = this.wallMargin - this.zoomScale.X / this.zoomScale.scale;
     const marginYtop = this.wallMargin - this.zoomScale.Y / this.zoomScale.scale;
@@ -465,8 +515,21 @@ export default class Network {
     const marginXleft = (this.width - this.zoomScale.X) / this.zoomScale.scale - this.wallMargin;
     const marginYbottom = (this.height - this.zoomScale.Y) / this.zoomScale.scale - this.wallMargin;
 
-    this.link
-        .attr("x1", (d) => {
+    // this.link
+    //     .attr("x1", (d) => {
+    //       return Math.max(marginXright, Math.min(marginXleft, d.source.x));
+    //     })
+    //     .attr("y1", (d) => {
+    //       return Math.max(marginYtop, Math.min(marginYbottom, d.source.y));
+    //     })
+    //     .attr("x2", (d) => {
+    //       return Math.max(marginXright, Math.min(marginXleft, d.target.x));
+    //     })
+    //     .attr("y2", (d) => {
+    //       return Math.max(marginYtop, Math.min(marginYbottom, d.target.y));
+    //     });
+
+    this.link.attr("x1", (d) => {
           return Math.max(marginXright, Math.min(marginXleft, d.source.x));
         })
         .attr("y1", (d) => {
@@ -477,7 +540,28 @@ export default class Network {
         })
         .attr("y2", (d) => {
           return Math.max(marginYtop, Math.min(marginYbottom, d.target.y));
-        });
+        })
+        .attr("d", (d) => {
+
+      const gradientVector = this.gradientVector(d.target.x - d.source.x, d.target.y - d.source.y);
+      this.gradient
+          .attr("x1", 0.5 - gradientVector.X)
+          .attr("y1", 0.5 - gradientVector.Y)
+          .attr("x2", 0.5 + gradientVector.X)
+          .attr("y2", 0.5 + gradientVector.Y);
+      const sourceDelta = 5;
+      const targetDelta = 5;
+
+
+      if ((d.target.x > d.source.x && d.target.y < d.source.y) || (d.target.x < d.source.x && d.target.y > d.source.y)) {
+        return "M" + (d.source.x - sourceDelta) + "," + (d.source.y - sourceDelta) + " L" + (d.target.x - targetDelta) + "," + (d.target.y - targetDelta) + " L" + (d.target.x + targetDelta) + "," + (d.target.y + targetDelta) + " L" + (d.source.x + sourceDelta) + "," + (d.source.y + sourceDelta) + " Z";
+      } else {
+        return "M" + (d.source.x - sourceDelta) + "," + (d.source.y + sourceDelta) + " L" + (d.target.x - targetDelta) + "," + (d.target.y + targetDelta) + " L" + (d.target.x + targetDelta) + "," + (d.target.y - targetDelta) + " L" + (d.source.x + sourceDelta) + "," + (d.source.y - sourceDelta) + " Z";
+      }
+    })
+
+
+
     this.node
         .attr("cx", (d) => {
           return Math.max(marginXright, Math.min(marginXleft, d.x));
@@ -496,7 +580,22 @@ export default class Network {
   }
 
 
+
   tickNoBounce() {
+    // this.link
+    //     .attr("x1", (d) => {
+    //       return d.source.x;
+    //     })
+    //     .attr("y1", (d) => {
+    //       return d.source.y;
+    //     })
+    //     .attr("x2", (d) => {
+    //       return d.target.x;
+    //     })
+    //     .attr("y2", (d) => {
+    //       return d.target.y;
+    //     });
+
     this.link
         .attr("x1", (d) => {
           return d.source.x;
@@ -509,7 +608,26 @@ export default class Network {
         })
         .attr("y2", (d) => {
           return d.target.y;
-        });
+        })
+        .attr("d", (d) => {
+
+      const gradientVector = this.gradientVector(d.target.x - d.source.x, d.target.y - d.source.y);
+      this.gradient
+          .attr("x1", 0.5 - gradientVector.X)
+          .attr("y1", 0.5 - gradientVector.Y)
+          .attr("x2", 0.5 + gradientVector.X)
+          .attr("y2", 0.5 + gradientVector.Y);
+      const sourceDelta = 5;
+      const targetDelta = 5;
+
+
+      if ((d.target.x > d.source.x && d.target.y < d.source.y) || (d.target.x < d.source.x && d.target.y > d.source.y)) {
+        return "M" + (d.source.x - sourceDelta) + "," + (d.source.y - sourceDelta) + " L" + (d.target.x - targetDelta) + "," + (d.target.y - targetDelta) + " L" + (d.target.x + targetDelta) + "," + (d.target.y + targetDelta) + " L" + (d.source.x + sourceDelta) + "," + (d.source.y + sourceDelta) + " Z";
+      } else {
+        return "M" + (d.source.x - sourceDelta) + "," + (d.source.y + sourceDelta) + " L" + (d.target.x - targetDelta) + "," + (d.target.y + targetDelta) + " L" + (d.target.x + targetDelta) + "," + (d.target.y - targetDelta) + " L" + (d.source.x + sourceDelta) + "," + (d.source.y - sourceDelta) + " Z";
+      }
+    });
+
     this.node
         .attr("cx", (d) => {
           return d.x;
