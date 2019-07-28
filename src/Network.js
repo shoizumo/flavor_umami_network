@@ -89,7 +89,8 @@ export default class Network {
 
 
 
-
+  ////////////////////////////////////////////////////////////////////////////////////////////
+  // render
   render() {
     this.setLegend();
     this.setLink();
@@ -116,7 +117,6 @@ export default class Network {
         .attr("fill", "#352622")
         .attr("font-family", 'Roboto');
 
-    // $(".legends").css({"cursor": ["pointer"]});
     d3.selectAll(".legends").style("cursor", "pointer");
 
     this.legend.append('circle') // 凡例の色付け四角
@@ -136,7 +136,6 @@ export default class Network {
         .text((d) => {
           return d;
         })
-        // .attr("class", "textselected")
         .style("text-anchor", "start")
         .style("font-size", 15);
   }
@@ -158,7 +157,6 @@ export default class Network {
         .attr("class", (d, i) => {
           return "link" + this.dataType + String(i);
         })
-        // .attr("class", "link")
   }
 
 
@@ -247,13 +245,15 @@ export default class Network {
     ).force("charge", d3.forceManyBody().strength(-300))
         .force("center", d3.forceCenter(this.centerX, this.centerY))
         .force("x", d3.forceX().strength(0.25).x(this.centerX))
-        .force("y", d3.forceY().strength(0.35).y(this.centerY));
+        .force("y", d3.forceY().strength(0.35).y(this.centerY))
+        .alphaMin(0.01);
 
 
-    this.simulation.alpha([0.7]);
     if (this.dataType === 'Umami') {
       Update.umamiSimulation(this.simulation, this.centerX, this.centerY);
       this.simulation.alpha([0.3])
+    }else{
+      this.simulation.alpha([0.7]);
     }
 
     this.simulation
@@ -263,33 +263,47 @@ export default class Network {
     this.simulation
         .force("link")
         .links(this.linkData);
-
   }
 
 
-  setLinkGradientColor(){
+  setLinkGradientColor() {
     this.gradient = [];
+    const gradientObj = this.svg.append("g").attr("class", "gradient" + this.vizID + this.dataType);
+    // this.deleteClassElement("gradient" + this.vizID);
+
     for (let i = 0, l = this.linkData.length; l > i; i++) {
-      this.gradient[i] = this.svg.append("defs")
-        .append("linearGradient")
-        .attr("id", "gradient" + this.dataType + String(i))
-        .attr("spreadMethod", "pad");
-    // source color
-    this.gradient[i].append("stop")
-        .attr("offset", "0%")
-        .attr("stop-color", () => {
-          return this.color(this.linkData[i].group_id_s);
-        })
-        .attr("stop-opacity", 1);
-    // target color
-    this.gradient[i].append("stop")
-        .attr("offset", "100%")
-        .attr("stop-color", () => {
-          return this.color(this.linkData[i].group_id_t);
-        })
-        .attr("stop-opacity", 1);
+      this.gradient[i] = gradientObj
+          .append("defs")
+          .append("linearGradient")
+          .attr("id", "gradient" + this.dataType + String(i))
+          .attr("spreadMethod", "pad");
+      // source color
+      this.gradient[i].append("stop")
+          .attr("offset", "0%")
+          .attr("stop-color", () => {
+            return this.color(this.linkData[i].group_id_s);
+          })
+          .attr("stop-opacity", 1);
+      // target color
+      this.gradient[i].append("stop")
+          .attr("offset", "100%")
+          .attr("stop-color", () => {
+            return this.color(this.linkData[i].group_id_t);
+          })
+          .attr("stop-opacity", 1);
     }
   }
+
+
+  gradientUnitVector(x, y) {
+    // scale = 0.5
+    const magnitude = Math.sqrt(x * x + y * y);
+    const X = x / magnitude;
+    const Y = y / magnitude;
+
+    // const unitVector = {'X' : X / magnitude, 'Y' : Y / magnitude};
+    return {'X': X * 0.5, 'Y': Y * 0.5};
+  };
 
 
   ////////////////////////////////////////////////////////////////////////////////////////////
@@ -307,7 +321,6 @@ export default class Network {
     this.node.on("mouseover", (d) => {
       if (this.isDragging === 0) {
        this.mouseover(d);
-       console.log('single', 'mouseover');
       }
     });
 
@@ -333,12 +346,10 @@ export default class Network {
 
       if (this.isClicked === 0){
         this.mouseover(d);
-        console.log('multi', 'mouseover1');
       }
       else{
         if (d.index !== this.clickedNodeIndex) {
           this.mouseover2nd(this.clickedNodeIndex, d);
-          console.log('multi', 'mouseover2');
         }
       }
 
@@ -359,15 +370,12 @@ export default class Network {
       // after clicked
       else {
 
-        console.log(d.index, this.clickedNodeIndex, d.index !== this.clickedNodeIndex);
         if (d.index !== this.clickedNodeIndex) {
 
-          console.log(d.name, this.nodeInfo.name2nd, d.name === this.nodeInfo.name2nd);
           if (this.prevName2nd !== d.name) {
             this.isMouseoutFirst = true
           }
 
-          console.log(this.isMouseoutFirst);
           if (!this.isMouseoutFirst) {
               this.mouseout();
               Connection.deleteDetail('detailMain2');
@@ -385,14 +393,12 @@ export default class Network {
 
 
     this.node.on("click", (d) => {
-      console.log('click');
       this.mouseclick(d);
     });
 
 
     this.svg.on("mouseenter", () => {
       if (this.isClicked === 0) {
-        console.log('mouseenter');
         this.mouseenter();
       }
     });
@@ -495,16 +501,6 @@ export default class Network {
   }
 
 
-  gradientVector (x, y, scale=0.5) {
-      const magnitude = Math.sqrt(x * x + y * y);
-      const X = x / magnitude;
-      const Y = y / magnitude;
-
-      // const unitVector = {'X' : X / magnitude, 'Y' : Y / magnitude};
-      return {'X' : scale * X, 'Y' : scale * Y};
-    };
-
-
   tickBounceWall() {
     const marginXright = this.wallMargin - this.zoomScale.X / this.zoomScale.scale;
     const marginYtop = this.wallMargin - this.zoomScale.Y / this.zoomScale.scale;
@@ -526,7 +522,7 @@ export default class Network {
         })
         .attr("d", (d) => {
 
-      const gradientVector = this.gradientVector(d.target.x - d.source.x, d.target.y - d.source.y);
+      const gradientVector = this.gradientUnitVector(d.target.x - d.source.x, d.target.y - d.source.y);
       // loop by index
       this.gradient[d.index]
           .attr("x1", 0.5 - gradientVector.X)
@@ -570,7 +566,7 @@ export default class Network {
         })
         .attr("d", (d) => {
 
-      const gradientVector = this.gradientVector(d.target.x - d.source.x, d.target.y - d.source.y);
+      const gradientVector = this.gradientUnitVector(d.target.x - d.source.x, d.target.y - d.source.y);
       this.gradient[d.index]
           .attr("x1", 0.5 - gradientVector.X)
           .attr("y1", 0.5 - gradientVector.Y)
@@ -607,7 +603,6 @@ export default class Network {
       Mouse.fadeNoClick(d.index, this.linkData, this.link, this.node, this.label);
       Mouse.cursor('grabbing', this.body, this.node);
     }
-
     this.isDragging = 1;
   }
 
@@ -628,7 +623,6 @@ export default class Network {
       Mouse.fadeClickable(d.index, this.linkData, this.link, this.node, this.label);
       Mouse.cursor('grab', this.body, this.node);
     }
-
     this.isDragging = 0;
   }
 
@@ -694,11 +688,10 @@ export default class Network {
       return this.transitPosition(selectedType, prevNodePosition, transitionTime);
 
     }).then(() => {
-      setTimeout(() => {
-        this.simulation.alphaTarget(0.3).restart();
-        console.log(5)
-      }, transitionTime);
+      return this.restartSimulation(transitionTime);
 
+    }).then(() => {
+      this.returnSimulationToDefault(transitionTime);
     });
   }
 
@@ -775,6 +768,27 @@ export default class Network {
     });
   }
 
+  restartSimulation(transitionTime) {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(
+            // this.simulation.alphaTarget(0.0).restart(),
+            this.simulation.alphaTarget(0.3).restart(),
+            this.deleteClassElement("gradient" + this.vizID + (this.dataType === 'Flavor' ? 'Umami' : 'Flavor')),
+            console.log(5)
+        )
+      }, transitionTime);
+    });
+  }
+
+  returnSimulationToDefault(transitionTime) {
+      setTimeout(() => {
+        this.simulation.alphaTarget(0.0);
+        console.log(6);
+      }, transitionTime);
+  }
+
+
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   // utility
@@ -806,6 +820,15 @@ export default class Network {
     this.svg.selectAll("*").remove();
   }
 
+  deleteClassElement(className) {
+    const elements = document.getElementsByClassName(className);
+    for (let i = elements.length - 1; i >= 0; i--) {
+      let e = elements[i];
+      if (e) {
+        e.parentNode.removeChild(e);
+      }
+    }
+  }
 
   /*
   ////////////////////////////////////////////////////////////////////////////////////////////
