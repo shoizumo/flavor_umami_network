@@ -89,7 +89,7 @@ export default class Mouse {
     d3.selectAll(nodeText)['_groups'][0].attr("class", null);
 
     for (let i = 0, l = linkData.length; l > i; i++) {
-      d3.selectAll(linkLine)['_groups'][0].attr("class", 'link' + dataType + String(i));
+      linkLine['_groups'][0][i].setAttribute("class", 'link' + dataType + String(i));
     }
 
   }

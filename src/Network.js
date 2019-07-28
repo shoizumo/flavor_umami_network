@@ -88,31 +88,7 @@ export default class Network {
   }
 
 
-  setLinkGradientColor(){
-    this.gradient = [];
-    for (let i = 0, l = this.linkData.length; l > i; i++) {
-      this.gradient[i] = this.svg.append("defs")
-        .append("linearGradient")
-        .attr("id", "gradient" + this.dataType + String(i))
-        .attr("spreadMethod", "pad");
-    // source color
-    this.gradient[i].append("stop")
-        .attr("offset", "0%")
-        .attr("stop-color", () => {
-          return this.color(this.linkData[i].group_id_s);
-        })
-        // .attr("stop-color", "red")
-        .attr("stop-opacity", 1);
-    // target color
-    this.gradient[i].append("stop")
-        .attr("offset", "100%")
-        .attr("stop-color", () => {
-          return this.color(this.linkData[i].group_id_t);
-        })
-        // .attr("stop-color", "green")
-        .attr("stop-opacity", 1);
-    }
-  }
+
 
   render() {
     this.setLegend();
@@ -289,6 +265,32 @@ export default class Network {
         .links(this.linkData);
 
   }
+
+
+  setLinkGradientColor(){
+    this.gradient = [];
+    for (let i = 0, l = this.linkData.length; l > i; i++) {
+      this.gradient[i] = this.svg.append("defs")
+        .append("linearGradient")
+        .attr("id", "gradient" + this.dataType + String(i))
+        .attr("spreadMethod", "pad");
+    // source color
+    this.gradient[i].append("stop")
+        .attr("offset", "0%")
+        .attr("stop-color", () => {
+          return this.color(this.linkData[i].group_id_s);
+        })
+        .attr("stop-opacity", 1);
+    // target color
+    this.gradient[i].append("stop")
+        .attr("offset", "100%")
+        .attr("stop-color", () => {
+          return this.color(this.linkData[i].group_id_t);
+        })
+        .attr("stop-opacity", 1);
+    }
+  }
+
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   // mouse action
