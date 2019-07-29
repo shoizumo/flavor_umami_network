@@ -3,49 +3,43 @@ import Connection from "./Connection";
 
 export default class Mouse {
 
-  static fadeClickable(nodeIndex, linkData, linkLine, nodeCircle, nodeText) {
-    // at first, make all node & line fade
-    d3.selectAll(nodeCircle)['_groups'][0].attr("class", "nodeColorFade");
-    d3.selectAll(linkLine)['_groups'][0].attr("class", "lineColorFade");
-    d3.selectAll(nodeText)['_groups'][0].attr("class", "nodeTextFade");
+  static clickableFade(nodeIndex, linkData, linkLine, nodeCircle, nodeText) {
+    Mouse.fadeCanMouseAction(linkLine, nodeCircle, nodeText);
+    Mouse.colorNetwork(nodeIndex, linkData, linkLine, nodeCircle, nodeText, 'nodeColor', 'lineColor')
+  }
+
+  static noClickFade(nodeIndex, linkData, linkLine, nodeCircle, nodeText) {
+    Mouse.fadeNoMouseAction(linkLine, nodeCircle, nodeText);
+    return Mouse.colorNetwork(nodeIndex, linkData, linkLine, nodeCircle, nodeText, 'nodeColor', 'lineColor');
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////////////
+  // for mouseover 1stLinked-1 : role of mouseover
+  static noClickFade1stLinked(nodeIndex, linkData, linkLine, nodeCircle, nodeText) {
+    Mouse.fadeNoMouseAction(linkLine, nodeCircle, nodeText);
+    Mouse.colorNetwork(nodeIndex, linkData, linkLine, nodeCircle, nodeText, 'nodeColor_1stLinked', 'lineColor_1stLinked');
+  }
+
+  // for mouseover 1stLinked-2: role of click
+  static noClickNoFade1stLinked(nodeIndex, linkData, linkLine, nodeCircle, nodeText) {
+    return Mouse.colorNetwork(nodeIndex, linkData, linkLine, nodeCircle, nodeText, 'nodeColor', 'lineColor');
+  }
+  ///////////////////////////////////////////////////////////////////////////////////////
+
+
+  static reset(linkData, linkLine, nodeCircle, nodeText, dataType) {
+    d3.selectAll(nodeCircle)['_groups'][0].attr("class", null);
+    d3.selectAll(nodeText)['_groups'][0].attr("class", null);
 
     for (let i = 0, l = linkData.length; l > i; i++) {
-      if (linkData[i].source.index === nodeIndex ||
-          linkData[i].target.index === nodeIndex) {
-
-        const lineIndex = i;
-        const nodeSource = linkData[lineIndex].source.index;
-        const nodeTarget = linkData[lineIndex].target.index;
-
-        // line
-        const selectLine = linkLine['_groups'][0][lineIndex];
-        selectLine.setAttribute('class', 'lineColor');
-        // node
-        nodeCircle['_groups'][0][nodeSource].setAttribute("class", "nodeColor");
-        nodeCircle['_groups'][0][nodeTarget].setAttribute("class", "nodeColor");
-        // text
-        nodeText['_groups'][0][nodeSource].setAttribute("class", "linkedNodeText");
-        nodeText['_groups'][0][nodeTarget].setAttribute("class", "linkedNodeText");
-      }
+      linkLine['_groups'][0][i].setAttribute("class", 'link' + dataType + String(i));
     }
-    // selectNode
-    nodeCircle['_groups'][0][nodeIndex].setAttribute("class", "nodeColor");
-    // selectNodeText
-    nodeText['_groups'][0][nodeIndex].setAttribute("class", "linkedNodeText");
   }
 
 
-  static fadeNoClick(nodeIndex, linkData, linkLine, nodeCircle, nodeText,
-                     isFade = true,
-                     nodeColorClass = 'nodeColor', lineColorClass = 'lineColor') {
-
-    if (isFade){
-      // make node non-drag
-      d3.selectAll(nodeCircle)['_groups'][0].attr("class", "nodeColorFadeNonDrag");
-      d3.selectAll(linkLine)['_groups'][0].attr("class", "lineColorFade");
-      d3.selectAll(nodeText)['_groups'][0].attr("class", "nodeTextFade");
-    }
-
+  ///////////////////////////////////////////////////////////////////////////////////////
+  static colorNetwork(nodeIndex, linkData, linkLine, nodeCircle, nodeText, nodeColorClass, lineColorClass){
+    let nodeList = [];
     for (let i = 0, l = linkData.length; l > i; i++) {
       if (linkData[i].source.index === nodeIndex ||
           linkData[i].target.index === nodeIndex) {
@@ -53,6 +47,7 @@ export default class Mouse {
         const lineIndex = i;
         const nodeSource = linkData[lineIndex].source.index;
         const nodeTarget = linkData[lineIndex].target.index;
+        nodeList.push(nodeSource, nodeTarget);
 
         // line
         const selectLine = linkLine['_groups'][0][lineIndex];
@@ -69,30 +64,24 @@ export default class Mouse {
     nodeCircle['_groups'][0][nodeIndex].setAttribute("class", nodeColorClass);
     // selectNodeText
     nodeText['_groups'][0][nodeIndex].setAttribute("class", "linkedNodeText");
-  }
 
-  static fadeNoClick2nd(nodeIndex, linkData, linkLine, nodeCircle, nodeText) {
-    Mouse.fadeNoClick(nodeIndex, linkData, linkLine, nodeCircle, nodeText,
-        true, 'nodeColor_2nd',  'lineColor_2nd');
-  }
-
-  static noFadeNoClick2nd(nodeIndex, linkData, linkLine, nodeCircle, nodeText) {
-
-    Mouse.fadeNoClick(nodeIndex, linkData, linkLine, nodeCircle, nodeText,
-        false, 'nodeColor', 'lineColor');
+    return nodeList;
   }
 
 
-  static reset(linkData, linkLine, nodeCircle, nodeText, dataType) {
-    d3.selectAll(nodeCircle)['_groups'][0].attr("class", null);
-    // d3.selectAll(linkLine)['_groups'][0].attr("class", 'link');
-    d3.selectAll(nodeText)['_groups'][0].attr("class", null);
-
-    for (let i = 0, l = linkData.length; l > i; i++) {
-      linkLine['_groups'][0][i].setAttribute("class", 'link' + dataType + String(i));
-    }
-
+  static fadeNoMouseAction(linkLine, nodeCircle, nodeText){
+    d3.selectAll(nodeCircle)['_groups'][0].attr("class", "nodeColorFadeNonDrag");
+    d3.selectAll(linkLine)['_groups'][0].attr("class", "lineColorFade");
+    d3.selectAll(nodeText)['_groups'][0].attr("class", "nodeTextFade");
   }
+
+
+  static fadeCanMouseAction(linkLine, nodeCircle, nodeText){
+    d3.selectAll(nodeCircle)['_groups'][0].attr("class", "nodeColorFade");
+    d3.selectAll(linkLine)['_groups'][0].attr("class", "lineColorFade");
+    d3.selectAll(nodeText)['_groups'][0].attr("class", "nodeTextFade");
+  }
+  ///////////////////////////////////////////////////////////////////////////////////////
 
 
   static cursor(type, body, circle) {
@@ -155,16 +144,16 @@ export default class Mouse {
       const index = AN.detectNodeIndex(obj.name);
       let M = Connection.makeNodeList(networkMain.detectNodeIndex(obj.name), networkMain.linkData);
       let S = Connection.makeNodeList(networkSub.detectNodeIndex(obj.name), networkSub.linkData);
-      Mouse.fadeClickable(index, AN.linkData, AN.link, AN.node, AN.label);
+      Mouse.clickableFade(index, AN.linkData, AN.link, AN.node, AN.label);
 
       Connection.displayDetail(obj.name, M.sameNodes, M.diffNodes, 'detailMain1');
       Connection.displayDetail(obj.name, S.sameNodes, S.diffNodes, 'detailSub1');
 
     }
 
-    else if (obj.mouseAction === 'mouseover2nd') {
-      Mouse.fadeNoClick2nd(AN.detectNodeIndex(obj.name2nd), AN.linkData, AN.link, AN.node, AN.label);
-      Mouse.noFadeNoClick2nd(AN.clickedNodeIndex, AN.linkData, AN.link, AN.node, AN.label);
+    else if (obj.mouseAction === 'mouseover1stLinked') {
+      Mouse.noClickFade1stLinked(AN.detectNodeIndex(obj.name1stLinked), AN.linkData, AN.link, AN.node, AN.label);
+      Mouse.noClickNoFade1stLinked(AN.clickedNodeIndex, AN.linkData, AN.link, AN.node, AN.label);
 
       let M1 = Connection.makeNodeList(networkMain.detectNodeIndex(obj.name), networkMain.linkData);
       let S1 = Connection.makeNodeList(networkSub.detectNodeIndex(obj.name), networkSub.linkData);
@@ -172,11 +161,11 @@ export default class Mouse {
       const SubBaseNodes = S1.sameNodes.concat(S1.diffNodes);
 
       const nodeCategory = networkMain.detectNodeCategory(obj.name);
-      let M2 = Connection.makeNodeList2nd(networkMain.detectNodeIndex(obj.name2nd), networkMain.linkData, nodeCategory, MainBaseNodes);
-      let S2 = Connection.makeNodeList2nd(networkSub.detectNodeIndex(obj.name2nd), networkSub.linkData, nodeCategory, SubBaseNodes);
+      let M2 = Connection.makeNodeList1stLinked(networkMain.detectNodeIndex(obj.name1stLinked), networkMain.linkData, nodeCategory, MainBaseNodes);
+      let S2 = Connection.makeNodeList1stLinked(networkSub.detectNodeIndex(obj.name1stLinked), networkSub.linkData, nodeCategory, SubBaseNodes);
 
-      Connection.displayDetail(obj.name2nd, M2.sameNodes, M2.diffNodes, 'detailMain2');
-      Connection.displayDetail(obj.name2nd, S2.sameNodes, S2.diffNodes, 'detailSub2');
+      Connection.displayDetail(obj.name1stLinked, M2.sameNodes, M2.diffNodes, 'detailMain2');
+      Connection.displayDetail(obj.name1stLinked, S2.sameNodes, S2.diffNodes, 'detailSub2');
     }
 
     else if (obj.mouseAction === 'mouseout') {
@@ -186,7 +175,7 @@ export default class Mouse {
 
     else if (obj.mouseAction === 'click') {
       AN.clickedNodeIndex = AN.detectNodeIndex(obj.name);
-      Mouse.fadeNoClick(AN.clickedNodeIndex, AN.linkData, AN.link, AN.node, AN.label);
+      Mouse.noClickFade(AN.clickedNodeIndex, AN.linkData, AN.link, AN.node, AN.label);
       AN.isClicked = 1;
     }
 

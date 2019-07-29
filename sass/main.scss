@@ -119,7 +119,7 @@ $highlight_text_opacity: 1.0;
 $highlight_line_opacity: 1.0;
 $highlight_color: #d70035;
 
-$highlight_color_2nd: #3500d7;
+$highlight_color_1stLinked: #3500d7;
 
 
 // fade
@@ -152,9 +152,6 @@ $default_line_opacity: 0.5;
   stroke: $highlight_color;
   stroke-width: 2;
   opacity: $highlight_node_opacity;
-  //cursor: -webkit-grab;
-  //cursor: -moz-grab;
-  //cursor: grab;
 }
 
 
@@ -163,7 +160,6 @@ $default_line_opacity: 0.5;
   font-weight: 500;
   font-size: 0.85em;
   pointer-events: none;
-  //cursor: default;
 }
 
 
@@ -173,20 +169,17 @@ $default_line_opacity: 0.5;
 }
 
 
-/* mouseover 2nd(multi mode) */
-.nodeColor_2nd {
-  stroke: $highlight_color_2nd;
+/* mouseover 1stLinked(multi mode) */
+.nodeColor_1stLinked {
+  stroke: $highlight_color_1stLinked;
   stroke-width: 2;
   opacity: $highlight_node_opacity;
-  pointer-events: none;
+  //pointer-events: none;
   cursor: default;
-  //cursor: -webkit-grab;
-  //cursor: -moz-grab;
-  //cursor: grab;
 }
 
-.lineColor_2nd {
-  stroke: $highlight_color_2nd;
+.lineColor_1stLinked {
+  stroke: $highlight_color_1stLinked;
   opacity: $highlight_line_opacity;
 }
 
@@ -201,9 +194,6 @@ $default_line_opacity: 0.5;
 .nodeColorFade {
   fill: $fade_fill_color;
   stroke: $fade_stroke_color;
-  //cursor: -webkit-grab;
-  //cursor: -moz-grab;
-  //cursor: grab;
 }
 
 .nodeTextFade {
@@ -216,20 +206,6 @@ $default_line_opacity: 0.5;
   stroke: $fade_fill_color;
   opacity: $default_line_opacity;
 }
-
-
-/* return(default color) */
-//.nodeReturnFade {
-//}
-//
-//.nodeTextReturnFade {
-//  //pointer-events: none;
-//  //cursor: default;
-//}
-//
-//.lineReturnFade {
-//  //opacity: $default_line_opacity;
-//}
 
 
 ////////////////////////////////////////////////////////////////////////////////////////

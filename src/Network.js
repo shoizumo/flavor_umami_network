@@ -44,7 +44,8 @@ export default class Network {
     this.isClicked = 0;
     this.isDragging = 0;
     this.isMouseoutFirst = true;
-    this.prevName2nd = '';
+    this.prev1stLinkedMouseoverNodeName = '';
+    this.linked1stNodeList = [];
 
     this.mouseoutSetTimeout = '';
     this.mouseoutSetTimeoutDuration = 1000;
@@ -355,8 +356,20 @@ export default class Network {
       if (this.isClicked === 0) {
         this.mouseover(d);
       } else {
+        // if mouseover clicked node, do nothing
         if (d.index !== this.clickedNodeIndex) {
-          this.mouseover2nd(this.clickedNodeIndex, d);
+
+          // if mouseover 1st linked node, color 1st linked node
+          if (this.linked1stNodeList.indexOf(d.index) >= 0){
+            console.log('1st', this.linked1stNodeList);
+            this.mouseover1stLinked(this.clickedNodeIndex, d);
+          }
+          // if mouseover 1st linked node, color 1st linked node
+          else {
+            console.log('2nd', this.linked1stNodeList);
+            this.mouseover2ndLinked(d);
+          }
+
         }
       }
 
@@ -377,14 +390,17 @@ export default class Network {
       // after clicked
       else {
 
+        // if mouseout from clicked node, do nothing
         if (d.index !== this.clickedNodeIndex) {
 
-          if (this.prevName2nd !== d.name) {
+          // if mouseout from another 1st linked node, don't return to default
+          if (this.prev1stLinkedMouseoverNodeName !== d.name) {
             this.isMouseoutFirst = true
           }
 
+          // if mouseout from 1st linked linked node again, return to default
           if (!this.isMouseoutFirst) {
-            this.mouseout();
+            // this.mouseout();
             Connection.deleteDetail('detailMain2');
             Connection.deleteDetail('detailSub2');
             this.returnToPrevClickedNodeMouseover(this.clickedNodeIndex);
@@ -411,29 +427,56 @@ export default class Network {
   }
 
 
+  mouseover2ndLinked(d){
+    // click = last mouseover node
+    this.nodeInfo.name = this.nodeInfo.name1stLinked;
+    const clickedNodeIndex = this.detectNodeIndex(this.nodeInfo.name);
+    this.clickedNodeIndex = clickedNodeIndex;
+
+    // console.log('mouseover2ndLinked', ',prev', this.prev1stLinkedMouseoverNodeName, ',now', this.nodeInfo.name1stLinked, ',infoname', this.nodeInfo.name);
+
+    this.mouseout();  // delete nodeInfo.name1stLinked
+
+    // mouseover 1st = new mouseover node
+    this.nodeInfo.name1stLinked = d.name;
+
+
+    Mouse.noClickFade1stLinked(d.index, this.linkData, this.link, this.node, this.label);
+    this.linked1stNodeList = Mouse.noClickNoFade1stLinked(clickedNodeIndex, this.linkData, this.link, this.node, this.label);
+    clearInterval(this.mouseoutSetTimeout);
+
+    this.nodeInfo.network = this.vizID;
+    this.nodeInfo.mouseAction = 'mouseover2ndLinked';  // event trigger
+
+  }
+
+
   mouseover(d) {
-    Mouse.fadeClickable(d.index, this.linkData, this.link, this.node, this.label);
+    Mouse.clickableFade(d.index, this.linkData, this.link, this.node, this.label);
     clearInterval(this.mouseoutSetTimeout);
     this.nodeInfo.name = d.name;
     this.nodeInfo.network = this.vizID;
     this.nodeInfo.mouseAction = 'mouseover';  // event trigger
+    // console.log('mouseover', ',prev', this.prev1stLinkedMouseoverNodeName, ',now', this.nodeInfo.name1stLinked, ',infoname', this.nodeInfo.name);
   }
 
-  mouseover2nd(oldIndex, newNode) {
-    Mouse.fadeNoClick2nd(newNode.index, this.linkData, this.link, this.node, this.label);
-    Mouse.noFadeNoClick2nd(oldIndex, this.linkData, this.link, this.node, this.label);
+  mouseover1stLinked(oldIndex, newNode) {
+    Mouse.noClickFade1stLinked(newNode.index, this.linkData, this.link, this.node, this.label);
+    Mouse.noClickNoFade1stLinked(oldIndex, this.linkData, this.link, this.node, this.label);
     clearInterval(this.mouseoutSetTimeout);
-    this.prevName2nd = this.nodeInfo.name2nd;
-    this.nodeInfo.name2nd = newNode.name;
+    this.prev1stLinkedMouseoverNodeName = this.nodeInfo.name1stLinked;
+    this.nodeInfo.name1stLinked = newNode.name;
     this.nodeInfo.network = this.vizID;
-    this.nodeInfo.mouseAction = 'mouseover2nd';  // event trigger
+    this.nodeInfo.mouseAction = 'mouseover1stLinked';  // event trigger
+    // console.log('mouseover1stLinked', ',prev', this.prev1stLinkedMouseoverNodeName, ',now', this.nodeInfo.name1stLinked, ',infoname', this.nodeInfo.name);
   }
 
   mouseout() {
-    this.nodeInfo.name2nd = '';
+    this.nodeInfo.name1stLinked = '';
     Mouse.reset(this.linkData, this.link, this.node, this.label, this.dataType);
     this.nodeInfo.network = this.vizID;
     this.nodeInfo.mouseAction = 'mouseout';  // event trigger
+    // console.log('mouseout', ',prev', this.prev1stLinkedMouseoverNodeName, ',now', this.nodeInfo.name1stLinked, ',infoname', this.nodeInfo.name);
   }
 
   mouseenter() {
@@ -441,20 +484,24 @@ export default class Network {
     Mouse.cursor(this.vizMode === 'Single' ? 'grab' : 'pointer', this.body, this.node);
     this.nodeInfo.network = this.vizID;
     this.nodeInfo.mouseAction = 'mouseenter';  // event trigger
+    // console.log('mouseenter', ',prev', this.prev1stLinkedMouseoverNodeName, ',now', this.nodeInfo.name1stLinked, ',infoname', this.nodeInfo.name);
   }
 
   mouseclick(d) {
-    Mouse.fadeNoClick(d.index, this.linkData, this.link, this.node, this.label);
+    this.linked1stNodeList = [];
+    this.linked1stNodeList = Mouse.noClickFade(d.index, this.linkData, this.link, this.node, this.label);
     this.nodeInfo.name = d.name;
     this.nodeInfo.network = this.vizID;
     this.isClicked = 1;
     this.clickedNodeIndex = d.index;
     this.nodeInfo.mouseAction = 'click';  // event trigger
+    // console.log('mouseclick', ',prev', this.prev1stLinkedMouseoverNodeName, ',now', this.nodeInfo.name1stLinked, ',infoname', this.nodeInfo.name);
   }
 
   returnToPrevClickedNodeMouseover(prevIndex) {
-    Mouse.fadeNoClick(prevIndex, this.linkData, this.link, this.node, this.label);
+    Mouse.noClickFade(prevIndex, this.linkData, this.link, this.node, this.label);
     this.nodeInfo.mouseAction = 'mouseover';  // event trigger
+    // console.log('returnToPrevClickedNodeMouseover', ',prev', this.prev1stLinkedMouseoverNodeName, ',now', this.nodeInfo.name1stLinked, ',infoname', this.nodeInfo.name);
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
@@ -609,7 +656,7 @@ export default class Network {
       d.fx = d.x;
       d.fy = d.y;
 
-      Mouse.fadeNoClick(d.index, this.linkData, this.link, this.node, this.label);
+      Mouse.noClickFade(d.index, this.linkData, this.link, this.node, this.label);
       Mouse.cursor('grabbing', this.body, this.node);
     }
     this.isDragging = 1;
@@ -629,7 +676,7 @@ export default class Network {
       d.fy = null;
 
       Mouse.reset(this.linkData, this.link, this.node, this.label, this.dataType);
-      Mouse.fadeClickable(d.index, this.linkData, this.link, this.node, this.label);
+      Mouse.clickableFade(d.index, this.linkData, this.link, this.node, this.label);
       Mouse.cursor('grab', this.body, this.node);
     }
     this.isDragging = 0;
@@ -845,33 +892,4 @@ export default class Network {
     }
   }
 
-  /*
-  ////////////////////////////////////////////////////////////////////////////////////////////
-
-  Legend.putId2Legend(cell, legendName);
-  // ノードを更新する場合は再度クラスを付与する必要あり
-  Legend.putClass2Node(nodes, circle);
-
-
-  let legendFilter = d3.selectAll(".cell");
-  if (!isSp) {
-    legendFilter.on("mouseover", function () {
-      const legendId = this.id.slice(9);
-      Legend.mouseoverFilter(legendId, circle, cell, this.color);
-
-    });
-
-    legendFilter.on("click", function () {
-      const legendId = this.id.slice(9);
-      Legend.mouseoverClick(legendId, circle, cell, this.color);
-
-    });
-
-    // legend filter(mouse out)
-    legendFilter.on("mouseout", function () {
-      const legendId = this.id.slice(9);
-      Legend.mouseoutFilter(legendId, circle, cell);
-    });
-  }
-*/
 }

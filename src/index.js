@@ -28,7 +28,7 @@ import Connection from "./Connection";
   // network: network object is being manipulated
   // mouseAction: mouseAction which is event trigger
   */
-  let nodeInfo = {'name': '', 'name2nd': '', 'network': '', 'mouseAction': ''};
+  let nodeInfo = {'name': '', 'name1stLinked': '', 'network': '', 'mouseAction': ''};
   let networkMain, networkSub;
 
   /* Base Network */

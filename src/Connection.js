@@ -1,5 +1,3 @@
-import * as d3 from 'd3';
-
 export default class Connection {
 
   // //detect whether selected node match or not, and if matched, move to selected node.
@@ -60,7 +58,7 @@ export default class Connection {
   }
 
 
-  static makeNodeList2nd(nodeIndex, linkData, clickedNodeCategory, baseNodes) {
+  static makeNodeList1stLinked(nodeIndex, linkData, clickedNodeCategory, baseNodes) {
 
     let sameNodes = [];
     let diffNodes = [];
