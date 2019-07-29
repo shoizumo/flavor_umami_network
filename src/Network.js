@@ -85,8 +85,8 @@ export default class Network {
 
     // gradient link color list for each link
     this.gradient = [];
+    this.isGradientUpdateList = []
   }
-
 
 
   ////////////////////////////////////////////////////////////////////////////////////////////
@@ -252,7 +252,7 @@ export default class Network {
     if (this.dataType === 'Umami') {
       Update.umamiSimulation(this.simulation, this.centerX, this.centerY);
       this.simulation.alpha([0.3])
-    }else{
+    } else {
       this.simulation.alpha([0.7]);
     }
 
@@ -268,6 +268,7 @@ export default class Network {
 
   setLinkGradientColor() {
     this.gradient = [];
+    this.isGradientUpdateList = [];
     const gradientObj = this.svg.append("g").attr("class", "gradient" + this.vizID + this.dataType);
     // this.deleteClassElement("gradient" + this.vizID);
 
@@ -291,6 +292,13 @@ export default class Network {
             return this.color(this.linkData[i].group_id_t);
           })
           .attr("stop-opacity", 1);
+
+      if (this.linkData[i].group_id_s !== this.linkData[i].group_id_t) {
+        this.isGradientUpdateList.push(true);
+      } else {
+        this.isGradientUpdateList.push(false);
+      }
+
     }
   }
 
@@ -311,7 +319,7 @@ export default class Network {
   setMouseAction() {
     if (this.vizMode === 'Single') {
       this.setMouseActionSingle();
-    }else{
+    } else {
       this.setMouseActionMulti();
     }
   }
@@ -320,7 +328,7 @@ export default class Network {
   setMouseActionSingle() {
     this.node.on("mouseover", (d) => {
       if (this.isDragging === 0) {
-       this.mouseover(d);
+        this.mouseover(d);
       }
     });
 
@@ -344,10 +352,9 @@ export default class Network {
   setMouseActionMulti() {
     this.node.on("mouseover", (d) => {
 
-      if (this.isClicked === 0){
+      if (this.isClicked === 0) {
         this.mouseover(d);
-      }
-      else{
+      } else {
         if (d.index !== this.clickedNodeIndex) {
           this.mouseover2nd(this.clickedNodeIndex, d);
         }
@@ -377,14 +384,12 @@ export default class Network {
           }
 
           if (!this.isMouseoutFirst) {
-              this.mouseout();
-              Connection.deleteDetail('detailMain2');
-              Connection.deleteDetail('detailSub2');
-              this.returnToPrevClickedNodeMouseover(this.clickedNodeIndex);
-              this.isMouseoutFirst = true
-          }
-
-          else {
+            this.mouseout();
+            Connection.deleteDetail('detailMain2');
+            Connection.deleteDetail('detailSub2');
+            this.returnToPrevClickedNodeMouseover(this.clickedNodeIndex);
+            this.isMouseoutFirst = true
+          } else {
             this.isMouseoutFirst = false
           }
         }
@@ -447,7 +452,7 @@ export default class Network {
     this.nodeInfo.mouseAction = 'click';  // event trigger
   }
 
-  returnToPrevClickedNodeMouseover(prevIndex){
+  returnToPrevClickedNodeMouseover(prevIndex) {
     Mouse.fadeNoClick(prevIndex, this.linkData, this.link, this.node, this.label);
     this.nodeInfo.mouseAction = 'mouseover';  // event trigger
   }
@@ -509,8 +514,8 @@ export default class Network {
     const marginYbottom = (this.height - this.zoomScale.Y) / this.zoomScale.scale - this.wallMargin;
 
     this.link.attr("x1", (d) => {
-          return Math.max(marginXright, Math.min(marginXleft, d.source.x));
-        })
+      return Math.max(marginXright, Math.min(marginXleft, d.source.x));
+    })
         .attr("y1", (d) => {
           return Math.max(marginYtop, Math.min(marginYbottom, d.source.y));
         })
@@ -522,14 +527,12 @@ export default class Network {
         })
         .attr("d", (d) => {
 
-      const gradientVector = this.gradientUnitVector(d.target.x - d.source.x, d.target.y - d.source.y);
-      // loop by index
-      this.gradient[d.index]
-          .attr("x1", 0.5 - gradientVector.X)
-          .attr("y1", 0.5 - gradientVector.Y)
-          .attr("x2", 0.5 + gradientVector.X)
-          .attr("y2", 0.5 + gradientVector.Y);
-    });
+
+          if (this.isGradientUpdateList[d.index]) {
+            this.updateGradient(d);
+          }
+
+        });
 
     this.node
         .attr("cx", (d) => {
@@ -547,7 +550,6 @@ export default class Network {
           return Math.max(marginYtop, Math.min(marginYbottom, d.y));
         });
   }
-
 
 
   tickNoBounce() {
@@ -566,13 +568,10 @@ export default class Network {
         })
         .attr("d", (d) => {
 
-      const gradientVector = this.gradientUnitVector(d.target.x - d.source.x, d.target.y - d.source.y);
-      this.gradient[d.index]
-          .attr("x1", 0.5 - gradientVector.X)
-          .attr("y1", 0.5 - gradientVector.Y)
-          .attr("x2", 0.5 + gradientVector.X)
-          .attr("y2", 0.5 + gradientVector.Y);
-    });
+          if (this.isGradientUpdateList[d.index]) {
+            this.updateGradient(d);
+          }
+        });
 
     this.node
         .attr("cx", (d) => {
@@ -591,6 +590,16 @@ export default class Network {
         });
   }
 
+
+  updateGradient(d) {
+    const gradientVector = this.gradientUnitVector(d.target.x - d.source.x, d.target.y - d.source.y);
+    // loop by index
+    this.gradient[d.index]
+        .attr("x1", 0.5 - gradientVector.X)
+        .attr("y1", 0.5 - gradientVector.Y)
+        .attr("x2", 0.5 + gradientVector.X)
+        .attr("y2", 0.5 + gradientVector.Y);
+  }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   // drag event
@@ -670,10 +679,9 @@ export default class Network {
   // update network data
   update(selectedType) {
     let prevNodePosition = [];
-    this.updateData(selectedType);
-    this.simulation.stop();
     const updateObjTime = 500;
     const transitionTime = 3000;
+    this.updateData(selectedType);
 
     new Promise((resolve) => {
       this.updateDeletedObj(resolve, updateObjTime);
@@ -692,12 +700,16 @@ export default class Network {
 
     }).then(() => {
       this.returnSimulationToDefault(transitionTime);
+    }).catch((error) => {
+      console.log(error);
     });
   }
 
 
+  // update method
   updateData(selectedType) {
     this.dataType = selectedType;
+    this.simulation.stop();
     if (selectedType === 'Flavor') {
       Update.flavorSimulation(this.simulation, this.centerX, this.centerY);
       this.nodeData = this.flavorData.nodes;
@@ -718,7 +730,7 @@ export default class Network {
           this.link = resDeletedObj.link,
           this.node = resDeletedObj.node,
           this.label = resDeletedObj.label,
-          console.log(1)
+          // console.log(1)
       );
     }, updateObjTime);
   }
@@ -733,7 +745,7 @@ export default class Network {
             this.link = resAddedObj.link,
             this.node = resAddedObj.node,
             this.label = resAddedObj.label,
-            console.log(2)
+            // console.log(2)
         )
       }, updateObjTime);
     });
@@ -745,7 +757,7 @@ export default class Network {
       resolve(
           prevNodePosition = Update.storePreviousNodePosition(this.node, this.nodeData, prevNodePosition),
           Update.simulation(this.linkData, this.nodeData, this.simulation, this.ticked.bind(this)),
-          console.log(3)
+          // console.log(3)
       )
     });
   }
@@ -762,32 +774,35 @@ export default class Network {
         resolve(
             Update.transitNodePosition(this.node, this.label, this.nodeData, prevNodePosition, transitionTime),
             Update.transitLinkPosition(this.link, this.linkData, prevNodePosition, transitionTime),
-            console.log(4)
+            // console.log(4)
         )
       }, 50);
     });
   }
 
   restartSimulation(transitionTime) {
+    // update gradient
+    for (let i = 0, l = this.linkData.length; l > i; i++) {
+      this.updateGradient(this.linkData[i])
+    }
+
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve(
-            // this.simulation.alphaTarget(0.0).restart(),
             this.simulation.alphaTarget(0.3).restart(),
             this.deleteClassElement("gradient" + this.vizID + (this.dataType === 'Flavor' ? 'Umami' : 'Flavor')),
-            console.log(5)
+            // console.log(5)
         )
       }, transitionTime);
     });
   }
 
   returnSimulationToDefault(transitionTime) {
-      setTimeout(() => {
-        this.simulation.alphaTarget(0.0);
-        console.log(6);
-      }, transitionTime);
+    setTimeout(() => {
+      this.simulation.alphaTarget(0.0);
+      // console.log(6);
+    }, transitionTime);
   }
-
 
 
   ////////////////////////////////////////////////////////////////////////////////////////////
