@@ -34,6 +34,7 @@ export default class Mouse {
 
 
   static reset(linkData, linkLine, nodeCircle, nodeText, dataType) {
+    console.log('reset', dataType);
     d3.selectAll(nodeCircle)['_groups'][0].attr("class", null);
     d3.selectAll(nodeText)['_groups'][0].attr("class", null);
 
@@ -140,7 +141,7 @@ export default class Mouse {
     }
 
     if (obj.mouseAction === 'mouseenter') {
-      Mouse.reset(AN.linkData, AN.link, AN.node, AN.label, networkMain.dataType);
+      Mouse.reset(AN.linkData, AN.link, AN.node, AN.label, AN.dataType);
       Mouse.cursor(AN.vizMode === 'Single' ?'grab' : 'pointer', AN.body, AN.node);
       return;
     }
@@ -195,7 +196,7 @@ export default class Mouse {
     }
 
     else if (obj.mouseAction === 'mouseout') {
-      Mouse.reset(AN.linkData, AN.link, AN.node, AN.label, networkMain.dataType);
+      Mouse.reset(AN.linkData, AN.link, AN.node, AN.label, AN.dataType);
     }
 
 

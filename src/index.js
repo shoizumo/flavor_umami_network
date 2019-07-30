@@ -38,8 +38,9 @@ import Connection from "./Connection";
 
   //////////////////////////////////////////////////////////////////////////////////////////
   // Update
-  /* update data */
+   /* update data */
   const dataTypeSelector = document.getElementById('dataType');
+  dataTypeSelector.options.selectedIndex = 0;
   dataTypeSelector.onchange = function () {
     const selectedType = this.options[this.selectedIndex].value;
     networkMain.update(selectedType);
@@ -49,6 +50,7 @@ import Connection from "./Connection";
 
   /* update mode */
   const vizModeSelector = document.getElementById('vizMode');
+  vizModeSelector.options.selectedIndex = 0;
   vizModeSelector.onchange = function () {
     const selectedType = this.options[this.selectedIndex].value;
 
