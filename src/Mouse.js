@@ -3,6 +3,12 @@ import Connection from "./Connection";
 
 export default class Mouse {
 
+  /*
+  click event return 1st linked node list
+    - noClickFade : normal click event
+    - noClickNoFade1stLinked : when mouseover 2nd linked node, this event plays a role of click
+   */
+
   static clickableFade(nodeIndex, linkData, linkLine, nodeCircle, nodeText) {
     Mouse.fadeCanMouseAction(linkLine, nodeCircle, nodeText);
     Mouse.colorNetwork(nodeIndex, linkData, linkLine, nodeCircle, nodeText, 'nodeColor', 'lineColor')
@@ -168,6 +174,26 @@ export default class Mouse {
       Connection.displayDetail(obj.name1stLinked, S2.sameNodes, S2.diffNodes, 'detailSub2');
     }
 
+    else if (obj.mouseAction === 'mouseover2ndLinked') {
+      Mouse.reset(AN.linkData, AN.link, AN.node, AN.label, AN.dataType);
+      Mouse.noClickFade1stLinked(AN.detectNodeIndex(obj.name1stLinked), AN.linkData, AN.link, AN.node, AN.label);
+      Mouse.noClickNoFade1stLinked(AN.clickedNodeIndex, AN.linkData, AN.link, AN.node, AN.label);
+
+      let M1 = Connection.makeNodeList(networkMain.detectNodeIndex(obj.name), networkMain.linkData);
+      let S1 = Connection.makeNodeList(networkSub.detectNodeIndex(obj.name), networkSub.linkData);
+      const MainBaseNodes = M1.sameNodes.concat(M1.diffNodes);
+      const SubBaseNodes = S1.sameNodes.concat(S1.diffNodes);
+
+      const nodeCategory = networkMain.detectNodeCategory(obj.name);
+      let M2 = Connection.makeNodeList1stLinked(networkMain.detectNodeIndex(obj.name1stLinked), networkMain.linkData, nodeCategory, MainBaseNodes);
+      let S2 = Connection.makeNodeList1stLinked(networkSub.detectNodeIndex(obj.name1stLinked), networkSub.linkData, nodeCategory, SubBaseNodes);
+
+      Connection.displayDetail(obj.name, M1.sameNodes, M1.diffNodes, 'detailMain1');
+      Connection.displayDetail(obj.name, S1.sameNodes, S1.diffNodes, 'detailSub1');
+      Connection.displayDetail(obj.name1stLinked, M2.sameNodes, M2.diffNodes, 'detailMain2');
+      Connection.displayDetail(obj.name1stLinked, S2.sameNodes, S2.diffNodes, 'detailSub2');
+    }
+
     else if (obj.mouseAction === 'mouseout') {
       Mouse.reset(AN.linkData, AN.link, AN.node, AN.label, networkMain.dataType);
     }
@@ -177,6 +203,15 @@ export default class Mouse {
       AN.clickedNodeIndex = AN.detectNodeIndex(obj.name);
       Mouse.noClickFade(AN.clickedNodeIndex, AN.linkData, AN.link, AN.node, AN.label);
       AN.isClicked = 1;
+
+      let M = Connection.makeNodeList(networkMain.detectNodeIndex(obj.name), networkMain.linkData);
+      let S = Connection.makeNodeList(networkSub.detectNodeIndex(obj.name), networkSub.linkData);
+
+      Connection.deleteDetail('detailMain2');
+      Connection.deleteDetail('detailSub2');
+      Connection.displayDetail(obj.name, M.sameNodes, M.diffNodes, 'detailMain1');
+      Connection.displayDetail(obj.name, S.sameNodes, S.diffNodes, 'detailSub1');
+
     }
 
   }

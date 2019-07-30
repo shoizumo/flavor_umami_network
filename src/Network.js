@@ -361,12 +361,12 @@ export default class Network {
 
           // if mouseover 1st linked node, color 1st linked node
           if (this.linked1stNodeList.indexOf(d.index) >= 0){
-            console.log('1st', this.linked1stNodeList);
+            // console.log('1st', this.linked1stNodeList);
             this.mouseover1stLinked(this.clickedNodeIndex, d);
           }
           // if mouseover 1st linked node, color 1st linked node
           else {
-            console.log('2nd', this.linked1stNodeList);
+            // console.log('2nd', this.linked1stNodeList);
             this.mouseover2ndLinked(d);
           }
 
@@ -426,31 +426,7 @@ export default class Network {
 
   }
 
-
-  mouseover2ndLinked(d){
-    // click = last mouseover node
-    this.nodeInfo.name = this.nodeInfo.name1stLinked;
-    const clickedNodeIndex = this.detectNodeIndex(this.nodeInfo.name);
-    this.clickedNodeIndex = clickedNodeIndex;
-
-    // console.log('mouseover2ndLinked', ',prev', this.prev1stLinkedMouseoverNodeName, ',now', this.nodeInfo.name1stLinked, ',infoname', this.nodeInfo.name);
-
-    this.mouseout();  // delete nodeInfo.name1stLinked
-
-    // mouseover 1st = new mouseover node
-    this.nodeInfo.name1stLinked = d.name;
-
-
-    Mouse.noClickFade1stLinked(d.index, this.linkData, this.link, this.node, this.label);
-    this.linked1stNodeList = Mouse.noClickNoFade1stLinked(clickedNodeIndex, this.linkData, this.link, this.node, this.label);
-    clearInterval(this.mouseoutSetTimeout);
-
-    this.nodeInfo.network = this.vizID;
-    this.nodeInfo.mouseAction = 'mouseover2ndLinked';  // event trigger
-
-  }
-
-
+  /* mouse event detail */
   mouseover(d) {
     Mouse.clickableFade(d.index, this.linkData, this.link, this.node, this.label);
     clearInterval(this.mouseoutSetTimeout);
@@ -469,6 +445,26 @@ export default class Network {
     this.nodeInfo.network = this.vizID;
     this.nodeInfo.mouseAction = 'mouseover1stLinked';  // event trigger
     // console.log('mouseover1stLinked', ',prev', this.prev1stLinkedMouseoverNodeName, ',now', this.nodeInfo.name1stLinked, ',infoname', this.nodeInfo.name);
+  }
+
+  mouseover2ndLinked(d){
+    // last mouseover node -> click node
+    this.nodeInfo.name = this.nodeInfo.name1stLinked;
+    const clickedNodeIndex = this.detectNodeIndex(this.nodeInfo.name);
+    this.clickedNodeIndex = clickedNodeIndex;
+
+    this.mouseout();  // delete nodeInfo.name1stLinked
+
+    // new mouseover node -> mouseover 1st node
+    this.nodeInfo.name1stLinked = d.name;
+
+    Mouse.noClickFade1stLinked(d.index, this.linkData, this.link, this.node, this.label);
+    this.linked1stNodeList = Mouse.noClickNoFade1stLinked(clickedNodeIndex, this.linkData, this.link, this.node, this.label);
+    clearInterval(this.mouseoutSetTimeout);
+
+    this.nodeInfo.network = this.vizID;
+    this.nodeInfo.mouseAction = 'mouseover2ndLinked';  // event trigger
+    // console.log('mouseover2ndLinked', ',prev', this.prev1stLinkedMouseoverNodeName, ',now', this.nodeInfo.name1stLinked, ',infoname', this.nodeInfo.name);
   }
 
   mouseout() {
