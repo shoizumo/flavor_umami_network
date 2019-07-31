@@ -242,6 +242,15 @@ $grid-height: 325px;
   display: none;
 }
 
+#detailMobile {
+  width: $grid-width * 2 - 2px;
+  height: $grid-height * 2 - 2px;
+  border: 1px solid #fc9f94;
+  //grid-template-columns: ($grid-width / 2) ($grid-width / 2);
+  //grid-template-rows: $grid-height;
+  //display: none;
+}
+
 .detail {
   width: $grid-width / 2;
   height: $grid-height;

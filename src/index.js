@@ -17,11 +17,11 @@ import Connection from "./Connection";
       .attr("height", 0);
 
   /* mobile check */
-  let isSp = ((navigator.userAgent.indexOf('iPhone') > 0 ||
+  let isPC = !((navigator.userAgent.indexOf('iPhone') > 0 ||
       navigator.userAgent.indexOf('iPad') > 0) ||
       navigator.userAgent.indexOf('iPod') > 0 ||
       navigator.userAgent.indexOf('Android') > 0);
-  console.log(isSp);
+  console.log(isPC);
 
   /*
   // name: node name
@@ -32,7 +32,7 @@ import Connection from "./Connection";
   let networkMain, networkSub;
 
   /* Base Network */
-  networkMain = new Network(flavorData, umamiData, isSp, '#graphMain', 'Flavor', 'Single', 'Main', nodeInfo);
+  networkMain = new Network(flavorData, umamiData, isPC, '#graphMain', 'Flavor', 'Single', 'Main', nodeInfo);
   networkMain.render();
 
 
@@ -48,15 +48,19 @@ import Connection from "./Connection";
     document.getElementById('h1').textContent = selectedType + ' Network';
   };
 
-  /* update mode */
+  /* update mode(PC only) */
   const vizModeSelector = document.getElementById('vizMode');
   vizModeSelector.options.selectedIndex = 0;
+  if (!isPC) {
+    vizModeSelector.style.display = 'none';
+  }
+
   vizModeSelector.onchange = function () {
     const selectedType = this.options[this.selectedIndex].value;
 
     if (selectedType === 'Compare') {
       const dataType = networkMain.dataType === 'Flavor' ? 'Umami' : 'Flavor';
-      networkSub = new Network(flavorData, umamiData, isSp, '#graphSub', dataType, 'Multi', 'Sub', nodeInfo);
+      networkSub = new Network(flavorData, umamiData, isPC, '#graphSub', dataType, 'Multi', 'Sub', nodeInfo);
       networkSub.render();
 
       Update.multiMode(networkMain, networkSub, 500);

@@ -4,8 +4,8 @@ import Update from './Update'
 import Connection from "./Connection";
 
 export default class Network {
-  constructor(flavorData, umamiData, isSp, svgID, dataType, vizMode, vizID, nodeInfo) {
-    this.isSp = isSp;
+  constructor(flavorData, umamiData, isPC, svgID, dataType, vizMode, vizID, nodeInfo) {
+    this.isPC = isPC;
     this.flavorData = flavorData;
     this.umamiData = umamiData;
 
@@ -46,6 +46,7 @@ export default class Network {
     this.isMouseoutFirst = true;
     this.prev1stLinkedMouseoverNodeName = '';
     this.linked1stNodeList = [];
+    this.isNodeClick = 0;
 
     this.mouseoutSetTimeout = '';
     this.mouseoutSetTimeoutDuration = 1000;
@@ -67,7 +68,7 @@ export default class Network {
     this.zoomScale = {'scale': 1.0, 'X': 0, 'Y': 0};
     this.zoomGroup = this.svg.append("g");
     this.zoom_handler = d3.zoom()
-        .scaleExtent([0.5, 2])
+        .scaleExtent([0.5, this.isPC ? 2 : 5])
         // .translateExtent([
         //   [-this.width / 2, -this.height / 2], [this.width + this.width / 2, this.height + this.height / 2]
         // ])
@@ -318,12 +319,65 @@ export default class Network {
   ////////////////////////////////////////////////////////////////////////////////////////////
   // mouse action
   setMouseAction() {
+    if (!this.isPC){
+      this.setMouseActionMobile();
+      console.log('setMouseActionMobile');
+      return;
+    }
     if (this.vizMode === 'Single') {
       this.setMouseActionSingle();
     } else {
       this.setMouseActionMulti();
     }
   }
+
+
+  setMouseActionMobile(){
+
+
+    this.node.on("click", (d) => {
+      this.isNodeClick = 1;
+      if (this.isClicked === 0) {
+        console.log('click');
+        this.mouseclick(d);
+      } else {
+        // if mouseover clicked node, do nothing
+        if (d.index === this.clickedNodeIndex) {
+          console.log('click');
+          this.mouseclick(d);
+        }
+        else{
+          // if mouseover 1st linked node, color 1st linked node
+          if (this.linked1stNodeList.indexOf(d.index) >= 0) {
+            // console.log('1st', this.linked1stNodeList);
+            console.log('mouseover1stLinked');
+            this.mouseover1stLinked(this.clickedNodeIndex, d);
+          }
+          // if mouseover 1st linked node, color 1st linked node
+          else {
+            // console.log('2nd', this.linked1stNodeList);
+            console.log('mouseover2ndLinked');
+            this.mouseover2ndLinked(d);
+          }
+
+        }
+      }
+    });
+
+
+    // click except for node
+    this.svg.on("click", () => {
+      if (this.isNodeClick === 0) {
+        console.log('mouseenter');
+        this.mouseenter();
+      }
+      this.isNodeClick = 0;
+    });
+
+
+  }
+
+
 
 
   setMouseActionSingle() {
@@ -419,10 +473,18 @@ export default class Network {
 
 
     this.svg.on("mouseenter", () => {
+      console.log(this);
       if (this.isClicked === 0) {
         this.mouseenter();
+      }else{
+        if (this.vizID !== this.nodeInfo.network) {
+          console.log('mouseenter netwoek');
+          this.mouseenter();
+        }
       }
     });
+
+
 
   }
 
@@ -476,6 +538,8 @@ export default class Network {
   }
 
   mouseenter() {
+    this.isClicked = 0;
+    this.nodeInfo.name1stLinked = '';
     Mouse.reset(this.linkData, this.link, this.node, this.label, this.dataType);
     Mouse.cursor(this.vizMode === 'Single' ? 'grab' : 'pointer', this.body, this.node);
     this.nodeInfo.network = this.vizID;
@@ -484,6 +548,7 @@ export default class Network {
   }
 
   mouseclick(d) {
+    this.isNodeClick = 1;
     this.linked1stNodeList = [];
     this.linked1stNodeList = Mouse.noClickFade(d.index, this.linkData, this.link, this.node, this.label);
     this.nodeInfo.name = d.name;
@@ -505,7 +570,7 @@ export default class Network {
   //   /////////////////////////////////////////////////////////////
   //   // for SmartPhone
   //
-  //   // if (this.isSp) {
+  //   // if (this.isPC) {
   //   //   let touchColored = 0;
   //   //   let touchmove = 0;
   //   //   this.svg.on("touchmove", () => {
