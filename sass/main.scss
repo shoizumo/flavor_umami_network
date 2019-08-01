@@ -214,6 +214,7 @@ $default_line_opacity: 0.5;
 /* area */
 $grid-width: 500px;
 $grid-height: 325px;
+$mobile-height-ratio: 1.9;
 
 
 #visGrid{
@@ -244,17 +245,24 @@ $grid-height: 325px;
 
 #detailMobile {
   width: $grid-width * 2 - 2px;
-  height: $grid-height * 2 - 2px;
+  height: $grid-height * $mobile-height-ratio - 2px;
   border: 1px solid #fc9f94;
-  //grid-template-columns: ($grid-width / 2) ($grid-width / 2);
-  //grid-template-rows: $grid-height;
-  //display: none;
+  grid-template-columns: $grid-width $grid-width;
+  grid-template-rows: $grid-height * $mobile-height-ratio;
+  display: none;
 }
 
 .detail {
   width: $grid-width / 2;
   height: $grid-height;
   overflow: scroll;
+}
+
+.detailMobile {
+  width: $grid-width;
+  height: $grid-height * $mobile-height-ratio;
+  overflow: scroll;
+  font-size: 2.5em;
 }
 
 /* text */

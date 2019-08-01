@@ -38,22 +38,21 @@ import Connection from "./Connection";
 
   //////////////////////////////////////////////////////////////////////////////////////////
   // Update
-   /* update data */
+  /* update data */
   const dataTypeSelector = document.getElementById('dataType');
   dataTypeSelector.options.selectedIndex = 0;
   dataTypeSelector.onchange = function () {
+    networkMain.mouseenter();  // reset color
     const selectedType = this.options[this.selectedIndex].value;
     networkMain.update(selectedType);
     networkMain.setMouseAction();
     document.getElementById('h1').textContent = selectedType + ' Network';
   };
 
+
   /* update mode(PC only) */
   const vizModeSelector = document.getElementById('vizMode');
   vizModeSelector.options.selectedIndex = 0;
-  if (!isPC) {
-    vizModeSelector.style.display = 'none';
-  }
 
   vizModeSelector.onchange = function () {
     const selectedType = this.options[this.selectedIndex].value;
@@ -75,7 +74,7 @@ import Connection from "./Connection";
       document.getElementById('h2Container').style.display = 'block';
     }
     // 'Default'
-    else{
+    else {
       Update.singleMode(networkMain, networkSub, 500);
       Connection.deleteDetail('detailMain1');
       Connection.deleteDetail('detailMain2');
@@ -88,6 +87,12 @@ import Connection from "./Connection";
     }
 
   };
+
+  /* PC, Mobile setting*/
+  if (!isPC) {
+    vizModeSelector.style.display = 'none';
+    document.getElementById('detailMobile').style.display = 'grid';
+  }
 
 })();
 

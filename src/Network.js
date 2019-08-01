@@ -41,12 +41,13 @@ export default class Network {
 
     this.nodeInfo = nodeInfo;
     this.clickedNodeIndex = -1;
-    this.isClicked = 0;
+    this.isClicked = 0;  // "Both":0->mouseenter(), 1->mouseclick()
+    this.isNodeClick = 0;  // "Mobile":0->click except for node, 1->click
     this.isDragging = 0;
     this.isMouseoutFirst = true;
     this.prev1stLinkedMouseoverNodeName = '';
     this.linked1stNodeList = [];
-    this.isNodeClick = 0;
+
 
     this.mouseoutSetTimeout = '';
     this.mouseoutSetTimeoutDuration = 1000;
@@ -178,11 +179,14 @@ export default class Network {
         .attr("fill", (d) => {
           return this.color(d.group_id)
         })
-        .attr("stroke", "#fffcf9")
-        .call(d3.drag()
+        .attr("stroke", "#fffcf9");
+
+    if (this.isPC) {
+      this.node.call(d3.drag()
             .on("start", this.dragstarted.bind(this))
             .on("drag", this.dragging.bind(this))
             .on("end", this.dragended.bind(this)));
+    }
 
     if (this.dataType === 'Flavor') {
       this.node.attr("opacity", "0.6")
@@ -321,7 +325,6 @@ export default class Network {
   setMouseAction() {
     if (!this.isPC){
       this.setMouseActionMobile();
-      console.log('setMouseActionMobile');
       return;
     }
     if (this.vizMode === 'Single') {
@@ -332,52 +335,37 @@ export default class Network {
   }
 
 
-  setMouseActionMobile(){
-
-
+  setMouseActionMobile() {
+    // click node
     this.node.on("click", (d) => {
       this.isNodeClick = 1;
       if (this.isClicked === 0) {
-        console.log('click');
-        this.mouseclick(d);
+        this.tap(d);
       } else {
-        // if mouseover clicked node, do nothing
-        if (d.index === this.clickedNodeIndex) {
-          console.log('click');
-          this.mouseclick(d);
-        }
-        else{
-          // if mouseover 1st linked node, color 1st linked node
+        // if click clicked node, do nothing
+        if (d.index !== this.clickedNodeIndex) {
+          // if click 1st linked node, color 1st linked node
           if (this.linked1stNodeList.indexOf(d.index) >= 0) {
-            // console.log('1st', this.linked1stNodeList);
-            console.log('mouseover1stLinked');
-            this.mouseover1stLinked(this.clickedNodeIndex, d);
+            this.tap1stLinked(this.clickedNodeIndex, d);
           }
-          // if mouseover 1st linked node, color 1st linked node
+          // if click 1st linked node, color 1st linked node
           else {
-            // console.log('2nd', this.linked1stNodeList);
-            console.log('mouseover2ndLinked');
-            this.mouseover2ndLinked(d);
+            this.tap2ndLinked(d);
           }
-
         }
       }
     });
-
 
     // click except for node
     this.svg.on("click", () => {
       if (this.isNodeClick === 0) {
-        console.log('mouseenter');
         this.mouseenter();
+        Connection.deleteDetail('detailMobile1');
+        Connection.deleteDetail('detailMobile2');
       }
       this.isNodeClick = 0;
     });
-
-
   }
-
-
 
 
   setMouseActionSingle() {
@@ -387,7 +375,6 @@ export default class Network {
       }
     });
 
-
     this.node.on("mouseout", () => {
       if (this.isDragging === 0) {
         this.mouseoutSetTimeout = setTimeout(() => {
@@ -396,11 +383,9 @@ export default class Network {
       }
     });
 
-
     this.svg.on("mouseenter", () => {
       this.mouseenter();
     });
-
   }
 
 
@@ -423,12 +408,9 @@ export default class Network {
             // console.log('2nd', this.linked1stNodeList);
             this.mouseover2ndLinked(d);
           }
-
         }
       }
-
     });
-
 
     this.node.on("mouseout", (d) => {
       if (this.isClicked === 0) {
@@ -466,11 +448,9 @@ export default class Network {
       }
     });
 
-
     this.node.on("click", (d) => {
       this.mouseclick(d);
     });
-
 
     this.svg.on("mouseenter", () => {
       console.log(this);
@@ -478,14 +458,10 @@ export default class Network {
         this.mouseenter();
       }else{
         if (this.vizID !== this.nodeInfo.network) {
-          console.log('mouseenter netwoek');
           this.mouseenter();
         }
       }
     });
-
-
-
   }
 
   /* mouse event detail */
@@ -495,21 +471,104 @@ export default class Network {
     this.nodeInfo.name = d.name;
     this.nodeInfo.network = this.vizID;
     this.nodeInfo.mouseAction = 'mouseover';  // event trigger
-    // console.log('mouseover', ',prev', this.prev1stLinkedMouseoverNodeName, ',now', this.nodeInfo.name1stLinked, ',infoname', this.nodeInfo.name);
   }
 
   mouseover1stLinked(oldIndex, newNode) {
-    Mouse.noClickFade1stLinked(newNode.index, this.linkData, this.link, this.node, this.label);
-    Mouse.noClickNoFade1stLinked(oldIndex, this.linkData, this.link, this.node, this.label);
+    this.linked1st(oldIndex, newNode);
     clearInterval(this.mouseoutSetTimeout);
-    this.prev1stLinkedMouseoverNodeName = this.nodeInfo.name1stLinked;
-    this.nodeInfo.name1stLinked = newNode.name;
     this.nodeInfo.network = this.vizID;
     this.nodeInfo.mouseAction = 'mouseover1stLinked';  // event trigger
-    // console.log('mouseover1stLinked', ',prev', this.prev1stLinkedMouseoverNodeName, ',now', this.nodeInfo.name1stLinked, ',infoname', this.nodeInfo.name);
   }
 
   mouseover2ndLinked(d){
+    this.linked2nd(d);
+
+    clearInterval(this.mouseoutSetTimeout);
+    this.nodeInfo.network = this.vizID;
+    this.nodeInfo.mouseAction = 'mouseover2ndLinked';  // event trigger
+  }
+
+  mouseout() {
+    this.nodeInfo.name1stLinked = '';
+    Mouse.reset(this.linkData, this.link, this.node, this.label, this.dataType);
+    this.nodeInfo.network = this.vizID;
+    this.nodeInfo.mouseAction = 'mouseout';  // event trigger
+  }
+
+  mouseenter() {
+    this.isClicked = 0;
+    this.nodeInfo.name1stLinked = '';
+    Mouse.reset(this.linkData, this.link, this.node, this.label, this.dataType);
+    Mouse.cursor(this.vizMode === 'Single' ? 'grab' : 'pointer', this.body, this.node);
+    this.nodeInfo.network = this.vizID;
+    this.nodeInfo.mouseAction = 'mouseenter';  // event trigger
+  }
+
+  mouseclick(d) {
+    this.clickTap(d);
+    this.nodeInfo.network = this.vizID;
+    this.nodeInfo.mouseAction = 'click';  // event trigger
+  }
+
+  returnToPrevClickedNodeMouseover(prevIndex) {
+    Mouse.noClickFade(prevIndex, this.linkData, this.link, this.node, this.label);
+    this.nodeInfo.mouseAction = 'mouseover';  // event trigger
+  }
+
+  tap(d){
+    /* color */
+    this.clickTap(d);
+
+    /* detail */
+    let M = Connection.makeNodeList(this.detectNodeIndex(d.name), this.linkData);
+    Connection.displayDetail(d.name, M.sameNodes, M.diffNodes, 'detailMobile1');
+  }
+
+  tap1stLinked(oldIndex, newNode) {
+    /* color */
+    this.linked1st(oldIndex, newNode);
+
+    /* detail */
+    let M1 = Connection.makeNodeList(this.detectNodeIndex(this.nodeInfo.name), this.linkData);
+    const MainBaseNodes = M1.sameNodes.concat(M1.diffNodes);
+
+    const nodeCategory = this.detectNodeCategory(this.nodeInfo.name);
+    let M2 = Connection.makeNodeList1stLinked(this.detectNodeIndex(this.nodeInfo.name1stLinked), this.linkData, nodeCategory, MainBaseNodes);
+    Connection.displayDetail(this.nodeInfo.name1stLinked, M2.sameNodes, M2.diffNodes, 'detailMobile2');
+  }
+
+  tap2ndLinked(d){
+    /* color */
+    // last mouseover node -> click node
+    this.linked2nd(d);
+
+    /* detail */
+    let M1 = Connection.makeNodeList(this.detectNodeIndex(this.nodeInfo.name), this.linkData);
+    const MainBaseNodes = M1.sameNodes.concat(M1.diffNodes);
+
+    const nodeCategory = this.detectNodeCategory(this.nodeInfo.name);
+    let M2 = Connection.makeNodeList1stLinked(this.detectNodeIndex(this.nodeInfo.name1stLinked), this.linkData, nodeCategory, MainBaseNodes);
+
+    Connection.displayDetail(this.nodeInfo.name, M1.sameNodes, M1.diffNodes, 'detailMobile1');
+    Connection.displayDetail(this.nodeInfo.name1stLinked, M2.sameNodes, M2.diffNodes, 'detailMobile2');
+  }
+
+  clickTap(d){
+    this.isClicked = 1;
+    this.linked1stNodeList = [];
+    this.linked1stNodeList = Mouse.noClickFade(d.index, this.linkData, this.link, this.node, this.label);
+    this.nodeInfo.name = d.name;
+    this.clickedNodeIndex = d.index;
+  }
+
+  linked1st(oldIndex, newNode) {
+    Mouse.noClickFade1stLinked(newNode.index, this.linkData, this.link, this.node, this.label);
+    Mouse.noClickNoFade1stLinked(oldIndex, this.linkData, this.link, this.node, this.label);
+    this.prev1stLinkedMouseoverNodeName = this.nodeInfo.name1stLinked;
+    this.nodeInfo.name1stLinked = newNode.name;
+  }
+
+  linked2nd(d){
     // last mouseover node -> click node
     this.nodeInfo.name = this.nodeInfo.name1stLinked;
     const clickedNodeIndex = this.detectNodeIndex(this.nodeInfo.name);
@@ -522,86 +581,8 @@ export default class Network {
 
     Mouse.noClickFade1stLinked(d.index, this.linkData, this.link, this.node, this.label);
     this.linked1stNodeList = Mouse.noClickNoFade1stLinked(clickedNodeIndex, this.linkData, this.link, this.node, this.label);
-    clearInterval(this.mouseoutSetTimeout);
 
-    this.nodeInfo.network = this.vizID;
-    this.nodeInfo.mouseAction = 'mouseover2ndLinked';  // event trigger
-    // console.log('mouseover2ndLinked', ',prev', this.prev1stLinkedMouseoverNodeName, ',now', this.nodeInfo.name1stLinked, ',infoname', this.nodeInfo.name);
   }
-
-  mouseout() {
-    this.nodeInfo.name1stLinked = '';
-    Mouse.reset(this.linkData, this.link, this.node, this.label, this.dataType);
-    this.nodeInfo.network = this.vizID;
-    this.nodeInfo.mouseAction = 'mouseout';  // event trigger
-    // console.log('mouseout', ',prev', this.prev1stLinkedMouseoverNodeName, ',now', this.nodeInfo.name1stLinked, ',infoname', this.nodeInfo.name);
-  }
-
-  mouseenter() {
-    this.isClicked = 0;
-    this.nodeInfo.name1stLinked = '';
-    Mouse.reset(this.linkData, this.link, this.node, this.label, this.dataType);
-    Mouse.cursor(this.vizMode === 'Single' ? 'grab' : 'pointer', this.body, this.node);
-    this.nodeInfo.network = this.vizID;
-    this.nodeInfo.mouseAction = 'mouseenter';  // event trigger
-    // console.log('mouseenter', ',prev', this.prev1stLinkedMouseoverNodeName, ',now', this.nodeInfo.name1stLinked, ',infoname', this.nodeInfo.name);
-  }
-
-  mouseclick(d) {
-    this.isNodeClick = 1;
-    this.linked1stNodeList = [];
-    this.linked1stNodeList = Mouse.noClickFade(d.index, this.linkData, this.link, this.node, this.label);
-    this.nodeInfo.name = d.name;
-    this.nodeInfo.network = this.vizID;
-    this.isClicked = 1;
-    this.clickedNodeIndex = d.index;
-    this.nodeInfo.mouseAction = 'click';  // event trigger
-    // console.log('mouseclick', ',prev', this.prev1stLinkedMouseoverNodeName, ',now', this.nodeInfo.name1stLinked, ',infoname', this.nodeInfo.name);
-  }
-
-  returnToPrevClickedNodeMouseover(prevIndex) {
-    Mouse.noClickFade(prevIndex, this.linkData, this.link, this.node, this.label);
-    this.nodeInfo.mouseAction = 'mouseover';  // event trigger
-    // console.log('returnToPrevClickedNodeMouseover', ',prev', this.prev1stLinkedMouseoverNodeName, ',now', this.nodeInfo.name1stLinked, ',infoname', this.nodeInfo.name);
-  }
-
-  ////////////////////////////////////////////////////////////////////////////////////////////
-
-  //   /////////////////////////////////////////////////////////////
-  //   // for SmartPhone
-  //
-  //   // if (this.isPC) {
-  //   //   let touchColored = 0;
-  //   //   let touchmove = 0;
-  //   //   this.svg.on("touchmove", () => {
-  //   //     touchmove = 1
-  //   //   });
-  //   //
-  //   //   this.node.on("touchstart", (d) => {
-  //   //     Mouse.touchStart(d.index, this.linkData, this.link, this.node, this.label);
-  //   //   });
-  //   //
-  //   //   node.on("touchend", () => {
-  //   //     touchColored = 0;
-  //   //   });
-  //   //
-  //   //   this.svg.on("touchstart", () => {
-  //   //     touchColored = 1;
-  //   //   });
-  //   //
-  //   //   this.svg.on("touchend", () => {
-  //   //     if (touchmove === 0) {
-  //   //       if (touchColored === 1) {
-  //   //         this.node.attr("class", "nodeReturnFade");
-  //   //         this.link.attr("class", "lineReturnFade");
-  //   //         this.label.attr("class", "nodeTextReturnFade");
-  //   //       }
-  //   //     }
-  //   //     touchmove = 0
-  //   //   });
-  //   // }
-  // }
-
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   // tick event
