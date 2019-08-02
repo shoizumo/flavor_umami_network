@@ -24,6 +24,7 @@ export default class Network {
 
     this.body = d3.select("body");
     this.svg = d3.select(svgID);
+    this.vizArea = d3.select("#visGrid");
 
     this.svg
         .attr("style", "outline: 1px solid #ff8e1e;")
@@ -154,9 +155,6 @@ export default class Network {
         .attr("stroke-width", (d) => {
           return Math.sqrt(d.weight) * 0.1 + d.weight * 0.01 + 0.01;
         })
-        // .attr("stroke", (d) => {
-        //   // return this.color(d.group_id_s)
-        // })
         .attr("class", (d, i) => {
           return "link" + this.dataType + String(i);
         })
@@ -172,14 +170,14 @@ export default class Network {
         .data(this.nodeData)
         .enter()
         .append("circle")
-        // .attr("opacity", "0.6")
         .attr("r", (d) => {
           return Math.sqrt(d.size) * 4 + 2.5;
         })
         .attr("fill", (d) => {
           return this.color(d.group_id)
         })
-        .attr("stroke", "#fffcf9");
+        .attr("stroke", "#fffcf9")
+        .attr("stroke-width", "1.0");
 
     if (this.isPC) {
       this.node.call(d3.drag()
@@ -222,10 +220,10 @@ export default class Network {
         .attr("font-family", 'Roboto');
 
     if (this.dataType === 'Flavor') {
-      this.label.attr("opacity", "1.0")
+      this.label.attr("opacity", "0.8")
     } else {
       this.label.attr("opacity", (d) => {
-        return d.umami === 1 ? "1.0" : "0.5";
+        return d.umami === 1 ? "0.8" : "0.5";
       })
     }
   }
@@ -452,21 +450,28 @@ export default class Network {
       this.mouseclick(d);
     });
 
-    this.svg.on("mouseenter", () => {
-      console.log(this);
-      if (this.isClicked === 0) {
-        this.mouseenter();
-      }else{
-        if (this.vizID !== this.nodeInfo.network) {
-          this.mouseenter();
-        }
-      }
+    // this.svg.on("mouseenter", () => {
+    //   console.log(this);
+    //   if (this.isClicked === 0) {
+    //     this.mouseenter();
+    //   }else{
+    //     if (this.vizID !== this.nodeInfo.network) {
+    //       this.mouseenter();
+    //     }
+    //   }
+    // });
+
+    this.vizArea.on("mouseenter", () => {
+      console.log('mouseenter');
+      this.mouseenter();
     });
+
+
   }
 
   /* mouse event detail */
   mouseover(d) {
-    Mouse.clickableFade(d.index, this.linkData, this.link, this.node, this.label);
+    Mouse.clickableFade(d.index, this.linkData, this.link, this.node, this.label, this.dataType);
     clearInterval(this.mouseoutSetTimeout);
     this.nodeInfo.name = d.name;
     this.nodeInfo.network = this.vizID;
@@ -511,7 +516,7 @@ export default class Network {
   }
 
   returnToPrevClickedNodeMouseover(prevIndex) {
-    Mouse.noClickFade(prevIndex, this.linkData, this.link, this.node, this.label);
+    Mouse.noClickFade(prevIndex, this.linkData, this.link, this.node, this.label, this.dataType);
     this.nodeInfo.mouseAction = 'mouseover';  // event trigger
   }
 
@@ -556,14 +561,14 @@ export default class Network {
   clickTap(d){
     this.isClicked = 1;
     this.linked1stNodeList = [];
-    this.linked1stNodeList = Mouse.noClickFade(d.index, this.linkData, this.link, this.node, this.label);
+    this.linked1stNodeList = Mouse.noClickFade(d.index, this.linkData, this.link, this.node, this.label, this.dataType);
     this.nodeInfo.name = d.name;
     this.clickedNodeIndex = d.index;
   }
 
   linked1st(oldIndex, newNode) {
-    Mouse.noClickFade1stLinked(newNode.index, this.linkData, this.link, this.node, this.label);
-    Mouse.noClickNoFade1stLinked(oldIndex, this.linkData, this.link, this.node, this.label);
+    Mouse.noClickFade1stLinked(newNode.index, this.linkData, this.link, this.node, this.label, this.dataType);
+    Mouse.noClickNoFade1stLinked(oldIndex, this.linkData, this.link, this.node, this.label, this.dataType);
     this.prev1stLinkedMouseoverNodeName = this.nodeInfo.name1stLinked;
     this.nodeInfo.name1stLinked = newNode.name;
   }
@@ -579,8 +584,8 @@ export default class Network {
     // new mouseover node -> mouseover 1st node
     this.nodeInfo.name1stLinked = d.name;
 
-    Mouse.noClickFade1stLinked(d.index, this.linkData, this.link, this.node, this.label);
-    this.linked1stNodeList = Mouse.noClickNoFade1stLinked(clickedNodeIndex, this.linkData, this.link, this.node, this.label);
+    Mouse.noClickFade1stLinked(d.index, this.linkData, this.link, this.node, this.label, this.dataType);
+    this.linked1stNodeList = Mouse.noClickNoFade1stLinked(clickedNodeIndex, this.linkData, this.link, this.node, this.label, this.dataType);
 
   }
 
@@ -698,7 +703,7 @@ export default class Network {
       d.fx = d.x;
       d.fy = d.y;
 
-      Mouse.noClickFade(d.index, this.linkData, this.link, this.node, this.label);
+      Mouse.noClickFade(d.index, this.linkData, this.link, this.node, this.label, this.dataType);
       Mouse.cursor('grabbing', this.body, this.node);
     }
     this.isDragging = 1;
@@ -718,7 +723,7 @@ export default class Network {
       d.fy = null;
 
       Mouse.reset(this.linkData, this.link, this.node, this.label, this.dataType);
-      Mouse.clickableFade(d.index, this.linkData, this.link, this.node, this.label);
+      Mouse.clickableFade(d.index, this.linkData, this.link, this.node, this.label, this.dataType);
       Mouse.cursor('grab', this.body, this.node);
     }
     this.isDragging = 0;

@@ -113,13 +113,28 @@ select::-ms-expand {
 ////////////////////////////////////////////////////////////////////////////////////////
 /* mouse action */
 ////////////////////////////////////////////////////////////////////////////////////////
+/*
+## default setting ##
+## Node ##
+- opacity: 0.6
+- stroke: #fffcf9
+- stroke-width: 1.0
+
+## Link ##
+- opacity: 0.5
+
+## Label ##
+- opacity: 0.8
+- font-size: 0.7em
+- font-weight: 300
+
+*/
+
+
 // highlight
 $highlight_node_opacity: 0.8;
 $highlight_text_opacity: 1.0;
 $highlight_line_opacity: 1.0;
-$highlight_color: #d70035;
-
-$highlight_color_1stLinked: #3500d7;
 
 
 // fade
@@ -147,40 +162,57 @@ $default_line_opacity: 0.5;
 }
 
 
+
+
+
+
 /* mouseover */
+.selectedNode{
+  opacity: $highlight_node_opacity;
+
+  //stroke: #000000;
+  //stroke-width: 2;
+  //stroke-linecap: round;
+  //stroke-dasharray: 0.2, 3;
+}
+
 .nodeColor {
-  stroke: $highlight_color;
-  stroke-width: 2;
   opacity: $highlight_node_opacity;
 }
 
-
-.linkedNodeText {
+.selectedNodeText {
   opacity: $highlight_text_opacity;
   font-weight: 500;
-  font-size: 0.85em;
+  font-size: 1.0em;
+  text-decoration-line: underline;
   pointer-events: none;
 }
 
+.linkedNodeText {
+  opacity: $highlight_text_opacity;
+  font-weight: 400;
+  font-size: 0.80em;
+  pointer-events: none;
+}
 
 .lineColor {
-  stroke: $highlight_color;
   opacity: $highlight_line_opacity;
 }
 
 
 /* mouseover 1stLinked(multi mode) */
 .nodeColor_1stLinked {
-  stroke: $highlight_color_1stLinked;
-  stroke-width: 2;
   opacity: $highlight_node_opacity;
-  //pointer-events: none;
-  cursor: default;
+
 }
 
 .lineColor_1stLinked {
-  stroke: $highlight_color_1stLinked;
   opacity: $highlight_line_opacity;
+}
+
+.linkedNodeText_1stLinked {
+  fill: #0000ff;
+  pointer-events: none;
 }
 
 
@@ -199,7 +231,6 @@ $default_line_opacity: 0.5;
 .nodeTextFade {
   opacity: $fade_text_opacity;
   pointer-events: none;
-  cursor: default;
 }
 
 .lineColorFade {
