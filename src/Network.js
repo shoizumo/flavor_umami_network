@@ -463,12 +463,12 @@ export default class Network {
 
           // if mouseover 1st linked node, color 1st linked node
           if (this.linked1stNodeList.indexOf(d.index) >= 0){
-            if (this.nodeInfo.name1stLinked !== d.name) {
+            // if (this.nodeInfo.name1stLinked !== d.name) {
               // console.log('1st', this.linked1stNodeList);
               this.mouseover1stLinked(this.clickedNodeIndex, d);
               console.log('mouseover1stLinked', this.nodeInfo);
               console.log('');
-            }
+            // }
           }
           // if mouseover 1st linked node, color 1st linked node
           else {
@@ -563,13 +563,13 @@ export default class Network {
   }
 
   mouseenter() {
-    // this.stopHighlightNode();
-    // this.isClicked = 0;
-    // this.nodeInfo.name1stLinked = '';
-    // Mouse.reset(this.linkData, this.link, this.node, this.label, this.dataType);
-    // Mouse.cursor(this.vizMode === 'Single' ? 'grab' : 'pointer', this.body, this.node);
-    // this.nodeInfo.network = this.vizID;
-    // this.nodeInfo.mouseAction = 'mouseenter';  // event trigger
+    this.stopHighlightNode();
+    this.isClicked = 0;
+    this.nodeInfo.name1stLinked = '';
+    Mouse.reset(this.linkData, this.link, this.node, this.label, this.dataType);
+    Mouse.cursor(this.vizMode === 'Single' ? 'grab' : 'pointer', this.body, this.node);
+    this.nodeInfo.network = this.vizID;
+    this.nodeInfo.mouseAction = 'mouseenter';  // event trigger
   }
 
   mouseclick(d) {
