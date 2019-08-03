@@ -153,6 +153,7 @@ export default class Mouse {
 
     if (typeof AN.detectNodeIndex(obj.name) === "undefined") return;
     if (obj.mouseAction === 'mouseover') {
+      console.log('AN mouseover', obj);
       const index = AN.detectNodeIndex(obj.name);
       let M = Connection.makeNodeList(networkMain.detectNodeIndex(obj.name), networkMain.linkData);
       let S = Connection.makeNodeList(networkSub.detectNodeIndex(obj.name), networkSub.linkData);
@@ -165,8 +166,9 @@ export default class Mouse {
     }
 
     else if (obj.mouseAction === 'mouseover1stLinked') {
+      console.log('AN mouseover1stLinked', obj);
       Mouse.noClickFade1stLinked(AN.detectNodeIndex(obj.name1stLinked), AN.linkData, AN.link, AN.node, AN.label, AN.dataType);
-      Mouse.noClickNoFade1stLinked(AN.clickedNodeIndex, AN.linkData, AN.link, AN.node, AN.label, AN.dataType);
+      Mouse.noClickNoFade1stLinked(AN.detectNodeIndex(obj.name), AN.linkData, AN.link, AN.node, AN.label, AN.dataType);
       AN.statrHighlightNode(AN.nodeData[AN.detectNodeIndex(obj.name1stLinked)], '2nd');
 
       let M1 = Connection.makeNodeList(networkMain.detectNodeIndex(obj.name), networkMain.linkData);
@@ -183,11 +185,12 @@ export default class Mouse {
     }
 
     else if (obj.mouseAction === 'mouseover2ndLinked') {
+      console.log('AN mouseover2ndLinked', obj);
       Mouse.reset(AN.linkData, AN.link, AN.node, AN.label, AN.dataType);
       Mouse.noClickFade1stLinked(AN.detectNodeIndex(obj.name1stLinked), AN.linkData, AN.link, AN.node, AN.label, AN.dataType);
-      Mouse.noClickNoFade1stLinked(AN.clickedNodeIndex, AN.linkData, AN.link, AN.node, AN.label, AN.dataType);
+      AN.linked1stNodeList = Mouse.noClickNoFade1stLinked(AN.detectNodeIndex(obj.name), AN.linkData, AN.link, AN.node, AN.label, AN.dataType);
 
-      AN.statrHighlightNode(AN.nodeData[AN.clickedNodeIndex], '1st');
+      AN.statrHighlightNode(AN.nodeData[AN.detectNodeIndex(obj.name)], '1st');
       AN.statrHighlightNode(AN.nodeData[AN.detectNodeIndex(obj.name1stLinked)], '2nd');
 
       let M1 = Connection.makeNodeList(networkMain.detectNodeIndex(obj.name), networkMain.linkData);
