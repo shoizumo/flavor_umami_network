@@ -71,6 +71,9 @@ h1 {
   fill: #352622;
   font-size: 0.8em;
   font-family: "Roboto", sans-serif;
+  text-decoration-line: underline;
+  text-decoration-color: red!important;
+  -webkit-text-decoration-color: red!important;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -176,15 +179,38 @@ $default_line_opacity: 0.5;
   //stroke-dasharray: 0.2, 3;
 }
 
+.highlightNode {
+  opacity: 1.0;
+  fill: none;
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-dasharray: 0.4, 6;
+
+ animation: animation 10s linear infinite;
+}
+
+@keyframes animation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 .nodeColor {
   opacity: $highlight_node_opacity;
+}
+
+.lineColor {
+  opacity: $highlight_line_opacity;
 }
 
 .selectedNodeText {
   opacity: $highlight_text_opacity;
   font-weight: 500;
   font-size: 1.0em;
-  text-decoration-line: underline;
+  //text-decoration-line: underline;
   pointer-events: none;
 }
 
@@ -192,11 +218,6 @@ $default_line_opacity: 0.5;
   opacity: $highlight_text_opacity;
   font-weight: 400;
   font-size: 0.80em;
-  pointer-events: none;
-}
-
-.lineColor {
-  opacity: $highlight_line_opacity;
 }
 
 
@@ -211,7 +232,9 @@ $default_line_opacity: 0.5;
 }
 
 .linkedNodeText_1stLinked {
-  fill: #0000ff;
+  //fill: #0000ff;
+  //text-decoration-line: underline;
+  //text-decoration-color: #0000ff;
   pointer-events: none;
 }
 
@@ -328,8 +351,9 @@ $mobile-height-ratio: 1.9;
   margin-left: 15px;
   text-align: left;
   line-height: 150%;
-  color: #0000FF;
-  text-decoration: underline;
+  color: #302833;
+  //color: #0000FF;
+  //text-decoration: underline;
   font-family: "Roboto", sans-serif;
   cursor: pointer;
 }

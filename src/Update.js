@@ -44,7 +44,7 @@ export default class Update {
         .append("line")
         // .attr("opacity", 0.0)
         .attr("stroke-width",  (d) => {
-          return Math.sqrt(d.weight) * 0.1 + d.weight * 0.01 + 0.01;
+          return Math.sqrt(d.weight) * 0.1 + d.weight * 0.01 + 0.3;
         })
         .attr("class", (d, i) => {
           return "link" + dataType + String(i);
@@ -98,7 +98,7 @@ export default class Update {
         .append("circle")
         // .attr("opacity", "0.0")
         .attr("r",  (d) => {
-          return Math.sqrt(d.size) * 4 + 2.5;
+          return Math.sqrt(d.size) * 3.5 + 5;
         })
         .attr("fill",  (d) => {
           return color[d.group_id]

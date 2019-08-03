@@ -89,7 +89,12 @@ export default class Network {
 
     // gradient link color list for each link
     this.gradient = [];
-    this.isGradientUpdateList = []
+    this.isGradientUpdateList = [];
+
+    this.highlightNode = '';
+    this.highlightNodeIndex = '';
+    this.highlightNodeLinked = '';
+    this.highlightNodeLinkedIndex = '';
   }
 
 
@@ -153,7 +158,7 @@ export default class Network {
         .append("line")
         .attr("opacity", "0.5")
         .attr("stroke-width", (d) => {
-          return Math.sqrt(d.weight) * 0.1 + d.weight * 0.01 + 0.01;
+          return Math.sqrt(d.weight) * 0.1 + d.weight * 0.01 + 0.3;
         })
         .attr("class", (d, i) => {
           return "link" + this.dataType + String(i);
@@ -171,7 +176,7 @@ export default class Network {
         .enter()
         .append("circle")
         .attr("r", (d) => {
-          return Math.sqrt(d.size) * 4 + 2.5;
+          return Math.sqrt(d.size) * 3.5 + 5;
         })
         .attr("fill", (d) => {
           return this.color(d.group_id)
@@ -193,7 +198,65 @@ export default class Network {
         return d.umami === 1 ? "0.6" : "0.2";
       })
     }
+
+    /* highlight node */
+    this.highlightNode = this.zoomGroup.append("g")
+        .append("circle")
+        .attr("class", "highlightNode");
+
+    this.highlightNodeLinked = this.zoomGroup.append("g")
+        .append("circle")
+        .attr("class", "highlightNode");
   }
+
+  statrHighlightNode(d, type) {
+    if(type === '1st'){
+      this.highlightNodeIndex = d.index;
+    }else{
+      this.highlightNodeLinkedIndex = d.index;
+    }
+    this.updateHighlightNodeStyle(Math.sqrt(d.size) * 3.5 + 10, this.color(d.group_id), type);
+    const node = this.node['_groups'][0][d.index];
+    this.updateHighlightNodePosition(node.cx.baseVal.value, node.cy.baseVal.value, type);
+  }
+
+  stopHighlightNode() {
+    this.highlightNodeIndex = '';
+    this.highlightNodeLinkedIndex = '';
+    this.updateHighlightNodeStyle(0, '#ffffff', '1st');
+    this.updateHighlightNodeStyle(0, '#ffffff', '2nd');
+  }
+
+  updateHighlightNodeStyle(r, color, type){
+    let node;
+    if (type === '1st'){
+      node = this.highlightNode;
+    } else{
+      node = this.highlightNodeLinked;
+    }
+    node.attr("r", () => {
+          return r;
+        })
+        .attr("stroke", color)
+  }
+
+  updateHighlightNodePosition(x, y, type) {
+    let node;
+    if (type === '1st'){
+      node = this.highlightNode;
+    } else{
+      node = this.highlightNodeLinked;
+    }
+    node.attr("cx", () => {
+          return x;
+        })
+        .attr("cy", () => {
+          return y;
+        });
+
+    node.attr("transform-origin",  String(x) + " " + String(y))
+  }
+
 
 
   setLabel() {
@@ -242,7 +305,7 @@ export default class Network {
     ).force("collide",
         d3.forceCollide()
             .radius((d) => {
-              return Math.sqrt(d.size) * 4 + 2.5;
+              return Math.sqrt(d.size) * 3.5 + 5;
             })
             .strength(0.7)
             .iterations(1.0)
@@ -450,16 +513,6 @@ export default class Network {
       this.mouseclick(d);
     });
 
-    // this.svg.on("mouseenter", () => {
-    //   console.log(this);
-    //   if (this.isClicked === 0) {
-    //     this.mouseenter();
-    //   }else{
-    //     if (this.vizID !== this.nodeInfo.network) {
-    //       this.mouseenter();
-    //     }
-    //   }
-    // });
 
     this.vizArea.on("mouseenter", () => {
       console.log('mouseenter');
@@ -471,6 +524,7 @@ export default class Network {
 
   /* mouse event detail */
   mouseover(d) {
+    this.statrHighlightNode(d, '1st');
     Mouse.clickableFade(d.index, this.linkData, this.link, this.node, this.label, this.dataType);
     clearInterval(this.mouseoutSetTimeout);
     this.nodeInfo.name = d.name;
@@ -494,6 +548,7 @@ export default class Network {
   }
 
   mouseout() {
+    this.stopHighlightNode();
     this.nodeInfo.name1stLinked = '';
     Mouse.reset(this.linkData, this.link, this.node, this.label, this.dataType);
     this.nodeInfo.network = this.vizID;
@@ -501,6 +556,7 @@ export default class Network {
   }
 
   mouseenter() {
+    this.stopHighlightNode();
     this.isClicked = 0;
     this.nodeInfo.name1stLinked = '';
     Mouse.reset(this.linkData, this.link, this.node, this.label, this.dataType);
@@ -559,6 +615,7 @@ export default class Network {
   }
 
   clickTap(d){
+    this.statrHighlightNode(d,'1st');
     this.isClicked = 1;
     this.linked1stNodeList = [];
     this.linked1stNodeList = Mouse.noClickFade(d.index, this.linkData, this.link, this.node, this.label, this.dataType);
@@ -567,6 +624,7 @@ export default class Network {
   }
 
   linked1st(oldIndex, newNode) {
+    this.statrHighlightNode(newNode,'2nd');
     Mouse.noClickFade1stLinked(newNode.index, this.linkData, this.link, this.node, this.label, this.dataType);
     Mouse.noClickNoFade1stLinked(oldIndex, this.linkData, this.link, this.node, this.label, this.dataType);
     this.prev1stLinkedMouseoverNodeName = this.nodeInfo.name1stLinked;
@@ -587,6 +645,8 @@ export default class Network {
     Mouse.noClickFade1stLinked(d.index, this.linkData, this.link, this.node, this.label, this.dataType);
     this.linked1stNodeList = Mouse.noClickNoFade1stLinked(clickedNodeIndex, this.linkData, this.link, this.node, this.label, this.dataType);
 
+    this.statrHighlightNode(this.nodeData[clickedNodeIndex],'1st');
+    this.statrHighlightNode(d,'2nd');
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
@@ -601,23 +661,23 @@ export default class Network {
 
 
   tickBounceWall() {
-    const marginXright = this.wallMargin - this.zoomScale.X / this.zoomScale.scale;
-    const marginYtop = this.wallMargin - this.zoomScale.Y / this.zoomScale.scale;
+    const marginXRight = this.wallMargin - this.zoomScale.X / this.zoomScale.scale;
+    const marginYTop = this.wallMargin - this.zoomScale.Y / this.zoomScale.scale;
 
-    const marginXleft = (this.width - this.zoomScale.X) / this.zoomScale.scale - this.wallMargin;
-    const marginYbottom = (this.height - this.zoomScale.Y) / this.zoomScale.scale - this.wallMargin;
+    const marginXLeft = (this.width - this.zoomScale.X) / this.zoomScale.scale - this.wallMargin;
+    const marginYBottom = (this.height - this.zoomScale.Y) / this.zoomScale.scale - this.wallMargin;
 
     this.link.attr("x1", (d) => {
-      return Math.max(marginXright, Math.min(marginXleft, d.source.x));
+      return Math.max(marginXRight, Math.min(marginXLeft, d.source.x));
     })
         .attr("y1", (d) => {
-          return Math.max(marginYtop, Math.min(marginYbottom, d.source.y));
+          return Math.max(marginYTop, Math.min(marginYBottom, d.source.y));
         })
         .attr("x2", (d) => {
-          return Math.max(marginXright, Math.min(marginXleft, d.target.x));
+          return Math.max(marginXRight, Math.min(marginXLeft, d.target.x));
         })
         .attr("y2", (d) => {
-          return Math.max(marginYtop, Math.min(marginYbottom, d.target.y));
+          return Math.max(marginYTop, Math.min(marginYBottom, d.target.y));
         })
         .attr("d", (d) => {
 
@@ -630,18 +690,27 @@ export default class Network {
 
     this.node
         .attr("cx", (d) => {
-          return Math.max(marginXright, Math.min(marginXleft, d.x));
+          return Math.max(marginXRight, Math.min(marginXLeft, d.x));
         })
         .attr("cy", (d) => {
-          return Math.max(marginYtop, Math.min(marginYbottom, d.y));
+          return Math.max(marginYTop, Math.min(marginYBottom, d.y));
         });
+
+    if (this.highlightNodeIndex !== ''){
+      const node = this.node['_groups'][0][this.highlightNodeIndex];
+      this.updateHighlightNodePosition(node.cx.baseVal.value, node.cy.baseVal.value, '1st');
+    }
+    if (this.highlightNodeLinkedIndex !== ''){
+      const node = this.node['_groups'][0][this.highlightNodeLinkedIndex];
+      this.updateHighlightNodePosition(node.cx.baseVal.value, node.cy.baseVal.value, '2nd');
+    }
 
     this.label
         .attr("x", (d) => {
-          return Math.max(marginXright, Math.min(marginXleft, d.x));
+          return Math.max(marginXRight, Math.min(marginXLeft, d.x));
         })
         .attr("y", (d) => {
-          return Math.max(marginYtop, Math.min(marginYbottom, d.y));
+          return Math.max(marginYTop, Math.min(marginYBottom, d.y));
         });
   }
 
@@ -674,6 +743,15 @@ export default class Network {
         .attr("cy", (d) => {
           return d.y;
         });
+
+    if (this.highlightNodeIndex !== ''){
+      const node = this.node['_groups'][0][this.highlightNodeIndex];
+      this.updateHighlightNodePosition(node.cx.baseVal.value, node.cy.baseVal.value, '1st');
+    }
+    if (this.highlightNodeLinkedIndex !== ''){
+      const node = this.node['_groups'][0][this.highlightNodeLinkedIndex];
+      this.updateHighlightNodePosition(node.cx.baseVal.value, node.cy.baseVal.value, '2nd');
+    }
 
     this.label
         .attr("x", (d) => {

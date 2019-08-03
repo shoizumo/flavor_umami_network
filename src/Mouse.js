@@ -156,6 +156,7 @@ export default class Mouse {
       let M = Connection.makeNodeList(networkMain.detectNodeIndex(obj.name), networkMain.linkData);
       let S = Connection.makeNodeList(networkSub.detectNodeIndex(obj.name), networkSub.linkData);
       Mouse.clickableFade(index, AN.linkData, AN.link, AN.node, AN.label, AN.dataType);
+      // AN.statrHighlightNode(AN.nodeData[index], '1st');
 
       Connection.displayDetail(obj.name, M.sameNodes, M.diffNodes, 'detailMain1');
       Connection.displayDetail(obj.name, S.sameNodes, S.diffNodes, 'detailSub1');
@@ -165,6 +166,7 @@ export default class Mouse {
     else if (obj.mouseAction === 'mouseover1stLinked') {
       Mouse.noClickFade1stLinked(AN.detectNodeIndex(obj.name1stLinked), AN.linkData, AN.link, AN.node, AN.label, AN.dataType);
       Mouse.noClickNoFade1stLinked(AN.clickedNodeIndex, AN.linkData, AN.link, AN.node, AN.label, AN.dataType);
+      // AN.statrHighlightNode(AN.detectNodeIndex(obj.name1stLinked), '2nd');
 
       let M1 = Connection.makeNodeList(networkMain.detectNodeIndex(obj.name), networkMain.linkData);
       let S1 = Connection.makeNodeList(networkSub.detectNodeIndex(obj.name), networkSub.linkData);
