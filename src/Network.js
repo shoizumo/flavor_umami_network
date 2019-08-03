@@ -572,6 +572,10 @@ export default class Network {
   }
 
   returnToPrevClickedNodeMouseover(prevIndex) {
+    this.stopHighlightNode();
+    this.nodeInfo.mouseAction = 'mouseout';  // event trigger
+    this.statrHighlightNode(this.nodeData[prevIndex],'1st');
+
     Mouse.noClickFade(prevIndex, this.linkData, this.link, this.node, this.label, this.dataType);
     this.nodeInfo.mouseAction = 'mouseover';  // event trigger
   }
