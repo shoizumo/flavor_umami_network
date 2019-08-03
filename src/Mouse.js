@@ -151,7 +151,7 @@ export default class Mouse {
       return;
     }
 
-
+    if (typeof AN.detectNodeIndex(obj.name) === "undefined") return;
     if (obj.mouseAction === 'mouseover') {
       const index = AN.detectNodeIndex(obj.name);
       let M = Connection.makeNodeList(networkMain.detectNodeIndex(obj.name), networkMain.linkData);
@@ -187,8 +187,8 @@ export default class Mouse {
       Mouse.noClickFade1stLinked(AN.detectNodeIndex(obj.name1stLinked), AN.linkData, AN.link, AN.node, AN.label, AN.dataType);
       Mouse.noClickNoFade1stLinked(AN.clickedNodeIndex, AN.linkData, AN.link, AN.node, AN.label, AN.dataType);
 
-      AN.statrHighlightNode(AN.nodeData[AN.detectNodeIndex(obj.name1stLinked)], '1st');
-      AN.statrHighlightNode(AN.nodeData[AN.clickedNodeIndex], '2nd');
+      AN.statrHighlightNode(AN.nodeData[AN.clickedNodeIndex], '1st');
+      AN.statrHighlightNode(AN.nodeData[AN.detectNodeIndex(obj.name1stLinked)], '2nd');
 
       let M1 = Connection.makeNodeList(networkMain.detectNodeIndex(obj.name), networkMain.linkData);
       let S1 = Connection.makeNodeList(networkSub.detectNodeIndex(obj.name), networkSub.linkData);

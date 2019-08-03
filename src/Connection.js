@@ -91,7 +91,7 @@ export default class Connection {
   }
 
 
-  static existNodeCheck(nodeList, existNodeList){
+  static existNodeCheck(nodeList, existNodeList) {
     for (let i = 0, l = nodeList.length; l > i; i++) {
       for (let j = 0, l = existNodeList.length; l > j; j++) {
         if (nodeList[i] === existNodeList[j]) {
@@ -108,22 +108,50 @@ export default class Connection {
 
     const detailBox = document.getElementById(areaID);
     let elements = [];
-    // title
-    elements.push('<p class="detailSelected" >' + nodeName + '</p>');
-
-    // same category
-    elements.push('<p class="detailTitle" >' + `same category(${sameNodes.length})` + '</p>');
-    for (let i = 0, l = sameNodes.length; l > i; i++) {
-      elements.push('<p class="detailText" >' + sameNodes[i] + '</p>');
+    /* title */
+    let titleText1, titleText2;
+    if (areaID.slice(-1) === '1'){
+      titleText1 = '1st selected ingredient ';
+      titleText2 = 'is linked to';
+    }else{
+      titleText1 = '2nd selected ingredient ';
+      titleText2 = 'is newly linked to'
     }
-    elements.push('</br>');
+    elements.push('<p class="detailSelectedIntro">' + titleText1 + '</p>');
+    elements.push('<p class="detailSelected"><span> "' + nodeName + '" </span>' + titleText2 + '</p>');
 
-    // different category
-    elements.push('<p class="detailTitle" >' + `different category(${diffNodes.length})` + '</p>');
+    let numCategory;
+    /* same category */
+    if (sameNodes.length === 0) {
+      numCategory = '';
+    } else if (sameNodes.length === 1) {
+      numCategory = ' : 1 ingredient';
+    } else {
+      numCategory = ` : ${sameNodes.length} ingredients`
+    }
+    elements.push('<p class="detailTitle"><span>' + 'same category' + '</span>' + numCategory + '</p>');
+    if (sameNodes.length === 0){
+      elements.push('<p class="detailText">' + 'None' + '</p>');
+    }
+      for (let i = 0, l = sameNodes.length; l > i; i++) {
+        elements.push('<p class="detailText">- ' + sameNodes[i] + '</p>');
+      }
+
+    /* different category */
+    if (diffNodes.length === 0) {
+      numCategory = '';
+    } else if (diffNodes.length === 1) {
+      numCategory = ' : 1 ingredient';
+    } else {
+      numCategory = ` : ${diffNodes.length} ingredients`
+    }
+    elements.push('<p class="detailTitle"><span>' + 'different category' + '</span>'  + numCategory + '</p>');
+    if (diffNodes.length === 0){
+      elements.push('<p class="detailText">' + 'None' + '</p>');
+    }
     for (let i = 0, l = diffNodes.length; l > i; i++) {
-      elements.push('<p class="detailText" >' + diffNodes[i] + '</p>');
+      elements.push('<p class="detailText">- ' + diffNodes[i] + '</p>');
     }
-    elements.push('</br>');
 
     detailBox.insertAdjacentHTML('beforeEnd', elements.join(''));
 
