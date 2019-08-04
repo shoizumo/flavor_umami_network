@@ -2,6 +2,7 @@ import * as d3 from 'd3';
 import Mouse from './Mouse';
 import Update from './Update'
 import Connection from "./Connection";
+import SvgStyle from "./SvgStyle";
 
 export default class Network {
   constructor(flavorData, umamiData, isPC, svgID, dataType, vizMode, vizID, nodeInfo) {
@@ -95,6 +96,7 @@ export default class Network {
     this.highlightNodeIndex = '';
     this.highlightNodeLinked = '';
     this.highlightNodeLinkedIndex = '';
+
   }
 
 
@@ -102,8 +104,9 @@ export default class Network {
   // render
   render() {
     this.setLegend();
-    this.setLink();
     this.setLinkGradientColor();
+    this.setLink();
+    this.setSvgPattern();
     this.setNode();
     this.setLabel();
     this.setSimulation();
@@ -179,7 +182,9 @@ export default class Network {
           return Math.sqrt(d.size) * 3.5 + 5;
         })
         .attr("fill", (d) => {
-          return this.color(d.group_id)
+          // return this.color(d.group_id);
+          return 'url(#' + 'Horizontal' + this.color(d.group_id) + ')';
+
         })
         .attr("stroke", "#fffcf9")
         .attr("stroke-width", "1.0");
@@ -208,55 +213,6 @@ export default class Network {
         .append("circle")
         .attr("class", "highlightNode");
   }
-
-  statrHighlightNode(d, type) {
-    if(type === '1st'){
-      this.highlightNodeIndex = d.index;
-    }else{
-      this.highlightNodeLinkedIndex = d.index;
-    }
-    this.updateHighlightNodeStyle(Math.sqrt(d.size) * 3.5 + 10, this.color(d.group_id), type);
-    const node = this.node['_groups'][0][d.index];
-    this.updateHighlightNodePosition(node.cx.baseVal.value, node.cy.baseVal.value, type);
-  }
-
-  stopHighlightNode() {
-    this.highlightNodeIndex = '';
-    this.highlightNodeLinkedIndex = '';
-    this.updateHighlightNodeStyle(0, '#ffffff', '1st');
-    this.updateHighlightNodeStyle(0, '#ffffff', '2nd');
-  }
-
-  updateHighlightNodeStyle(r, color, type){
-    let node;
-    if (type === '1st'){
-      node = this.highlightNode;
-    } else{
-      node = this.highlightNodeLinked;
-    }
-    node.attr("r", () => {
-          return r;
-        })
-        .attr("stroke", color)
-  }
-
-  updateHighlightNodePosition(x, y, type) {
-    let node;
-    if (type === '1st'){
-      node = this.highlightNode;
-    } else{
-      node = this.highlightNodeLinked;
-    }
-    node.attr("cx", () => {
-          return x;
-        })
-        .attr("cy", () => {
-          return y;
-        });
-
-    node.attr("transform-origin",  String(x) + " " + String(y))
-  }
-
 
 
   setLabel() {
@@ -370,15 +326,65 @@ export default class Network {
   }
 
 
-  gradientUnitVector(x, y) {
-    // scale = 0.5
-    const magnitude = Math.sqrt(x * x + y * y);
-    const X = x / magnitude;
-    const Y = y / magnitude;
+  setSvgPattern() {
+    if (this.vizID === 'Main') {
+      for (let i = 0, l = this.legendColor.length; l > i; i++) {
+        SvgStyle.horizontalStripe(this.svg, this.legendColor[i]);
+        SvgStyle.verticalStripe(this.svg, this.legendColor[i]);
+      }
+    }
+  }
 
-    // const unitVector = {'X' : X / magnitude, 'Y' : Y / magnitude};
-    return {'X': X * 0.5, 'Y': Y * 0.5};
-  };
+
+  ////////////////////////////////////////////////////////////////////////////////////////////
+  // highlight node
+  statrHighlightNode(d, type) {
+    if(type === '1st'){
+      this.highlightNodeIndex = d.index;
+    }else{
+      this.highlightNodeLinkedIndex = d.index;
+    }
+    this.updateHighlightNodeStyle(Math.sqrt(d.size) * 3.5 + 10, this.color(d.group_id), type);
+    const node = this.node['_groups'][0][d.index];
+    this.updateHighlightNodePosition(node.cx.baseVal.value, node.cy.baseVal.value, type);
+  }
+
+  stopHighlightNode() {
+    this.highlightNodeIndex = '';
+    this.highlightNodeLinkedIndex = '';
+    this.updateHighlightNodeStyle(0, '#ffffff', '1st');
+    this.updateHighlightNodeStyle(0, '#ffffff', '2nd');
+  }
+
+  updateHighlightNodeStyle(r, color, type){
+    let node;
+    if (type === '1st'){
+      node = this.highlightNode;
+    } else{
+      node = this.highlightNodeLinked;
+    }
+    node.attr("r", () => {
+          return r;
+        })
+        .attr("stroke", color)
+  }
+
+  updateHighlightNodePosition(x, y, type) {
+    let node;
+    if (type === '1st'){
+      node = this.highlightNode;
+    } else{
+      node = this.highlightNodeLinked;
+    }
+    node.attr("cx", () => {
+          return x;
+        })
+        .attr("cy", () => {
+          return y;
+        });
+
+    node.attr("transform-origin",  String(x) + " " + String(y))
+  }
 
 
   ////////////////////////////////////////////////////////////////////////////////////////////
@@ -776,7 +782,7 @@ export default class Network {
 
 
   updateGradient(d) {
-    const gradientVector = this.gradientUnitVector(d.target.x - d.source.x, d.target.y - d.source.y);
+    const gradientVector = SvgStyle.gradientUnitVector(d.target.x - d.source.x, d.target.y - d.source.y);
     // loop by index
     this.gradient[d.index]
         .attr("x1", 0.5 - gradientVector.X)
