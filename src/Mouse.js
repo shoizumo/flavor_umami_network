@@ -97,6 +97,9 @@ export default class Mouse {
       }
     }
     // selectNode
+    if (typeof nodeCircle['_groups'][0][nodeIndex] === "undefined") {
+      console.log('aaaaaaaaaaaaaaaaaaaaaaa');
+    }
     nodeCircle['_groups'][0][nodeIndex].setAttribute("class", nodeClass);
     nodeCircle['_groups'][0][nodeIndex].setAttribute("fill", Mouse.nodeColor()[nodeData[nodeIndex].group_id]);
     // selectNodeText
@@ -186,7 +189,7 @@ export default class Mouse {
 
     if (typeof AN.detectNodeIndex(obj.name) === "undefined") return;
     if (obj.mouseAction === 'mouseover') {
-      console.log('AN mouseover', obj);
+      // console.log('AN mouseover', obj);
       const index = AN.detectNodeIndex(obj.name);
       let M = Connection.makeNodeList(networkMain.detectNodeIndex(obj.name), networkMain.linkData);
       let S = Connection.makeNodeList(networkSub.detectNodeIndex(obj.name), networkSub.linkData);
@@ -199,15 +202,15 @@ export default class Mouse {
     }
 
     else if (obj.mouseAction === 'mouseover1stLinked') {
-      console.log('AN mouseover1stLinked', obj);
+      // console.log('AN mouseover1stLinked', obj);
       Mouse.noClickFade1stLinked(AN.detectNodeIndex(obj.name1stLinked), AN);
       Mouse.noClickNoFade1stLinked(AN.detectNodeIndex(obj.name), AN);
       AN.statrHighlightNode(AN.nodeData[AN.detectNodeIndex(obj.name1stLinked)], '2nd');
 
       let M1 = Connection.makeNodeList(networkMain.detectNodeIndex(obj.name), networkMain.linkData);
       let S1 = Connection.makeNodeList(networkSub.detectNodeIndex(obj.name), networkSub.linkData);
-      const MainBaseNodes = M1.sameNodes.concat(M1.diffNodes);
-      const SubBaseNodes = S1.sameNodes.concat(S1.diffNodes);
+      const MainBaseNodes = M1.sameNodes.concat(M1.diffNodes).concat(obj.name);
+      const SubBaseNodes = S1.sameNodes.concat(S1.diffNodes).concat(obj.name);
 
       const nodeCategory = networkMain.detectNodeCategory(obj.name);
       let M2 = Connection.makeNodeList1stLinked(networkMain.detectNodeIndex(obj.name1stLinked), networkMain.linkData, nodeCategory, MainBaseNodes);
@@ -218,7 +221,7 @@ export default class Mouse {
     }
 
     else if (obj.mouseAction === 'mouseover2ndLinked') {
-      console.log('AN mouseover2ndLinked', obj);
+      // console.log('AN mouseover2ndLinked', obj);
       Mouse.reset(AN);
       Mouse.noClickFade1stLinked(AN.detectNodeIndex(obj.name1stLinked), AN);
       AN.linked1stNodeList = Mouse.noClickNoFade1stLinked(AN.detectNodeIndex(obj.name), AN);
@@ -228,8 +231,8 @@ export default class Mouse {
 
       let M1 = Connection.makeNodeList(networkMain.detectNodeIndex(obj.name), networkMain.linkData);
       let S1 = Connection.makeNodeList(networkSub.detectNodeIndex(obj.name), networkSub.linkData);
-      const MainBaseNodes = M1.sameNodes.concat(M1.diffNodes);
-      const SubBaseNodes = S1.sameNodes.concat(S1.diffNodes);
+      const MainBaseNodes = M1.sameNodes.concat(M1.diffNodes).concat(obj.name);
+      const SubBaseNodes = S1.sameNodes.concat(S1.diffNodes).concat(obj.name);
 
       const nodeCategory = networkMain.detectNodeCategory(obj.name);
       let M2 = Connection.makeNodeList1stLinked(networkMain.detectNodeIndex(obj.name1stLinked), networkMain.linkData, nodeCategory, MainBaseNodes);

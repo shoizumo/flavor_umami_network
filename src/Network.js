@@ -450,7 +450,7 @@ export default class Network {
       }
     });
 
-    this.svg.on("mouseenter", () => {
+    this.vizArea.on("mouseenter", () => {
       this.mouseenter();
     });
   }
@@ -461,27 +461,19 @@ export default class Network {
 
       if (this.isClicked === 0) {
         this.mouseover(d);
-        console.log('mouseover', this.nodeInfo);
-        console.log('');
+        // console.log('mouseover', this.nodeInfo);
+        // console.log('');
       } else {
         // if mouseover clicked node, do nothing
         if (d.index !== this.clickedNodeIndex) {
 
           // if mouseover 1st linked node, color 1st linked node
           if (this.linked1stNodeList.indexOf(d.index) >= 0){
-            // if (this.nodeInfo.name1stLinked !== d.name) {
-              // console.log('1st', this.linked1stNodeList);
-              this.mouseover1stLinked(this.clickedNodeIndex, d);
-              console.log('mouseover1stLinked', this.nodeInfo);
-              console.log('');
-            // }
+            this.mouseover1stLinked(this.clickedNodeIndex, d);
           }
           // if mouseover 1st linked node, color 1st linked node
           else {
-            // console.log('2nd', this.linked1stNodeList);
             this.mouseover2ndLinked(d);
-            console.log('mouseover2ndLinked', this.nodeInfo);
-            console.log('');
           }
         }
       }
@@ -529,7 +521,6 @@ export default class Network {
 
 
     this.vizArea.on("mouseenter", () => {
-      console.log('mouseenter');
       this.mouseenter();
     });
 
