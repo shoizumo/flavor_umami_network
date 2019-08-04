@@ -13,7 +13,7 @@ export default class SvgStyle {
         .attr("x", 0)
         .attr("y", 0)
         .attr("width", 20)
-        .attr("height", 2)
+        .attr("height", 3)
         .attr("fill", color);
   }
 
@@ -30,7 +30,7 @@ export default class SvgStyle {
         .append("rect")
         .attr("x", 0)
         .attr("y", 0)
-        .attr("width", 2)
+        .attr("width", 3)
         .attr("height", 20)
         .attr("fill", color);
   }

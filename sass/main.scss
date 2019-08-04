@@ -165,15 +165,6 @@ $default_line_opacity: 0.5;
 
 
 /* mouseover */
-.selectedNode{
-  opacity: $highlight_node_opacity;
-
-  //stroke: #000000;
-  //stroke-width: 2;
-  //stroke-linecap: round;
-  //stroke-dasharray: 0.2, 3;
-}
-
 .highlightNode {
   opacity: 1.0;
   fill: none;
@@ -181,9 +172,8 @@ $default_line_opacity: 0.5;
   stroke-linecap: round;
   stroke-dasharray: 0.4, 6;
 
- animation: animation 10s linear infinite;
+  animation: animation 10s linear infinite;
 }
-
 @keyframes animation {
   0% {
     transform: rotate(0deg);

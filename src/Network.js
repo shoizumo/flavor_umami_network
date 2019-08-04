@@ -60,9 +60,10 @@ export default class Network {
       "alcoholic beverage", "herb", "dairy", "nut/seed/pulse", "spice",
       "fish/seafood", "plant derivative", "flower", "animal product"];
 
-    this.legendColor = ["#0fff0f", "#fc783f", "#ff4c4c", "#3cb37a", "#e8c59c",
-      "#e73552", "#ad5d88", "#db830d", "#965d21", "#00afcc",
-      "#434da2", "#b3e500", "#ff00ae", "#ff7fbf"];
+    this.legendColor = Mouse.nodeColor();
+    // ["#0fff0f", "#fc783f", "#ff4c4c", "#3cb37a", "#e8c59c",
+    //   "#e73552", "#ad5d88", "#db830d", "#965d21", "#00afcc",
+    //   "#434da2", "#b3e500", "#ff00ae", "#ff7fbf"];
 
     this.wallMargin = 7.5;
 
@@ -182,9 +183,8 @@ export default class Network {
           return Math.sqrt(d.size) * 3.5 + 5;
         })
         .attr("fill", (d) => {
-          // return this.color(d.group_id);
-          return 'url(#' + 'Horizontal' + this.color(d.group_id) + ')';
-
+          return this.color(d.group_id);
+          // return 'url(#' + 'Horizontal' + this.color(d.group_id) + ')';
         })
         .attr("stroke", "#fffcf9")
         .attr("stroke-width", "1.0");
@@ -539,7 +539,7 @@ export default class Network {
   /* mouse event detail */
   mouseover(d) {
     this.statrHighlightNode(d, '1st');
-    Mouse.clickableFade(d.index, this.linkData, this.link, this.node, this.label, this.dataType);
+    Mouse.clickableFade(d.index, this);
     clearInterval(this.mouseoutSetTimeout);
     this.nodeInfo.name = d.name;
     this.nodeInfo.network = this.vizID;
@@ -563,7 +563,7 @@ export default class Network {
   mouseout() {
     this.stopHighlightNode();
     this.nodeInfo.name1stLinked = '';
-    Mouse.reset(this.linkData, this.link, this.node, this.label, this.dataType);
+    Mouse.reset(this);
     this.nodeInfo.network = this.vizID;
     this.nodeInfo.mouseAction = 'mouseout';  // event trigger
   }
@@ -572,7 +572,7 @@ export default class Network {
     this.stopHighlightNode();
     this.isClicked = 0;
     this.nodeInfo.name1stLinked = '';
-    Mouse.reset(this.linkData, this.link, this.node, this.label, this.dataType);
+    Mouse.reset(this);
     Mouse.cursor(this.vizMode === 'Single' ? 'grab' : 'pointer', this.body, this.node);
     this.nodeInfo.network = this.vizID;
     this.nodeInfo.mouseAction = 'mouseenter';  // event trigger
@@ -590,7 +590,7 @@ export default class Network {
     this.statrHighlightNode(this.nodeData[prevIndex],'1st');
 
     console.log('mouseover', 'returnToPrevClickedNodeMouseover');
-    Mouse.noClickFade(prevIndex, this.linkData, this.link, this.node, this.label, this.dataType);
+    Mouse.noClickFade(prevIndex, this);
     this.nodeInfo.mouseAction = 'mouseover';  // event trigger
   }
 
@@ -636,15 +636,15 @@ export default class Network {
     this.statrHighlightNode(d,'1st');
     this.isClicked = 1;
     this.linked1stNodeList = [];
-    this.linked1stNodeList = Mouse.noClickFade(d.index, this.linkData, this.link, this.node, this.label, this.dataType);
+    this.linked1stNodeList = Mouse.noClickFade(d.index, this);
     this.nodeInfo.name = d.name;
     this.clickedNodeIndex = d.index;
   }
 
   linked1st(oldIndex, newNode) {
     this.statrHighlightNode(newNode,'2nd');
-    Mouse.noClickFade1stLinked(newNode.index, this.linkData, this.link, this.node, this.label, this.dataType);
-    Mouse.noClickNoFade1stLinked(oldIndex, this.linkData, this.link, this.node, this.label, this.dataType);
+    Mouse.noClickFade1stLinked(newNode.index, this);
+    Mouse.noClickNoFade1stLinked(oldIndex, this);
     this.prev1stLinkedMouseoverNodeName = this.nodeInfo.name1stLinked;
     this.nodeInfo.name1stLinked = newNode.name;
   }
@@ -660,8 +660,8 @@ export default class Network {
     // new mouseover node -> mouseover 1st node
     this.nodeInfo.name1stLinked = d.name;
 
-    Mouse.noClickFade1stLinked(d.index, this.linkData, this.link, this.node, this.label, this.dataType);
-    this.linked1stNodeList = Mouse.noClickNoFade1stLinked(clickedNodeIndex, this.linkData, this.link, this.node, this.label, this.dataType);
+    Mouse.noClickFade1stLinked(d.index, this);
+    this.linked1stNodeList = Mouse.noClickNoFade1stLinked(clickedNodeIndex, this);
 
     this.statrHighlightNode(this.nodeData[clickedNodeIndex],'1st');
     this.statrHighlightNode(d,'2nd');
@@ -799,7 +799,7 @@ export default class Network {
       d.fx = d.x;
       d.fy = d.y;
 
-      Mouse.noClickFade(d.index, this.linkData, this.link, this.node, this.label, this.dataType);
+      Mouse.noClickFade(d.index, this);
       Mouse.cursor('grabbing', this.body, this.node);
     }
     this.isDragging = 1;
@@ -818,8 +818,8 @@ export default class Network {
       d.fx = null;
       d.fy = null;
 
-      Mouse.reset(this.linkData, this.link, this.node, this.label, this.dataType);
-      Mouse.clickableFade(d.index, this.linkData, this.link, this.node, this.label, this.dataType);
+      Mouse.reset(this);
+      Mouse.clickableFade(d.index, this);
       Mouse.cursor('grab', this.body, this.node);
     }
     this.isDragging = 0;
