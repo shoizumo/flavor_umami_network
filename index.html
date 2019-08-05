@@ -34,7 +34,7 @@
           content='This interactive network shows which ingredients go well together.'>
 
     <link rel="stylesheet" href="css/main.css">
-    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=fallback" rel="stylesheet">
 
   </head>
 
@@ -68,10 +68,11 @@
 
     <div align="center">
 <!--      for PC-->
-      <div id="visGrid">
+      <div id="visGrid" class="vizArea">
         <svg id="graphMain" class="graph">
-          <text class="node_link" x="5" y="625">Node size : Ingredient prevalence in recipes</text>
-          <text class="node_link" x="5" y="640">Link thickness : Number of shared compounds</text>
+          <text class="about" x="10" y="640">About Network</text>
+<!--          <text class="node_link" x="5" y="625">Node size : Ingredient prevalence in recipes</text>-->
+<!--          <text class="node_link" x="5" y="640">Link thickness : Number of shared compounds</text>-->
         </svg>
 
         <svg id="graphSub" class="graph">
@@ -89,7 +90,7 @@
       </div>
 
 <!--      for mobile-->
-      <div id="detailMobile">
+      <div id="detailMobile" class="vizArea">
         <div id="detailMobile1" class="detailMobile"></div>
         <div id="detailMobile2" class="detailMobile"></div>
       </div>

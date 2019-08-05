@@ -127,10 +127,10 @@ export default class Network {
         })
         .attr("width", 200)
         .attr("height", 20)
-        .attr("fill", "#352622")
+        .attr("fill", "#1f1100")
         .attr("font-family", 'Roboto');
 
-    d3.selectAll(".legends").style("cursor", "pointer");
+    // d3.selectAll(".legends").style("cursor", "pointer");
 
     this.legend.append('circle') // 凡例の色付け四角
         .attr("cx", 5)
@@ -235,7 +235,7 @@ export default class Network {
         .attr("font-size", ".7em")
         .attr("font-weight", "300")
         .attr("class", "nonDrag")
-        .attr("fill", "#352622")
+        .attr("fill", "#1f1100")
         .attr("font-family", 'Roboto');
 
     if (this.dataType === 'Flavor') {

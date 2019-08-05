@@ -147,7 +147,7 @@ export default class Update {
         .attr("font-size", ".7em")
         .attr("font-weight", "300")
         .attr("class", "nonDrag")
-        .attr("fill", "#352622")
+        .attr("fill", "#1f1100")
         .attr("font-family", 'Roboto');
 
      // nodeText.transition()

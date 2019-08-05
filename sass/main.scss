@@ -1,6 +1,6 @@
 @charset "UTF-8";
-$font: "Roboto", sans-serif;
-
+$font: "Roboto", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+$font_color: #1f1100;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -8,7 +8,7 @@ $font: "Roboto", sans-serif;
 ////////////////////////////////////////////////////////////////////////////////////////
 
 body {
-  /*background-color: #fffcf0;*/
+  background-color: #fffffc;
   text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
 
@@ -21,9 +21,7 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
-//#graphMain {
-//  cursor: default;
-//}
+
 
 
 h1 {
@@ -35,7 +33,7 @@ h1 {
   text-align: center;
   font-size: 3.0em;
   font-weight: 700;
-  color: #302833;
+  color: $font_color;
   font-family: $font;
 }
 
@@ -51,8 +49,8 @@ h1 {
   margin-right: auto;
   text-align: center;
   font-size: 2.0em;  // default h2 is 1.5em
-  font-weight: 600;
-  color: #302833;
+  font-weight: 500;
+  color: $font_color;
   font-family: $font;
   display: none;
 }
@@ -69,11 +67,19 @@ h1 {
   float :right;
 }
 
-.node_link {
-  fill: #352622;
-  font-size: 0.8em;
+.about {
+  fill: $font_color;
+  font-size: 1.0em;
+  color: $font_color;
   font-family: $font;
+  z-index: 1;
 }
+
+//.node_link {
+//  fill: $font_color;
+//  font-size: 0.8em;
+//  font-family: $font;
+//}
 
 ////////////////////////////////////////////////////////////////////////////////////////
 /* selector */
@@ -85,9 +91,6 @@ h1 {
   margin-left: auto;
   margin-right: auto;
   text-align: right;
-  /*font-size: 3.5em;*/
-  color: #302833;
-  font-family: $font;
 }
 
 select {
@@ -95,13 +98,13 @@ select {
   -moz-appearance: none;
   appearance: none;
 
-  /*background: transparent;*/
-  //position: relative;
+  color: $font_color;
+  font-family: $font;
   z-index: 1;
   padding: 0 30px 0 5px;
   border: 1px solid #b4b3b3;
   /*border-bottom: 1px solid #b4b3b3;*/
-  border-radius: 2px;
+  border-radius: 1px;
 
   background: url(arrow.svg) no-repeat right 5px bottom 45%;
   background-size: 15px, 100%;
@@ -195,7 +198,6 @@ $default_line_opacity: 0.5;
   opacity: $highlight_text_opacity;
   font-weight: 500;
   font-size: 1.0em;
-  //text-decoration-line: underline;
   pointer-events: none;
 }
 
@@ -255,6 +257,9 @@ $grid-width: 500px;
 $grid-height: 325px;
 $mobile-height-ratio: 1.9;
 
+.vizArea{
+  background-color: #ffffff;
+}
 
 #visGrid{
   width: 500px * 2;
@@ -267,7 +272,7 @@ $mobile-height-ratio: 1.9;
 #detailMain {
   width: $grid-width - 2px;
   height: $grid-height - 2px;
-  border: 1px solid #fc9f94;
+  outline: 1px solid #ff8e1e;
   grid-template-columns: ($grid-width / 2) ($grid-width / 2);
   grid-template-rows: $grid-height;
   display: none;
@@ -276,7 +281,7 @@ $mobile-height-ratio: 1.9;
 #detailSub {
   width: $grid-width - 2px;
   height: $grid-height - 2px;
-  border: 1px solid #fc9f94;
+  outline: 1px solid #ff8e1e;
   grid-template-columns: ($grid-width / 2) ($grid-width / 2);
   grid-template-rows: $grid-height;
   display: none;
@@ -285,7 +290,7 @@ $mobile-height-ratio: 1.9;
 #detailMobile {
   width: $grid-width * 2 - 2px;
   height: $grid-height * $mobile-height-ratio - 2px;
-  border: 1px solid #fc9f94;
+  outline: 1px solid #ff8e1e;
   grid-template-columns: $grid-width $grid-width;
   grid-template-rows: $grid-height * $mobile-height-ratio;
   display: none;
@@ -308,7 +313,7 @@ $mobile-height-ratio: 1.9;
 .detailTextClass{
   text-align: left;
   line-height: 150%;
-  color: #302833;
+  color: $font_color;
   font-family: $font;
 }
 
