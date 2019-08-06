@@ -97,9 +97,6 @@ export default class Mouse {
       }
     }
     // selectNode
-    if (typeof nodeCircle['_groups'][0][nodeIndex] === "undefined") {
-      console.log('aaaaaaaaaaaaaaaaaaaaaaa');
-    }
     nodeCircle['_groups'][0][nodeIndex].setAttribute("class", nodeClass);
     nodeCircle['_groups'][0][nodeIndex].setAttribute("fill", Mouse.nodeColor()[nodeData[nodeIndex].group_id]);
     // selectNodeText

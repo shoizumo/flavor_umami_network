@@ -32,6 +32,10 @@
     <meta name="twitter:image" content="http://foodgalaxy.jp/FlavorNetwork/top.png">
     <meta name="twitter:description"
           content='This interactive network shows which ingredients go well together.'>
+    <meta name="viewport" content="user-scalable=yes">
+<!--    <meta name="viewport" content="width=device-width">-->
+
+
 
     <link rel="stylesheet" href="css/main.css">
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=fallback" rel="stylesheet">
@@ -49,8 +53,8 @@
 
     <h1 id="h1">Flavor Network</h1>
     <div id="h2Container">
-      <h2 id="h2Main" class="h2">aaa</h2>
-      <h2 id="h2Sub" class="h2">bbb</h2>
+      <h2 id="h2Main" class="h2"></h2>
+      <h2 id="h2Sub" class="h2"></h2>
     </div>
 
     <div id="dataTypeContainer">
@@ -66,11 +70,12 @@
     </div>
 
 
+<!--    SVG-->
     <div align="center">
 <!--      for PC-->
       <div id="visGrid" class="vizArea">
         <svg id="graphMain" class="graph">
-          <text class="about" x="10" y="640">About Network</text>
+          <text class="about" x="10" y="640" id="about">About Network</text>
 <!--          <text class="node_link" x="5" y="625">Node size : Ingredient prevalence in recipes</text>-->
 <!--          <text class="node_link" x="5" y="640">Link thickness : Number of shared compounds</text>-->
         </svg>
@@ -95,6 +100,33 @@
         <div id="detailMobile2" class="detailMobile"></div>
       </div>
     </div>
+<!--    /SVG-->
+
+
+
+<!--    modal window-->
+    <div id="modal" class="modal">
+      <div id="modalContent">
+        <header id="modalTitle">title</header>
+        <a href="#" id="modalClose" class="close"></a>
+        <div>
+          <p>de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc
+            de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc
+            de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc
+            de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc
+            de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc
+            de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc de sc
+          </p>
+          <div>
+            <p>how to read</p>
+            <p>how to read</p>
+            <p>how to read</p>
+          </div>
+          <p>data</p>
+        </div>
+      </div>
+    </div>
+<!--    /modal window-->
 
 
     <script src="js/main.js"></script>

@@ -28,7 +28,7 @@ export default class Network {
     this.vizArea = d3.select("#visGrid");
 
     this.svg
-        .attr("style", "outline: 1px solid #ff8e1e;")
+        .attr("style", "outline: 1px solid #9A7475;")
         // .attr("width", this.width / this.scaleRatio)
         // .attr("height", this.height / this.scaleRatio)
         .attr("width", vizMode === 'Single' ? this.width : 0)
@@ -127,7 +127,7 @@ export default class Network {
         })
         .attr("width", 200)
         .attr("height", 20)
-        .attr("fill", "#1f1100")
+        .attr("fill", "#281E13")
         .attr("font-family", 'Roboto');
 
     // d3.selectAll(".legends").style("cursor", "pointer");
@@ -235,7 +235,7 @@ export default class Network {
         .attr("font-size", ".7em")
         .attr("font-weight", "300")
         .attr("class", "nonDrag")
-        .attr("fill", "#1f1100")
+        .attr("fill", "#281E13")
         .attr("font-family", 'Roboto');
 
     if (this.dataType === 'Flavor') {

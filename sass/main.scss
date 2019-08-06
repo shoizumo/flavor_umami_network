@@ -1,6 +1,7 @@
 @charset "UTF-8";
 $font: "Roboto", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
-$font_color: #1f1100;
+$font_color: #281E13;
+$frame_color: #9A7475;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -49,30 +50,32 @@ h1 {
   margin-right: auto;
   text-align: center;
   font-size: 2.0em;  // default h2 is 1.5em
-  font-weight: 500;
   color: $font_color;
   font-family: $font;
   display: none;
 }
 
 #h2Main {
+  font-weight: 500;
   width: 500px;
   margin: 0;
   float :left;
 }
 
 #h2Sub {
+  font-weight: 500;
   width: 500px;
   margin: 0;
   float :right;
 }
 
 .about {
-  fill: $font_color;
-  font-size: 1.0em;
-  color: $font_color;
+  fill: #61453B;
+  font-size: 1.2em;
+  font-weight: 700;
   font-family: $font;
   z-index: 1;
+  cursor: pointer;
 }
 
 //.node_link {
@@ -102,7 +105,7 @@ select {
   font-family: $font;
   z-index: 1;
   padding: 0 30px 0 5px;
-  border: 1px solid #b4b3b3;
+  border: 1px solid $frame_color;
   /*border-bottom: 1px solid #b4b3b3;*/
   border-radius: 1px;
 
@@ -272,7 +275,7 @@ $mobile-height-ratio: 1.9;
 #detailMain {
   width: $grid-width - 2px;
   height: $grid-height - 2px;
-  outline: 1px solid #ff8e1e;
+  outline: 1px solid $frame_color;
   grid-template-columns: ($grid-width / 2) ($grid-width / 2);
   grid-template-rows: $grid-height;
   display: none;
@@ -281,7 +284,7 @@ $mobile-height-ratio: 1.9;
 #detailSub {
   width: $grid-width - 2px;
   height: $grid-height - 2px;
-  outline: 1px solid #ff8e1e;
+  outline: 1px solid $frame_color;
   grid-template-columns: ($grid-width / 2) ($grid-width / 2);
   grid-template-rows: $grid-height;
   display: none;
@@ -290,7 +293,7 @@ $mobile-height-ratio: 1.9;
 #detailMobile {
   width: $grid-width * 2 - 2px;
   height: $grid-height * $mobile-height-ratio - 2px;
-  outline: 1px solid #ff8e1e;
+  outline: 1px solid $frame_color;
   grid-template-columns: $grid-width $grid-width;
   grid-template-rows: $grid-height * $mobile-height-ratio;
   display: none;
@@ -353,7 +356,6 @@ $mobile-height-ratio: 1.9;
   }
 }
 
-
 .detailText {
   font-size: 0.8em;
   margin-top: 3px;
@@ -362,3 +364,78 @@ $mobile-height-ratio: 1.9;
   @extend .detailTextClass;
 }
 
+
+////////////////////////////////////////////////////////////////////////////////////////
+/* modal window */
+////////////////////////////////////////////////////////////////////////////////////////
+#modal {
+  display: none;
+  position: fixed;
+  z-index: 2;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+#modalContent {
+  background-color: #fffffc;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  -webkit-transform: translate(-50%,-50%);
+  -ms-transform: translate(-50%,-50%);
+  padding: 3rem;
+  border-radius: 10px;
+
+
+  overflow-y: scroll;
+  -webkit-overflow-scrolling:touch;
+
+
+  width: calc(100% - 20em);
+  height: calc(100% - 20em);
+  max-width: 400px;
+  max-height: 600px;
+
+
+
+  header {
+    font-size: 2.0em;
+  }
+
+  p {
+    font-size: 1.2em;
+  }
+}
+
+
+/* close button */
+.close {
+  position: absolute;
+  right: 3rem;
+  top: 3rem;
+  width: 32px;
+  height: 32px;
+  opacity: 0.3;
+}
+.close:hover {
+  opacity: 1;
+}
+.close:before, .close:after {
+  position: absolute;
+  left: 15px;
+  content: ' ';
+  height: 33px;
+  width: 2px;
+  background-color: #333;
+}
+.close:before {
+  transform: rotate(45deg);
+}
+.close:after {
+  transform: rotate(-45deg);
+}

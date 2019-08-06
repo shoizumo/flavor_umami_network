@@ -23,6 +23,7 @@ import Connection from "./Connection";
       navigator.userAgent.indexOf('Android') > 0);
   console.log(isPC);
 
+
   /*
   // name: node name
   // network: network object is being manipulated
@@ -92,7 +93,33 @@ import Connection from "./Connection";
   if (!isPC) {
     vizModeSelector.style.display = 'none';
     document.getElementById('detailMobile').style.display = 'grid';
+
+    // modal window
+    document.getElementById('modalContent').style.maxWidth = '1000px';
+    document.getElementById('modalContent').style.maxHeight = '1200px';
   }
+
+
+  //////////////////////////////////////////////////////////////////////////////////////////
+  // Modal
+  const about = document.getElementById('about');
+  const modal = document.getElementById('modal');
+  const close = document.getElementById('modalClose');
+
+  about.addEventListener('click', function () {
+    modal.style.display = 'block';
+  });
+
+  close.addEventListener('click', function () {
+    modal.style.display = 'none';
+  });
+
+  window.addEventListener('click', function (e) {
+    if (e.target == modal) {
+      modal.style.display = 'none';
+    }
+  });
+
 
 })();
 
