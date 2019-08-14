@@ -33,7 +33,7 @@ h1 {
   margin-left: auto;
   margin-right: auto;
   text-align: center;
-  font-size: 3.0em;
+  font-size: 2.7em;
   font-weight: 700;
   color: $font_color;
   font-family: $font;
@@ -50,7 +50,7 @@ h1 {
   margin-left: auto;
   margin-right: auto;
   text-align: center;
-  font-size: 2.0em;  // default h2 is 1.5em
+  font-size: 1.8em;  // default h2 is 1.5em
   color: $font_color;
   font-family: $font;
   display: none;
@@ -70,14 +70,14 @@ h1 {
   float :right;
 }
 
-.about {
-  fill: $about_color;
-  font-size: 1.2em;
-  font-weight: 700;
-  font-family: $font;
-  z-index: 1;
-  cursor: pointer;
-}
+//.about {
+//  fill: $about_color;
+//  font-size: 1.2em;
+//  font-weight: 700;
+//  font-family: $font;
+//  z-index: 1;
+//  cursor: pointer;
+//}
 
 //.node_link {
 //  fill: $font_color;
@@ -470,4 +470,20 @@ $mobile-height-ratio: 1.9;
 }
 .close:after {
   transform: rotate(-45deg);
+}
+
+
+#name {
+  font-size: 1.0em;
+  font-weight: 300;
+  line-height: 150%;
+  color: $font_color;
+  font-family: $font;
+  margin-top: 5px;
+  margin-bottom: 0;
+}
+
+.button-link {
+  cursor: pointer;
+  text-decoration-line: none;
 }

@@ -108,6 +108,8 @@ import Connection from "./Connection";
 
   about.addEventListener('click', function () {
     modal.style.display = 'block';
+    document.getElementById('modalContent').scrollTop = 0;
+
   });
 
   close.addEventListener('click', function () {
