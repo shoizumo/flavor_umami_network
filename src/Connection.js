@@ -161,6 +161,7 @@ export default class Connection {
   static deleteDetail(areaID) {
     const detailBox = document.getElementById(areaID);
     detailBox.innerHTML = '';
+    detailBox.scrollTop = 0;
   }
 
 }
