@@ -261,7 +261,7 @@ export default class Mouse {
 
     else if (obj.mouseAction === 'click') {
       AN.clickedNodeIndex = AN.detectNodeIndex(obj.name);
-      Mouse.noClickFade(AN.clickedNodeIndex, AN);
+      AN.linked1stNodeList = Mouse.noClickFade(AN.clickedNodeIndex, AN);
       AN.isClicked = 1;
       AN.statrHighlightNode(AN.nodeData[AN.clickedNodeIndex], '1st');
 

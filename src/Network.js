@@ -466,8 +466,9 @@ export default class Network {
         // console.log('');
       } else {
         // if mouseover clicked node, do nothing
+        console.log(d.index !== this.clickedNodeIndex, d.index, this.clickedNodeIndex);
         if (d.index !== this.clickedNodeIndex) {
-
+          console.log(this.linked1stNodeList.indexOf(d.index) >= 0, d.index, this.linked1stNodeList);
           // if mouseover 1st linked node, color 1st linked node
           if (this.linked1stNodeList.indexOf(d.index) >= 0){
             this.mouseover1stLinked(this.clickedNodeIndex, d);
