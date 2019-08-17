@@ -44,6 +44,8 @@ export default class Mouse {
     d3.selectAll(nodeText)['_groups'][0].attr("class", null);
     Mouse.fillNode(nodeData, nodeCircle);
     Mouse.putGradientLineColor(linkData, linkLine, dataType);
+    Connection.deleteDetail("detail" + NW.vizID + "1");
+    Connection.deleteDetail("detail" + NW.vizID + "2");
   }
 
   static putGradientLineColor(linkData, linkLine, dataType){
@@ -178,9 +180,19 @@ export default class Mouse {
     }
 
     if (obj.mouseAction === 'mouseenter') {
-      Mouse.reset(AN);
-      Mouse.cursor(AN.vizMode === 'Single' ?'grab' : 'pointer', AN.body, AN.node);
-      AN.stopHighlightNode();
+      //  manipulate both network(visArea is same, so can't distinguish network)
+      networkMain.stopHighlightNode();
+      networkMain.isClicked = 0;
+      Mouse.reset(networkMain);
+      Mouse.cursor(networkMain.vizMode === 'Single' ?'grab' : 'pointer', networkMain.body, networkMain.node);
+      networkMain.stopHighlightNode();
+
+      networkSub.stopHighlightNode();
+      networkSub.isClicked = 0;
+      Mouse.reset(networkSub);
+      Mouse.cursor(networkSub.vizMode === 'Single' ?'grab' : 'pointer', networkSub.body, networkSub.node);
+      networkSub.stopHighlightNode();
+
       return;
     }
 

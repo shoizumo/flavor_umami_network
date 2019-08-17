@@ -452,13 +452,14 @@ export default class Network {
 
     this.vizArea.on("mouseenter", () => {
       this.mouseenter();
+      Mouse.cursor(this.vizMode === 'Single' ? 'grab' : 'pointer', this.body, this.node);
     });
   }
 
 
   setMouseActionMulti() {
     this.node.on("mouseover", (d) => {
-
+      console.log(this.isClicked, this);
       if (this.isClicked === 0) {
         this.mouseover(d);
         // console.log('mouseover', this.nodeInfo);
@@ -529,6 +530,7 @@ export default class Network {
 
   /* mouse event detail */
   mouseover(d) {
+    console.log('mouseover');
     this.statrHighlightNode(d, '1st');
     Mouse.clickableFade(d.index, this);
     clearInterval(this.mouseoutSetTimeout);
@@ -538,6 +540,7 @@ export default class Network {
   }
 
   mouseover1stLinked(oldIndex, newNode) {
+    console.log('mouseover1stLinked');
     this.linked1st(oldIndex, newNode);
     clearInterval(this.mouseoutSetTimeout);
     this.nodeInfo.network = this.vizID;
@@ -545,6 +548,7 @@ export default class Network {
   }
 
   mouseover2ndLinked(d){
+    console.log('mouseover2ndLinked');
     this.linked2nd(d);
     clearInterval(this.mouseoutSetTimeout);
     this.nodeInfo.network = this.vizID;
@@ -552,6 +556,7 @@ export default class Network {
   }
 
   mouseout() {
+    console.log('mouseout');
     this.stopHighlightNode();
     this.nodeInfo.name1stLinked = '';
     Mouse.reset(this);
@@ -560,22 +565,26 @@ export default class Network {
   }
 
   mouseenter() {
-    this.stopHighlightNode();
-    this.isClicked = 0;
+    console.log('mouseenter');
+    // this.stopHighlightNode();
+    // this.isClicked = 0;
+    console.log(this.isClicked, this.dataType, this);
     this.nodeInfo.name1stLinked = '';
-    Mouse.reset(this);
-    Mouse.cursor(this.vizMode === 'Single' ? 'grab' : 'pointer', this.body, this.node);
+    // Mouse.reset(this);
+    // Mouse.cursor(this.vizMode === 'Single' ? 'grab' : 'pointer', this.body, this.node);
     this.nodeInfo.network = this.vizID;
     this.nodeInfo.mouseAction = 'mouseenter';  // event trigger
   }
 
   mouseclick(d) {
+    console.log('mouseclick');
     this.clickTap(d);
     this.nodeInfo.network = this.vizID;
     this.nodeInfo.mouseAction = 'click';  // event trigger
   }
 
   returnToPrevClickedNodeMouseover(prevIndex) {
+    console.log('returnToPrevClickedNodeMouseover');
     this.stopHighlightNode();
     this.nodeInfo.mouseAction = 'mouseout';  // event trigger
     this.statrHighlightNode(this.nodeData[prevIndex],'1st');
