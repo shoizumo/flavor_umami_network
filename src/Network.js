@@ -72,7 +72,7 @@ export default class Network {
     this.zoomScale = {'scale': 1.0, 'X': 0, 'Y': 0};
     this.zoomGroup = this.svg.append("g");
     this.zoom_handler = d3.zoom()
-        .scaleExtent([0.5, this.isPC ? 2 : 5])
+        .scaleExtent([0.5, this.isPC ? 3 : 5])
         // .translateExtent([
         //   [-this.width / 2, -this.height / 2], [this.width + this.width / 2, this.height + this.height / 2]
         // ])
@@ -459,7 +459,6 @@ export default class Network {
 
   setMouseActionMulti() {
     this.node.on("mouseover", (d) => {
-      console.log(this.isClicked, this);
       if (this.isClicked === 0) {
         this.mouseover(d);
         // console.log('mouseover', this.nodeInfo);
@@ -468,7 +467,6 @@ export default class Network {
         // if mouseover clicked node, do nothing
         console.log(d.index !== this.clickedNodeIndex, d.index, this.clickedNodeIndex);
         if (d.index !== this.clickedNodeIndex) {
-          console.log(this.linked1stNodeList.indexOf(d.index) >= 0, d.index, this.linked1stNodeList);
           // if mouseover 1st linked node, color 1st linked node
           if (this.linked1stNodeList.indexOf(d.index) >= 0){
             this.mouseover1stLinked(this.clickedNodeIndex, d);
@@ -531,7 +529,6 @@ export default class Network {
 
   /* mouse event detail */
   mouseover(d) {
-    console.log('mouseover');
     this.statrHighlightNode(d, '1st');
     Mouse.clickableFade(d.index, this);
     clearInterval(this.mouseoutSetTimeout);
@@ -541,7 +538,6 @@ export default class Network {
   }
 
   mouseover1stLinked(oldIndex, newNode) {
-    console.log('mouseover1stLinked');
     this.linked1st(oldIndex, newNode);
     clearInterval(this.mouseoutSetTimeout);
     this.nodeInfo.network = this.vizID;
@@ -549,7 +545,6 @@ export default class Network {
   }
 
   mouseover2ndLinked(d){
-    console.log('mouseover2ndLinked');
     this.linked2nd(d);
     clearInterval(this.mouseoutSetTimeout);
     this.nodeInfo.network = this.vizID;
@@ -557,7 +552,6 @@ export default class Network {
   }
 
   mouseout() {
-    console.log('mouseout');
     this.stopHighlightNode();
     this.nodeInfo.name1stLinked = '';
     Mouse.reset(this);
@@ -566,10 +560,8 @@ export default class Network {
   }
 
   mouseenter() {
-    console.log('mouseenter');
     // this.stopHighlightNode();
     // this.isClicked = 0;
-    console.log(this.isClicked, this.dataType, this);
     this.nodeInfo.name1stLinked = '';
     // Mouse.reset(this);
     // Mouse.cursor(this.vizMode === 'Single' ? 'grab' : 'pointer', this.body, this.node);
@@ -578,19 +570,16 @@ export default class Network {
   }
 
   mouseclick(d) {
-    console.log('mouseclick');
     this.clickTap(d);
     this.nodeInfo.network = this.vizID;
     this.nodeInfo.mouseAction = 'click';  // event trigger
   }
 
   returnToPrevClickedNodeMouseover(prevIndex) {
-    console.log('returnToPrevClickedNodeMouseover');
     this.stopHighlightNode();
     this.nodeInfo.mouseAction = 'mouseout';  // event trigger
     this.statrHighlightNode(this.nodeData[prevIndex],'1st');
 
-    console.log('mouseover', 'returnToPrevClickedNodeMouseover');
     Mouse.noClickFade(prevIndex, this);
     this.nodeInfo.mouseAction = 'mouseover';  // event trigger
   }

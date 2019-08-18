@@ -1,38 +1,87 @@
 export default class SvgStyle {
 
   static horizontalStripe(svg, color) {
-    svg.append("defs")
+    const SVGpattern = svg
         .append("pattern")
         .attr("id", "Horizontal" + color)
         .attr("x", 0)
         .attr("y", 0)
-        .attr("width", 20)
-        .attr("height", 4)
-        .attr("patternUnits", "userSpaceOnUse")
-        .append("rect")
-        .attr("x", 0)
-        .attr("y", 0)
-        .attr("width", 20)
-        .attr("height", 3)
+        .attr("width", 3)
+        .attr("height", 5.4)
+        .attr("viewBox", "0 0 10 18")
+        .attr("patternUnits", "userSpaceOnUse");
+
+    const SVGpatternG = SVGpattern
+        .append("g")
+        .attr("id", "chevron" + color);
+
+    SVGpatternG.append("path")
+        .attr("d", "M0 0l5 3v5l-5 -3z")
         .attr("fill", color);
+
+    SVGpatternG.append("path")
+        .attr("d", "M10 0l-5 3v5l5 -3")
+        .attr("fill", color);
+
+    SVGpattern.append("use")
+        .attr("x", 0)
+        .attr("y", 9)
+        .attr("xlink:href", "#chevron" + color);
+
+    // svg.append("rect")
+    //     .attr("x", -100)
+    //     .attr("y", -100)
+    //     .attr("width", 10)
+    //     .attr("height", 18);
   }
 
 
   static verticalStripe(svg, color) {
-    svg.append("defs")
+    // svg.append("defs")
+    //     .append("pattern")
+    //     .attr("id", "Vertical" + color)
+    //     .attr("x", 0)
+    //     .attr("y", 0)
+    //     .attr("width", 4)
+    //     .attr("height", 20)
+    //     .attr("patternUnits", "userSpaceOnUse")
+    //     .append("rect")
+    //     .attr("x", 0)
+    //     .attr("y", 0)
+    //     .attr("width", 3)
+    //     .attr("height", 20)
+    //     .attr("fill", color);
+
+    const SVGpattern = svg
         .append("pattern")
         .attr("id", "Vertical" + color)
         .attr("x", 0)
         .attr("y", 0)
-        .attr("width", 4)
-        .attr("height", 20)
+        .attr("width", 8)
+        .attr("height", 8)
         .attr("patternUnits", "userSpaceOnUse")
-        .append("rect")
+
+    SVGpattern.append("rect")
         .attr("x", 0)
         .attr("y", 0)
-        .attr("width", 3)
-        .attr("height", 20)
+        .attr("width", 4)
+        .attr("height", 4)
         .attr("fill", color);
+
+    SVGpattern.append("rect")
+        .attr("x", 4)
+        .attr("y", 4)
+        .attr("width", 4)
+        .attr("height", 4)
+        .attr("fill", color);
+
+
+    // svg.append("rect")
+    //     .attr("x", -100)
+    //     .attr("y", -100)
+    //     .attr("width", 10)
+    //     .attr("height", 18);
+
   }
 
   static gradientUnitVector(x, y) {
