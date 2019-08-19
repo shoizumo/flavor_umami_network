@@ -185,13 +185,11 @@ export default class Mouse {
       networkMain.isClicked = 0;
       Mouse.reset(networkMain);
       Mouse.cursor(networkMain.vizMode === 'Single' ?'grab' : 'pointer', networkMain.body, networkMain.node);
-      networkMain.stopHighlightNode();
 
       networkSub.stopHighlightNode();
       networkSub.isClicked = 0;
       Mouse.reset(networkSub);
       Mouse.cursor(networkSub.vizMode === 'Single' ?'grab' : 'pointer', networkSub.body, networkSub.node);
-      networkSub.stopHighlightNode();
 
       return;
     }

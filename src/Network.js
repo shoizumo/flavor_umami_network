@@ -426,9 +426,7 @@ export default class Network {
     // click except for node
     this.svg.on("click", () => {
       if (this.isNodeClick === 0) {
-        this.mouseenter();
-        Connection.deleteDetail('detailMobile1');
-        Connection.deleteDetail('detailMobile2');
+        this.mouseenterReset()
       }
       this.isNodeClick = 0;
     });
@@ -560,13 +558,23 @@ export default class Network {
   }
 
   mouseenter() {
-    // this.stopHighlightNode();
-    // this.isClicked = 0;
     this.nodeInfo.name1stLinked = '';
     // Mouse.reset(this);
     // Mouse.cursor(this.vizMode === 'Single' ? 'grab' : 'pointer', this.body, this.node);
     this.nodeInfo.network = this.vizID;
     this.nodeInfo.mouseAction = 'mouseenter';  // event trigger
+  }
+
+  mouseenterReset(){
+    this.nodeInfo.name1stLinked = '';
+    this.nodeInfo.network = this.vizID;
+
+    Connection.deleteDetail('detailMobile1');
+    Connection.deleteDetail('detailMobile2');
+
+    this.stopHighlightNode();
+    this.isClicked = 0;
+    Mouse.reset(this);
   }
 
   mouseclick(d) {

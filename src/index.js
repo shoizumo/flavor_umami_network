@@ -43,7 +43,9 @@ import Connection from "./Connection";
   const dataTypeSelector = document.getElementById('dataType');
   dataTypeSelector.options.selectedIndex = 0;
   dataTypeSelector.onchange = function () {
-    networkMain.mouseenter();  // reset color
+    // reset color for PC/Mobile
+    networkMain.mouseenterReset();
+
     const selectedType = this.options[this.selectedIndex].value;
     networkMain.update(selectedType);
     networkMain.setMouseAction();
