@@ -172,7 +172,7 @@ $default_line_opacity: 0.5;
 
 
 /* mouseover */
-.highlightNode {
+.highlightNode1st {
   opacity: 1.0;
   fill: none;
   stroke-width: 4;
@@ -189,6 +189,24 @@ $default_line_opacity: 0.5;
     transform: rotate(360deg);
   }
 }
+
+.highlightNode2nd {
+  opacity: 0.5;
+  fill: none;
+  stroke-width: 4;
+  stroke-dasharray: 2.0, 5.0;
+
+  animation: animation 10s linear infinite;
+}
+@keyframes animation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 
 .nodeColor {
   opacity: $highlight_node_opacity;

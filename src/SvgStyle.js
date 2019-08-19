@@ -27,31 +27,10 @@ export default class SvgStyle {
         .attr("x", 0)
         .attr("y", 9)
         .attr("xlink:href", "#chevron" + color);
-
-    // svg.append("rect")
-    //     .attr("x", -100)
-    //     .attr("y", -100)
-    //     .attr("width", 10)
-    //     .attr("height", 18);
   }
 
 
   static verticalStripe(svg, color) {
-    // svg.append("defs")
-    //     .append("pattern")
-    //     .attr("id", "Vertical" + color)
-    //     .attr("x", 0)
-    //     .attr("y", 0)
-    //     .attr("width", 4)
-    //     .attr("height", 20)
-    //     .attr("patternUnits", "userSpaceOnUse")
-    //     .append("rect")
-    //     .attr("x", 0)
-    //     .attr("y", 0)
-    //     .attr("width", 3)
-    //     .attr("height", 20)
-    //     .attr("fill", color);
-
     const SVGpattern = svg
         .append("pattern")
         .attr("id", "Vertical" + color)
@@ -74,15 +53,8 @@ export default class SvgStyle {
         .attr("width", 4)
         .attr("height", 4)
         .attr("fill", color);
-
-
-    // svg.append("rect")
-    //     .attr("x", -100)
-    //     .attr("y", -100)
-    //     .attr("width", 10)
-    //     .attr("height", 18);
-
   }
+
 
   static gradientUnitVector(x, y) {
     // scale = 0.5

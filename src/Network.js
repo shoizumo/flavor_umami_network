@@ -207,11 +207,11 @@ export default class Network {
     /* highlight node */
     this.highlightNode = this.zoomGroup.append("g")
         .append("circle")
-        .attr("class", "highlightNode");
+        .attr("class", "highlightNode1st");
 
     this.highlightNodeLinked = this.zoomGroup.append("g")
         .append("circle")
-        .attr("class", "highlightNode");
+        .attr("class", "highlightNode2nd");
   }
 
 
@@ -357,33 +357,37 @@ export default class Network {
   }
 
   updateHighlightNodeStyle(r, color, type){
-    let node;
+    let highlightNode;
     if (type === '1st'){
-      node = this.highlightNode;
+      highlightNode = this.highlightNode;
     } else{
-      node = this.highlightNodeLinked;
+      highlightNode = this.highlightNodeLinked;
     }
-    node.attr("r", () => {
+    highlightNode.attr("r", () => {
           return r;
         })
         .attr("stroke", color)
   }
 
   updateHighlightNodePosition(x, y, type) {
-    let node;
+    let highlightNode;
     if (type === '1st'){
-      node = this.highlightNode;
+      highlightNode = this.highlightNode;
     } else{
-      node = this.highlightNodeLinked;
+      highlightNode = this.highlightNodeLinked;
     }
-    node.attr("cx", () => {
+    highlightNode.attr("cx", () => {
           return x;
         })
         .attr("cy", () => {
           return y;
         });
 
-    node.attr("transform-origin",  String(x) + " " + String(y))
+    highlightNode["_groups"][0][0].style.transformOrigin =
+        highlightNode["_groups"][0][0].cx.animVal.value + "px " +
+        highlightNode["_groups"][0][0].cy.animVal.value + "px";
+    // don't work for firefox
+    // highlightNode.attr("transform-origin",  String(x) + " " + String(y))
   }
 
 
