@@ -55,41 +55,27 @@ import Connection from "./Connection";
 
   /* update mode(PC only) */
   const vizModeSelector = document.getElementById('vizMode');
-  vizModeSelector.options.selectedIndex = 0;
+  // link from FG -> compare mode, default -> default mode
+  if (location.href.slice(-1) !== '?'){
+    vizModeSelector.options.selectedIndex = 0;
+  } else{
+    vizModeSelector.options.selectedIndex = 1;
+    compareMode();
+  }
+
 
   vizModeSelector.onchange = function () {
     const selectedType = this.options[this.selectedIndex].value;
 
     if (selectedType === 'Compare') {
-      const dataType = networkMain.dataType === 'Flavor' ? 'Umami' : 'Flavor';
-      networkSub = new Network(flavorData, umamiData, isPC, '#graphSub', dataType, 'Multi', 'Sub', nodeInfo);
-      networkSub.render();
-
-      Update.multiMode(networkMain, networkSub, 500);
-      Mouse.watchMouseAction(nodeInfo, 'mouseAction', networkMain, networkSub);
-
-
-      document.getElementById('h2Main').textContent = networkMain.dataType;
-      document.getElementById('h2Sub').textContent = networkSub.dataType;
-
-      dataTypeSelector.style.display = 'none';
-      document.getElementById('h1').style.display = 'none';
-      document.getElementById('h2Container').style.display = 'block';
+      compareMode();
     }
     // 'Default'
     else {
-      Update.singleMode(networkMain, networkSub, 500);
-      Connection.deleteDetail('detailMain1');
-      Connection.deleteDetail('detailMain2');
-      Connection.deleteDetail('detailSub1');
-      Connection.deleteDetail('detailSub2');
-
-      dataTypeSelector.style.display = 'inline';
-      document.getElementById('h1').style.display = 'block';
-      document.getElementById('h2Container').style.display = 'none';
+      defaultMode();
     }
-
   };
+
 
   /* PC, Mobile setting*/
   if (!isPC) {
@@ -102,6 +88,36 @@ import Connection from "./Connection";
   }
 
 
+  function compareMode() {
+    const dataType = networkMain.dataType === 'Flavor' ? 'Umami' : 'Flavor';
+    networkSub = new Network(flavorData, umamiData, isPC, '#graphSub', dataType, 'Multi', 'Sub', nodeInfo);
+    networkSub.render();
+
+    Update.multiMode(networkMain, networkSub, 500);
+    Mouse.watchMouseAction(nodeInfo, 'mouseAction', networkMain, networkSub);
+
+
+    document.getElementById('h2Main').textContent = networkMain.dataType;
+    document.getElementById('h2Sub').textContent = networkSub.dataType;
+
+    dataTypeSelector.style.display = 'none';
+    document.getElementById('h1').style.display = 'none';
+    document.getElementById('h2Container').style.display = 'block';
+  }
+
+  function defaultMode() {
+    Update.singleMode(networkMain, networkSub, 500);
+    Connection.deleteDetail('detailMain1');
+    Connection.deleteDetail('detailMain2');
+    Connection.deleteDetail('detailSub1');
+    Connection.deleteDetail('detailSub2');
+
+    dataTypeSelector.style.display = 'inline';
+    document.getElementById('h1').style.display = 'block';
+    document.getElementById('h2Container').style.display = 'none';
+  }
+
+
   //////////////////////////////////////////////////////////////////////////////////////////
   // Modal
   const about = document.getElementById('about');
@@ -111,7 +127,6 @@ import Connection from "./Connection";
   about.addEventListener('click', function () {
     modal.style.display = 'block';
     document.getElementById('modalContent').scrollTop = 0;
-
   });
 
   close.addEventListener('click', function () {
@@ -119,11 +134,10 @@ import Connection from "./Connection";
   });
 
   window.addEventListener('click', function (e) {
-    if (e.target == modal) {
+    if (e.target === modal) {
       modal.style.display = 'none';
     }
   });
-
 
 })();
 
