@@ -417,11 +417,18 @@ $mobile-height-ratio: 1.9;
   overflow-y: scroll;
   -webkit-overflow-scrolling:touch;
 
-
   width: calc(100% - 20em);
   height: calc(100% - 20em);
   max-width: 450px;
   max-height: 600px;
+
+  -webkit-touch-callout: default;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+
+  //-webkit-tap-highlight-color: transparent;
 
 
   header {
@@ -430,6 +437,7 @@ $mobile-height-ratio: 1.9;
   }
 
   h3{
+    margin-top: 1.5em;
     margin-bottom: 0.5em;
   }
 
@@ -488,6 +496,13 @@ $mobile-height-ratio: 1.9;
 }
 .close:after {
   transform: rotate(-45deg);
+}
+
+.credit{
+  text-decoration: none;
+  &:visited{
+    color: $font_color;
+  }
 }
 
 

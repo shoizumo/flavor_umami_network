@@ -56,7 +56,7 @@ import Connection from "./Connection";
   /* update mode(PC only) */
   const vizModeSelector = document.getElementById('vizMode');
   // link from FG -> compare mode, default -> default mode
-  if (location.href.slice(-1) !== '?'){
+  if (!isPC | location.href.slice(-1) !== '?'){
     vizModeSelector.options.selectedIndex = 0;
   } else{
     vizModeSelector.options.selectedIndex = 1;
