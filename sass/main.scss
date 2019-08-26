@@ -208,6 +208,22 @@ $default_line_opacity: 0.5;
 }
 
 
+.highlightNode1stStatic {
+  opacity: 1.0;
+  fill: none;
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-dasharray: 0.4, 6;
+}
+
+.highlightNode2ndStatic {
+  opacity: 0.5;
+  fill: none;
+  stroke-width: 4;
+  stroke-dasharray: 2.0, 5.0;
+}
+
+
 .nodeColor {
   opacity: $highlight_node_opacity;
 }

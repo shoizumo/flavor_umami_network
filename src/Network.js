@@ -7,6 +7,14 @@ import SvgStyle from "./SvgStyle";
 export default class Network {
   constructor(flavorData, umamiData, isPC, svgID, dataType, vizMode, vizID, nodeInfo) {
     this.isPC = isPC;
+    const ua = window.navigator.userAgent.toLowerCase();
+    if (ua.indexOf('safari') !== -1 && ua.indexOf('chrome') === -1) {
+      this.isSafari = true;
+    }else{
+      this.isSafari = false;
+    }
+
+
     this.flavorData = flavorData;
     this.umamiData = umamiData;
 
@@ -205,13 +213,24 @@ export default class Network {
     }
 
     /* highlight node */
-    this.highlightNode = this.zoomGroup.append("g")
-        .append("circle")
-        .attr("class", "highlightNode1st");
+    if (this.isSafari || this.isPC) {
+      this.highlightNode = this.zoomGroup.append("g")
+          .append("circle")
+          .attr("class", "highlightNode1stStatic");
 
-    this.highlightNodeLinked = this.zoomGroup.append("g")
-        .append("circle")
-        .attr("class", "highlightNode2nd");
+      this.highlightNodeLinked = this.zoomGroup.append("g")
+          .append("circle")
+          .attr("class", "highlightNode2ndStatic");
+
+    } else {
+      this.highlightNode = this.zoomGroup.append("g")
+          .append("circle")
+          .attr("class", "highlightNode1st");
+
+      this.highlightNodeLinked = this.zoomGroup.append("g")
+          .append("circle")
+          .attr("class", "highlightNode2nd");
+    }
   }
 
 
